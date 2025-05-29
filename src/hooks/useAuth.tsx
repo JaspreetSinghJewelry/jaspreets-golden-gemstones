@@ -4,12 +4,13 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 interface User {
   id: string;
   phone: string;
+  name: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (phone: string) => void;
+  login: (phone: string, name: string) => void;
   logout: () => void;
 }
 
@@ -26,8 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (phone: string) => {
-    const newUser = { id: `user_${Date.now()}`, phone };
+  const login = (phone: string, name: string) => {
+    const newUser = { id: `user_${Date.now()}`, phone, name };
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
   };

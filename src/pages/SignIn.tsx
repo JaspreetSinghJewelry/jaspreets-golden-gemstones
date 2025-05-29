@@ -8,11 +8,12 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
 const SignIn = () => {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,15 @@ const SignIn = () => {
   const { login } = useAuth();
 
   const handleSendOTP = async () => {
+    if (!name.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter your full name",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!phoneNumber || phoneNumber.length !== 10) {
       toast({
         title: "Invalid Phone Number",
@@ -54,10 +64,10 @@ const SignIn = () => {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      login(phoneNumber);
+      login(phoneNumber, name);
       toast({
         title: "Welcome!",
-        description: "Successfully signed in to your account",
+        description: `Successfully signed in, ${name}!`,
       });
       setIsLoading(false);
       navigate('/');
@@ -97,7 +107,7 @@ const SignIn = () => {
             </CardTitle>
             <p className="text-gray-600 mt-2">
               {step === 'phone' 
-                ? 'Enter your phone number to continue' 
+                ? 'Enter your details to continue' 
                 : `Enter the 6-digit code sent to +91${phoneNumber}`
               }
             </p>
@@ -105,6 +115,17 @@ const SignIn = () => {
           <CardContent>
             {step === 'phone' ? (
               <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
                 <div>
                   <Label htmlFor="phone">Phone Number</Label>
                   <div className="flex mt-1">
@@ -124,7 +145,7 @@ const SignIn = () => {
                 </div>
                 <Button 
                   onClick={handleSendOTP}
-                  disabled={isLoading || phoneNumber.length !== 10}
+                  disabled={isLoading || phoneNumber.length !== 10 || !name.trim()}
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700"
                   size="lg"
                 >

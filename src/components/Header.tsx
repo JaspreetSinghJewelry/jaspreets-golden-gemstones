@@ -1,17 +1,18 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Search, ShoppingBag, User, Heart, LogOut } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import CartDrawer from './CartDrawer';
+import AccountMenu from './AccountMenu';
 import { FancyText } from '@/components/ui/fancy-text';
 import { useAuth } from '@/hooks/useAuth';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
@@ -19,15 +20,13 @@ const Header = () => {
   ];
 
   const handleUserAction = () => {
-    if (isAuthenticated) {
-      logout();
-    } else {
+    if (!isAuthenticated) {
       navigate('/signin');
     }
   };
 
   return (
-    <header className="bg-gradient-to-r from-[#1F1E39] via-[#2A2857] to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
+    <header className="bg-gradient-to-r from-[#1F1E39] via-[#2A2857] to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl">
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#1F1E39] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
@@ -41,7 +40,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3 cursor-pointer transform hover:scale-110 transition-all duration-300 animate-slide-in-left" onClick={() => navigate('/')}>
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
             <img 
               src="/lovable-uploads/266b589d-2d61-4c55-8e5e-53c54e18c97f.png" 
               alt="Jaspreet Singh Jewelry Logo" 
@@ -56,13 +55,12 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8 animate-fade-in" style={{animationDelay: '0.5s'}}>
-            {navItems.map((item, index) => (
+          <nav className="hidden lg:flex items-center space-x-8">
+            {navItems.map((item) => (
               <a
                 key={item}
                 href="#"
-                className="hover:text-yellow-400 transition-all duration-300 font-medium transform hover:scale-110 animate-fade-in"
-                style={{animationDelay: `${index * 0.1}s`}}
+                className="hover:text-yellow-400 transition-all duration-300 font-medium"
               >
                 {item}
               </a>
@@ -70,21 +68,31 @@ const Header = () => {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4 animate-slide-in-right">
+          <div className="flex items-center space-x-4">
             <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 hover:bg-white/10">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 transform hover:scale-125 transition-all duration-300 animate-pulse">
+            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-white hover:text-yellow-400 transform hover:scale-125 transition-all duration-300"
-              onClick={handleUserAction}
-            >
-              {isAuthenticated ? <LogOut className="h-5 w-5" /> : <User className="h-5 w-5" />}
-            </Button>
+            
+            {isAuthenticated ? (
+              <AccountMenu>
+                <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
+                  <User className="h-5 w-5" />
+                </Button>
+              </AccountMenu>
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-white hover:text-yellow-400"
+                onClick={handleUserAction}
+              >
+                <User className="h-5 w-5" />
+              </Button>
+            )}
+            
             <CartDrawer>
               <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">
                 <ShoppingBag className="h-5 w-5" />
@@ -100,7 +108,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-white transform hover:scale-125 transition-all duration-300"
+              className="lg:hidden text-white"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -110,14 +118,13 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="lg:hidden mt-4 pb-4 border-t border-white/30 pt-4 animate-slide-in-up">
+          <nav className="lg:hidden mt-4 pb-4 border-t border-white/30 pt-4">
             <div className="flex flex-col space-y-3">
-              {navItems.map((item, index) => (
+              {navItems.map((item) => (
                 <a
                   key={item}
                   href="#"
-                  className="hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105 animate-fade-in"
-                  style={{animationDelay: `${index * 0.1}s`}}
+                  className="hover:text-yellow-400 transition-colors duration-200"
                 >
                   {item}
                 </a>
