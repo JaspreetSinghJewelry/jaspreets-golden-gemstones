@@ -28,13 +28,13 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-indigo-400 via-[#1F1E39] to-blue-500 text-white animate-fade-in">
+    <section className="py-16 bg-gradient-to-br from-[#1F1E39] via-[#2A2857] to-yellow-600 text-white animate-fade-in">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="animate-slide-in-left">
             <h2 className="text-4xl font-bold mb-6 animate-bounce">
               Crafting Excellence Since 
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-blue-300 animate-pulse">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-400 animate-pulse">
                 Three Generations
               </span>
             </h2>
@@ -49,7 +49,7 @@ const AboutSection = () => {
             </p>
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 hover:from-yellow-400 hover:to-blue-500 font-semibold transform hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-600 font-semibold transform hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse"
             >
               Our Story
             </Button>
@@ -62,7 +62,7 @@ const AboutSection = () => {
                 className="bg-white/20 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-white/30 transition-all duration-500 transform hover:scale-110 hover:-translate-y-2 animate-fade-in shadow-xl"
                 style={{animationDelay: `${index * 0.3}s`}}
               >
-                <div className="text-yellow-300 mb-4 flex justify-center animate-bounce" style={{animationDelay: `${index * 0.2}s`}}>
+                <div className="text-yellow-400 mb-4 flex justify-center animate-bounce" style={{animationDelay: `${index * 0.2}s`}}>
                   {feature.icon}
                 </div>
                 <h3 className="font-bold mb-2 animate-pulse">{feature.title}</h3>

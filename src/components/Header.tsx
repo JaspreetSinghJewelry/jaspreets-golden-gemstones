@@ -17,11 +17,11 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-[#1F1E39] via-blue-600 to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
+    <header className="bg-gradient-to-r from-[#1F1E39] via-[#2A2857] to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 py-2 animate-pulse">
+      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#1F1E39] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
-          <FancyText variant="elegant" className="animate-bounce">
+          <FancyText variant="elegant">
             Free Shipping on Orders Above ₹10,000 | Certified Jewelry
           </FancyText>
         </div>
@@ -31,15 +31,17 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2 cursor-pointer transform hover:scale-110 transition-all duration-300 animate-slide-in-left" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-300 to-blue-400 rounded-full flex items-center justify-center shadow-lg animate-spin" style={{animationDuration: '3s'}}>
-              <span className="text-gray-800 font-bold text-lg">JS</span>
-            </div>
+          <div className="flex items-center space-x-3 cursor-pointer transform hover:scale-110 transition-all duration-300 animate-slide-in-left" onClick={() => navigate('/')}>
+            <img 
+              src="/lovable-uploads/266b589d-2d61-4c55-8e5e-53c54e18c97f.png" 
+              alt="Jaspreet Singh Jewelry Logo" 
+              className="w-12 h-12 object-contain"
+            />
             <div>
-              <FancyText variant="glow" className="text-xl font-bold animate-pulse">
+              <FancyText variant="glow" className="text-xl font-bold">
                 Jaspreet Singh
               </FancyText>
-              <p className="text-sm text-yellow-300 animate-bounce">Jewelry</p>
+              <p className="text-sm text-yellow-400">Jewelry</p>
             </div>
           </div>
 
@@ -49,7 +51,7 @@ const Header = () => {
               <a
                 key={item}
                 href="#"
-                className="hover:text-yellow-300 transition-all duration-300 font-medium transform hover:scale-110 animate-fade-in"
+                className="hover:text-yellow-400 transition-all duration-300 font-medium transform hover:scale-110 animate-fade-in"
                 style={{animationDelay: `${index * 0.1}s`}}
               >
                 {item}
@@ -59,25 +61,25 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4 animate-slide-in-right">
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-300 transform hover:scale-125 transition-all duration-300 animate-bounce">
+            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 hover:bg-white/10">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-300 transform hover:scale-125 transition-all duration-300 animate-pulse">
+            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 transform hover:scale-125 transition-all duration-300 animate-pulse">
               <Heart className="h-5 w-5" />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-white hover:text-yellow-300 transform hover:scale-125 transition-all duration-300"
+              className="text-white hover:text-yellow-400 transform hover:scale-125 transition-all duration-300"
               onClick={() => navigate('/signin')}
             >
               <User className="h-5 w-5" />
             </Button>
             <CartDrawer>
-              <Button variant="ghost" size="icon" className="text-white hover:text-yellow-300 relative transform hover:scale-125 transition-all duration-300 animate-bounce">
+              <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#1F1E39] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
                     {cartCount}
                   </span>
                 )}
@@ -104,7 +106,7 @@ const Header = () => {
                 <a
                   key={item}
                   href="#"
-                  className="hover:text-yellow-300 transition-colors duration-200 transform hover:scale-105 animate-fade-in"
+                  className="hover:text-yellow-400 transition-colors duration-200 transform hover:scale-105 animate-fade-in"
                   style={{animationDelay: `${index * 0.1}s`}}
                 >
                   {item}
