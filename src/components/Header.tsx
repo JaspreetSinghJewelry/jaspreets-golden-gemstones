@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cartCount } = useCart();
 
   const navItems = [
     'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Collections', 'Bridal'
@@ -57,8 +59,13 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
               <User className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
+            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative">
               <ShoppingBag className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-[#1F1E39] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {cartCount}
+                </span>
+              )}
             </Button>
             
             {/* Mobile Menu Button */}

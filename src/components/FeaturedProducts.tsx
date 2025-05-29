@@ -3,8 +3,11 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Star } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 
 const FeaturedProducts = () => {
+  const { addToCart } = useCart();
+
   const products = [
     {
       id: 1,
@@ -13,7 +16,7 @@ const FeaturedProducts = () => {
       originalPrice: '₹52,999',
       rating: 4.8,
       reviews: 124,
-      image: '💍',
+      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
       badge: 'Bestseller'
     },
     {
@@ -23,7 +26,7 @@ const FeaturedProducts = () => {
       originalPrice: '₹35,999',
       rating: 4.9,
       reviews: 89,
-      image: '📿',
+      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
       badge: 'New'
     },
     {
@@ -33,7 +36,7 @@ const FeaturedProducts = () => {
       originalPrice: '₹19,999',
       rating: 4.7,
       reviews: 156,
-      image: '👂',
+      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=300&fit=crop',
       badge: 'Sale'
     },
     {
@@ -43,10 +46,20 @@ const FeaturedProducts = () => {
       originalPrice: '₹45,999',
       rating: 4.6,
       reviews: 78,
-      image: '⌚',
+      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=300&fit=crop',
       badge: 'Limited'
     }
   ];
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image
+    });
+  };
 
   return (
     <section className="py-16 bg-white">
@@ -68,8 +81,12 @@ const FeaturedProducts = () => {
             >
               <CardContent className="p-0">
                 <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center">
-                    <span className="text-6xl">{product.image}</span>
+                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
                   </div>
                   <div className="absolute top-4 left-4">
                     <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] px-3 py-1 rounded-full text-xs font-bold">
@@ -110,6 +127,7 @@ const FeaturedProducts = () => {
                   </div>
                   
                   <Button 
+                    onClick={() => handleAddToCart(product)}
                     className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700 font-semibold"
                   >
                     Add to Cart
