@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -14,6 +14,7 @@ import SearchModal from './SearchModal';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated, user } = useAuth();
@@ -21,8 +22,18 @@ const Header = () => {
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
   const navItems = [
-    'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Collections', 'Bridal'
+    'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Lab Grown Diamonds', 'Collections', 'Bridal'
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleUserAction = () => {
     if (!isAuthenticated) {
@@ -31,26 +42,35 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
+    <header className={`bg-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl transition-all duration-300 ${
+      isScrolled ? 'py-2 shadow-xl' : 'py-4'
+    }`}>
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+          <div className={`flex items-center cursor-pointer transition-all duration-300 ${
+            isScrolled ? 'scale-90' : 'scale-100'
+          }`} onClick={() => navigate('/')}>
             <img 
               src="/lovable-uploads/266b589d-2d61-4c55-8e5e-53c54e18c97f.png" 
               alt="Company Logo" 
-              className="w-20 h-20 object-contain"
+              className={`object-contain transition-all duration-300 ${
+                isScrolled ? 'w-16 h-16' : 'w-20 h-20'
+              }`}
             />
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <a
                 key={item}
                 href="#"
-                className="hover:text-yellow-400 transition-all duration-300 font-medium"
+                className={`hover:text-yellow-400 transition-all duration-300 font-medium transform hover:scale-110 animate-fade-in ${
+                  item === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
+                }`}
+                style={{animationDelay: `${index * 0.1}s`}}
               >
                 {item}
               </a>
@@ -63,7 +83,7 @@ const Header = () => {
               ref={searchButtonRef}
               variant="ghost" 
               size="icon" 
-              className="text-white hover:text-yellow-400 hover:bg-white/10"
+              className="text-white hover:text-yellow-400 hover:bg-white/10 transform hover:scale-110 transition-all duration-300"
               onClick={() => setIsSearchOpen(true)}
             >
               <Search className="h-5 w-5" />
@@ -72,11 +92,11 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-white hover:text-yellow-400 relative hover:bg-white/10"
+              className="text-white hover:text-yellow-400 relative hover:bg-white/10 transform hover:scale-110 transition-all duration-300"
             >
               <Heart className="h-5 w-5" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-400 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-400 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg animate-bounce">
                   {wishlistCount}
                 </span>
               )}
@@ -84,7 +104,7 @@ const Header = () => {
             
             {isAuthenticated ? (
               <AccountMenu>
-                <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
+                <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 transform hover:scale-110 transition-all duration-300">
                   <User className="h-5 w-5" />
                 </Button>
               </AccountMenu>
@@ -92,7 +112,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="text-white hover:text-yellow-400"
+                className="text-white hover:text-yellow-400 transform hover:scale-110 transition-all duration-300"
                 onClick={handleUserAction}
               >
                 <User className="h-5 w-5" />
@@ -100,10 +120,10 @@ const Header = () => {
             )}
             
             <CartDrawer>
-              <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10 transform hover:scale-110 transition-all duration-300">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg animate-bounce">
                     {cartCount}
                   </span>
                 )}
@@ -114,7 +134,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-white"
+              className="lg:hidden text-white transform hover:scale-110 transition-all duration-300"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -124,13 +144,16 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="lg:hidden mt-4 pb-4 border-t border-white/30 pt-4">
+          <nav className="lg:hidden mt-4 pb-4 border-t border-white/30 pt-4 animate-slide-in-up">
             <div className="flex flex-col space-y-3">
-              {navItems.map((item) => (
+              {navItems.map((item, index) => (
                 <a
                   key={item}
                   href="#"
-                  className="hover:text-yellow-400 transition-colors duration-200"
+                  className={`hover:text-yellow-400 transition-colors duration-200 animate-fade-in transform hover:translate-x-2 ${
+                    item === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
+                  }`}
+                  style={{animationDelay: `${index * 0.1}s`}}
                 >
                   {item}
                 </a>

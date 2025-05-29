@@ -1,6 +1,6 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface CartItem {
   id: number;
@@ -24,6 +24,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     // Load cart items from localStorage on initialization
     try {
@@ -48,6 +49,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems]);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Please Sign In",
+        description: "You need to sign in to add items to your cart",
+        variant: "destructive"
+      });
+      return;
+    }
+
     console.log('Adding to cart:', product);
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
