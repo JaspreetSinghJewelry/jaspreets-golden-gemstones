@@ -7,13 +7,11 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, MapPin, ShoppingBag, CreditCard, Truck, Shield, User, Mail, Phone, Home, Plus, Minus, Trash2 } from 'lucide-react';
-import PaymentOptions from '@/components/PaymentOptions';
 
 const Checkout = () => {
   const { cartItems, getCartTotal, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState('card');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -61,15 +59,22 @@ const Checkout = () => {
     });
   };
 
-  const handlePlaceOrder = () => {
-    console.log('Order placed:', { 
-      items: cartItems, 
-      customer: formData, 
-      total: totalAmount,
-      location: location,
-      paymentMethod: selectedPayment
+  const handleContinueToPayment = () => {
+    // Validate required fields
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'pincode', 'state'];
+    const isValid = requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
+    
+    if (!isValid) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    // Navigate to payment page with customer data
+    navigate('/payment', { 
+      state: { 
+        customerData: { ...formData, location } 
+      }
     });
-    navigate('/order-success');
   };
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
@@ -136,8 +141,8 @@ const Checkout = () => {
               <Truck className="h-4 w-4" />
               <span>Shipping</span>
             </div>
-            <div className="h-1 w-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded"></div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full text-[#0D0C29] font-semibold">
+            <div className="h-1 w-8 bg-gray-300 rounded"></div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-300 rounded-full text-gray-600 font-semibold">
               <CreditCard className="h-4 w-4" />
               <span>Payment</span>
             </div>
@@ -161,7 +166,7 @@ const Checkout = () => {
                   <div>
                     <Label htmlFor="firstName" className="text-[#0D0C29] font-semibold flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      First Name
+                      First Name *
                     </Label>
                     <Input
                       id="firstName"
@@ -174,7 +179,7 @@ const Checkout = () => {
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="text-[#0D0C29] font-semibold">
-                      Last Name
+                      Last Name *
                     </Label>
                     <Input
                       id="lastName"
@@ -188,7 +193,7 @@ const Checkout = () => {
                   <div>
                     <Label htmlFor="email" className="text-[#0D0C29] font-semibold flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      Email Address
+                      Email Address *
                     </Label>
                     <Input
                       id="email"
@@ -203,7 +208,7 @@ const Checkout = () => {
                   <div>
                     <Label htmlFor="phone" className="text-[#0D0C29] font-semibold flex items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      Phone Number
+                      Phone Number *
                     </Label>
                     <Input
                       id="phone"
@@ -262,7 +267,7 @@ const Checkout = () => {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="address" className="text-[#0D0C29] font-semibold">
-                      Complete Address
+                      Complete Address *
                     </Label>
                     <Input
                       id="address"
@@ -277,7 +282,7 @@ const Checkout = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="city" className="text-[#0D0C29] font-semibold">
-                        City
+                        City *
                       </Label>
                       <Input
                         id="city"
@@ -290,7 +295,7 @@ const Checkout = () => {
                     </div>
                     <div>
                       <Label htmlFor="state" className="text-[#0D0C29] font-semibold">
-                        State
+                        State *
                       </Label>
                       <Input
                         id="state"
@@ -303,7 +308,7 @@ const Checkout = () => {
                     </div>
                     <div>
                       <Label htmlFor="pincode" className="text-[#0D0C29] font-semibold">
-                        Pincode
+                        Pincode *
                       </Label>
                       <Input
                         id="pincode"
@@ -318,12 +323,6 @@ const Checkout = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* Payment Options */}
-            <PaymentOptions 
-              selectedPayment={selectedPayment}
-              onPaymentChange={setSelectedPayment}
-            />
           </div>
 
           {/* Right Column - Order Summary */}
@@ -407,14 +406,14 @@ const Checkout = () => {
                     <span className="text-sm font-medium">Secure SSL Encrypted Checkout</span>
                   </div>
 
-                  {/* Proceed to Buy Button */}
+                  {/* Continue to Payment Button */}
                   <Button 
-                    onClick={handlePlaceOrder}
+                    onClick={handleContinueToPayment}
                     className="w-full bg-gradient-to-r from-[#0D0C29] to-purple-800 text-white hover:from-purple-900 hover:to-[#0D0C29] font-bold py-4 text-lg shadow-xl border-2 border-yellow-400 hover:border-yellow-300 transition-all duration-300 transform hover:scale-105"
                     size="lg"
                   >
                     <CreditCard className="h-5 w-5 mr-2" />
-                    Proceed to Buy - ₹{totalAmount.toLocaleString()}
+                    Continue to Payment
                   </Button>
                 </div>
               </CardContent>

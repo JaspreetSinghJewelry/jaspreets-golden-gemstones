@@ -9,6 +9,7 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 import OrderSuccess from "./pages/OrderSuccess";
 import SignIn from "./pages/SignIn";
 import Products from "./pages/Products";
@@ -45,6 +46,7 @@ const App = () => (
                 <Route path="/bridal" element={<Bridal />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment" element={<Payment />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="*" element={<NotFound />} />
