@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export interface CartItem {
   id: number;
@@ -26,6 +26,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+    console.log('Adding to cart:', product);
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       
@@ -34,43 +35,57 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           title: "Updated Cart",
           description: `Increased quantity of ${product.name}`,
         });
-        return prevItems.map(item =>
+        const updatedItems = prevItems.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
+        console.log('Updated cart items:', updatedItems);
+        return updatedItems;
       } else {
         toast({
           title: "Added to Cart",
           description: `${product.name} has been added to your cart`,
         });
-        return [...prevItems, { ...product, quantity: 1 }];
+        const newItems = [...prevItems, { ...product, quantity: 1 }];
+        console.log('New cart items:', newItems);
+        return newItems;
       }
     });
   };
 
   const removeFromCart = (id: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+    console.log('Removing from cart:', id);
+    setCartItems(prevItems => {
+      const filtered = prevItems.filter(item => item.id !== id);
+      console.log('Cart after removal:', filtered);
+      return filtered;
+    });
   };
 
   const updateQuantity = (id: number, quantity: number) => {
+    console.log('Updating quantity:', id, quantity);
     if (quantity === 0) {
       removeFromCart(id);
       return;
     }
     
-    setCartItems(prevItems =>
-      prevItems.map(item =>
+    setCartItems(prevItems => {
+      const updated = prevItems.map(item =>
         item.id === id ? { ...item, quantity } : item
-      )
-    );
+      );
+      console.log('Cart after quantity update:', updated);
+      return updated;
+    });
   };
 
   const getCartTotal = () => {
-    return cartItems.reduce((total, item) => {
+    const total = cartItems.reduce((total, item) => {
       const price = parseInt(item.price.replace(/[₹,]/g, ''));
       return total + (price * item.quantity);
     }, 0);
+    console.log('Cart total:', total);
+    return total;
   };
 
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);

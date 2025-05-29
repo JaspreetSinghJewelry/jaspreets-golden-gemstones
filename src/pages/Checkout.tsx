@@ -24,10 +24,12 @@ const Checkout = () => {
     state: ''
   });
 
+  console.log('Checkout page - Cart items:', cartItems);
+  console.log('Checkout page - Cart total:', getCartTotal());
+
   const subTotal = getCartTotal();
-  const deliveryCharge = 0; // Free delivery
   const taxes = Math.round(subTotal * 0.18); // 18% GST
-  const totalAmount = subTotal + deliveryCharge + taxes;
+  const totalAmount = subTotal + taxes;
 
   useEffect(() => {
     requestLocation();
@@ -310,7 +312,7 @@ const Checkout = () => {
               <CardHeader className="bg-gradient-to-r from-yellow-400 to-amber-500 text-[#0D0C29] rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 font-bold">
                   <ShoppingBag className="h-5 w-5" />
-                  Order Summary
+                  Order Summary ({cartItems.length} items)
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -338,10 +340,6 @@ const Checkout = () => {
                     <div className="flex justify-between text-[#0D0C29]">
                       <span className="font-medium">Sub Total</span>
                       <span className="font-semibold">₹{subTotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-[#0D0C29]">
-                      <span className="font-medium">Delivery Charge</span>
-                      <span className="font-semibold text-green-600">FREE</span>
                     </div>
                     <div className="flex justify-between text-[#0D0C29]">
                       <span className="font-medium">GST (18%)</span>
