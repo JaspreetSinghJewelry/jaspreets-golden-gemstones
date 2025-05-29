@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -99,7 +98,7 @@ const Footer = () => {
                 <div className="flex items-start space-x-3">
                   <MapPin className="h-5 w-5 text-yellow-400 mt-1" />
                   <div>
-                    <span className="text-gray-400 block mb-2">123 Jewelry Street, Mumbai, India</span>
+                    <span className="text-gray-400 block mb-2">Karol Bagh, New Delhi</span>
                     <Button
                       variant="outline"
                       size="sm"

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -16,6 +15,7 @@ const Header = () => {
   const { cartCount } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
 
   const navItems = [
     'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Collections', 'Bridal'
@@ -28,7 +28,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-[#0D0C29] via-[#0D0C29] to-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
+    <header className="bg-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#0D0C29] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
@@ -66,6 +66,7 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
             <Button 
+              ref={searchButtonRef}
               variant="ghost" 
               size="icon" 
               className="text-white hover:text-yellow-400 hover:bg-white/10"
@@ -135,7 +136,11 @@ const Header = () => {
         )}
       </div>
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)}
+        triggerRef={searchButtonRef}
+      />
     </header>
   );
 };

@@ -5,7 +5,7 @@ import { FancyText } from '@/components/ui/fancy-text';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-[#0D0C29] via-[#2563eb] to-yellow-600 text-white py-20 overflow-hidden">
+    <section className="relative bg-[#0D0C29] text-white py-20 overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-[#0D0C29]/20"></div>
       <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-500/30 rounded-full blur-3xl"></div>
