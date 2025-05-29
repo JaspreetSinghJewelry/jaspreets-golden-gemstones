@@ -1,11 +1,30 @@
-
 import React from 'react';
 import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
+      {/* Newsletter Section */}
+      <div className="bg-gradient-to-r from-[#1F1E39] to-blue-900 py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="text-3xl font-bold mb-4">Stay Updated</h3>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Subscribe to our newsletter for exclusive offers and latest jewelry collections
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <Input 
+              placeholder="Enter your email"
+              className="bg-white text-black"
+            />
+            <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700 font-semibold">
+              Subscribe
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Main Footer */}
       <div className="py-12">
         <div className="container mx-auto px-4">

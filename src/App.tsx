@@ -12,8 +12,6 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import SignIn from "./pages/SignIn";
 import Products from "./pages/Products";
-import Rings from "./pages/Rings";
-import Wishlist from "./pages/Wishlist";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,14 +28,6 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/products" element={<Products />} />
-                <Route path="/rings" element={<Rings />} />
-                <Route path="/necklaces" element={<Products />} />
-                <Route path="/earrings" element={<Products />} />
-                <Route path="/bracelets" element={<Products />} />
-                <Route path="/lab-grown-diamonds" element={<Products />} />
-                <Route path="/collections" element={<Products />} />
-                <Route path="/bridal" element={<Products />} />
-                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/signin" element={<SignIn />} />
