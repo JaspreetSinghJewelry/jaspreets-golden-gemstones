@@ -1,15 +1,14 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { FancyText } from '@/components/ui/fancy-text';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-[#1F1E39] via-[#2A2857] to-yellow-600 text-white py-20 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-yellow-600 text-white py-20 overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-[#1F1E39]/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-[#1e3a8a]/20"></div>
       <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-500/30 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-10 left-10 w-48 h-48 bg-[#1F1E39]/30 rounded-full blur-2xl"></div>
+      <div className="absolute bottom-10 left-10 w-48 h-48 bg-[#1e3a8a]/30 rounded-full blur-2xl"></div>
       <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl"></div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -17,14 +16,14 @@ const HeroSection = () => {
           {/* Centered Content */}
           <div className="max-w-4xl space-y-8">
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                <FancyText variant="glow" size="xl" className="block mb-2">
+              <h1 className="text-7xl lg:text-9xl font-bold leading-tight">
+                <FancyText variant="glow" size="xl" className="block mb-2 text-6xl lg:text-8xl">
                   Exquisite
                 </FancyText>
-                <FancyText variant="gradient" size="xl" className="block mb-2">
+                <FancyText variant="gradient" size="xl" className="block mb-2 text-6xl lg:text-8xl">
                   Jewelry
                 </FancyText>
-                <span className="text-white drop-shadow-lg">Collection</span>
+                <span className="text-white drop-shadow-lg text-6xl lg:text-8xl">Collection</span>
               </h1>
               <p className="text-xl text-gray-100 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
                 Discover our handcrafted collection of premium jewelry pieces, 

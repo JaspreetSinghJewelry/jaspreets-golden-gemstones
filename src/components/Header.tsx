@@ -26,9 +26,9 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-[#1F1E39] via-[#2A2857] to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl">
+    <header className="bg-gradient-to-r from-[#1e3a8a] via-[#1e3a8a] to-[#1e3a8a] text-white sticky top-0 z-50 shadow-2xl">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#1F1E39] py-2">
+      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#1e3a8a] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
           <FancyText variant="elegant">
             Free Shipping on Orders Above ₹10,000 | Certified Jewelry
@@ -40,18 +40,12 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
             <img 
               src="/lovable-uploads/266b589d-2d61-4c55-8e5e-53c54e18c97f.png" 
-              alt="Jaspreet Singh Jewelry Logo" 
-              className="w-12 h-12 object-contain"
+              alt="Company Logo" 
+              className="w-20 h-20 object-contain"
             />
-            <div>
-              <FancyText variant="glow" className="text-xl font-bold">
-                Jaspreet Singh
-              </FancyText>
-              <p className="text-sm text-yellow-400">Jewelry</p>
-            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -97,7 +91,7 @@ const Header = () => {
               <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#1F1E39] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#1e3a8a] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
                     {cartCount}
                   </span>
                 )}
