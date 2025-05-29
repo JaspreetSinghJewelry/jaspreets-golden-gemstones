@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import ScrollAnimation from './ScrollAnimation';
@@ -34,6 +33,13 @@ const Categories = () => {
       hoverColor: 'hover:from-yellow-300 hover:to-yellow-500'
     },
     {
+      name: 'Lab Grown',
+      description: 'Sustainable Diamond Collection',
+      icon: '🌱',
+      bgColor: 'bg-gradient-to-br from-green-400 to-emerald-500',
+      hoverColor: 'hover:from-emerald-500 hover:to-green-600'
+    },
+    {
       name: 'Bridal',
       description: 'Complete Bridal Sets',
       icon: '👰',
@@ -64,7 +70,7 @@ const Categories = () => {
           </div>
         </ScrollAnimation>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
           {categories.map((category, index) => (
             <ScrollAnimation 
               key={index}
