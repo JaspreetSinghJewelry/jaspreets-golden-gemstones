@@ -62,7 +62,7 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-yellow-100 to-pink-200 animate-fade-in">
+    <section className="py-16 bg-gradient-to-br from-yellow-100 to-blue-200 animate-fade-in">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-slide-in-up">
           <h2 className="text-4xl font-bold text-[#1F1E39] mb-4 animate-bounce">
@@ -77,12 +77,12 @@ const FeaturedProducts = () => {
           {products.map((product, index) => (
             <Card 
               key={product.id}
-              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4 hover:rotate-1 animate-fade-in border-2 border-transparent hover:border-pink-300"
+              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4 hover:rotate-1 animate-fade-in border-2 border-transparent hover:border-[#1F1E39]"
               style={{animationDelay: `${index * 0.2}s`}}
             >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden">
-                  <div className="bg-gradient-to-br from-blue-100 to-purple-200 h-64 flex items-center justify-center overflow-hidden">
+                  <div className="bg-gradient-to-br from-blue-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
@@ -90,21 +90,21 @@ const FeaturedProducts = () => {
                     />
                   </div>
                   <div className="absolute top-4 left-4 animate-bounce">
-                    <span className="bg-gradient-to-r from-pink-400 to-yellow-400 text-gray-800 px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
+                    <span className="bg-gradient-to-r from-[#1F1E39] to-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
                       {product.badge}
                     </span>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="absolute top-4 right-4 bg-white/80 hover:bg-pink-100 text-gray-600 hover:text-red-500 transform hover:scale-125 transition-all duration-300 animate-pulse"
+                    className="absolute top-4 right-4 bg-white/80 hover:bg-blue-100 text-gray-600 hover:text-red-500 transform hover:scale-125 transition-all duration-300 animate-pulse"
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
                 </div>
                 
                 <div className="p-6 bg-gradient-to-b from-white to-blue-50">
-                  <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-pink-600 transition-colors duration-300 transform group-hover:scale-105">
+                  <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-blue-600 transition-colors duration-300 transform group-hover:scale-105">
                     {product.name}
                   </h3>
                   
@@ -129,7 +129,7 @@ const FeaturedProducts = () => {
                   
                   <Button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-pink-400 to-yellow-400 text-gray-800 hover:from-pink-500 hover:to-yellow-500 font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-pink-300/50 animate-pulse"
+                    className="w-full bg-gradient-to-r from-[#1F1E39] to-yellow-400 text-white hover:from-blue-600 hover:to-yellow-500 font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-blue-300/50 animate-pulse"
                   >
                     Add to Cart
                   </Button>
@@ -143,7 +143,7 @@ const FeaturedProducts = () => {
           <Button 
             variant="outline"
             size="lg"
-            className="border-2 border-pink-400 text-pink-600 hover:bg-pink-400 hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
+            className="border-2 border-[#1F1E39] text-[#1F1E39] hover:bg-[#1F1E39] hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
           >
             View All Products
           </Button>

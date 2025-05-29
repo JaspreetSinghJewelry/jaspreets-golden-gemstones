@@ -17,9 +17,9 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
+    <header className="bg-gradient-to-r from-[#1F1E39] via-blue-600 to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-yellow-300 to-pink-400 text-gray-800 py-2 animate-pulse">
+      <div className="bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 py-2 animate-pulse">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
           <FancyText variant="elegant" className="animate-bounce">
             Free Shipping on Orders Above ₹10,000 | Certified Jewelry
@@ -32,7 +32,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2 cursor-pointer transform hover:scale-110 transition-all duration-300 animate-slide-in-left" onClick={() => navigate('/')}>
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-300 to-pink-400 rounded-full flex items-center justify-center shadow-lg animate-spin" style={{animationDuration: '3s'}}>
+            <div className="w-10 h-10 bg-gradient-to-br from-yellow-300 to-blue-400 rounded-full flex items-center justify-center shadow-lg animate-spin" style={{animationDuration: '3s'}}>
               <span className="text-gray-800 font-bold text-lg">JS</span>
             </div>
             <div>
@@ -77,7 +77,7 @@ const Header = () => {
               <Button variant="ghost" size="icon" className="text-white hover:text-yellow-300 relative transform hover:scale-125 transition-all duration-300 animate-bounce">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-300 to-pink-400 text-gray-800 text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse shadow-lg">
                     {cartCount}
                   </span>
                 )}

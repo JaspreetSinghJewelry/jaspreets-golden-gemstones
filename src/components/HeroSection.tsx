@@ -5,12 +5,12 @@ import { FancyText } from '@/components/ui/fancy-text';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 text-white py-20 overflow-hidden animate-fade-in">
+    <section className="relative bg-gradient-to-br from-blue-400 via-[#1F1E39] to-yellow-400 text-white py-20 overflow-hidden animate-fade-in">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/20 to-pink-300/20 animate-pulse"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/20 to-blue-300/20 animate-pulse"></div>
       <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-300/30 rounded-full blur-3xl animate-bounce"></div>
-      <div className="absolute bottom-10 left-10 w-48 h-48 bg-pink-300/30 rounded-full blur-2xl animate-pulse"></div>
-      <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-purple-300/20 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s'}}></div>
+      <div className="absolute bottom-10 left-10 w-48 h-48 bg-blue-300/30 rounded-full blur-2xl animate-pulse"></div>
+      <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-[#1F1E39]/20 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s'}}></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -18,10 +18,10 @@ const HeroSection = () => {
           <div className="space-y-8 animate-slide-in-left">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                <FancyText variant="glow" size="xl" className="block mb-2 animate-fade-in" style={{animationDelay: '0.5s'}}>
+                <FancyText variant="glow" size="xl" className="block mb-2 animate-fade-in">
                   Exquisite
                 </FancyText>
-                <FancyText variant="gradient" size="xl" className="block mb-2 animate-fade-in" style={{animationDelay: '1s'}}>
+                <FancyText variant="gradient" size="xl" className="block mb-2 animate-fade-in">
                   Jewelry
                 </FancyText>
                 <span className="text-white drop-shadow-lg animate-fade-in" style={{animationDelay: '1.5s'}}>Collection</span>
@@ -59,13 +59,13 @@ const HeroSection = () => {
                 <p className="text-sm text-gray-100">Years Experience</p>
               </div>
               <div className="text-center transform hover:scale-110 transition-all duration-300">
-                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce" style={{animationDelay: '0.5s'}}>
+                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce">
                   500+
                 </FancyText>
                 <p className="text-sm text-gray-100">Happy Customers</p>
               </div>
               <div className="text-center transform hover:scale-110 transition-all duration-300">
-                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce" style={{animationDelay: '1s'}}>
+                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce">
                   100%
                 </FancyText>
                 <p className="text-sm text-gray-100">Certified Gold</p>

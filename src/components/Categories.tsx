@@ -8,8 +8,8 @@ const Categories = () => {
       name: 'Rings',
       description: 'Engagement & Wedding Rings',
       icon: '💍',
-      bgColor: 'bg-gradient-to-br from-pink-200 to-pink-400',
-      hoverColor: 'hover:from-pink-300 hover:to-pink-500'
+      bgColor: 'bg-gradient-to-br from-[#1F1E39] to-blue-500',
+      hoverColor: 'hover:from-blue-600 hover:to-[#1F1E39]'
     },
     {
       name: 'Necklaces',
@@ -22,8 +22,8 @@ const Categories = () => {
       name: 'Earrings',
       description: 'Stunning Ear Jewelry',
       icon: '✨',
-      bgColor: 'bg-gradient-to-br from-purple-200 to-purple-400',
-      hoverColor: 'hover:from-purple-300 hover:to-purple-500'
+      bgColor: 'bg-gradient-to-br from-[#1F1E39] to-blue-600',
+      hoverColor: 'hover:from-blue-700 hover:to-[#1F1E39]'
     },
     {
       name: 'Bracelets',
@@ -55,7 +55,7 @@ const Categories = () => {
           <h2 className="text-5xl font-bold text-[#1F1E39] mb-6 animate-bounce">
             Shop by Category
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-pink-500 mx-auto mb-6 animate-pulse"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-[#1F1E39] mx-auto mb-6 animate-pulse"></div>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{animationDelay: '0.5s'}}>
             Explore our diverse collection of handcrafted jewelry designed for every occasion and celebration
           </p>
@@ -73,7 +73,7 @@ const Categories = () => {
                      style={{animationDelay: `${index * 0.3}s`}}>
                   <span className="text-3xl animate-pulse">{category.icon}</span>
                 </div>
-                <h3 className="font-bold text-[#1F1E39] mb-3 text-lg group-hover:text-pink-600 transition-colors duration-500 transform group-hover:scale-110">{category.name}</h3>
+                <h3 className="font-bold text-[#1F1E39] mb-3 text-lg group-hover:text-blue-600 transition-colors duration-500 transform group-hover:scale-110">{category.name}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{category.description}</p>
               </CardContent>
             </Card>

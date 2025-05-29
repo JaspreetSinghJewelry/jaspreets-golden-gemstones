@@ -28,13 +28,13 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white animate-fade-in">
+    <section className="py-16 bg-gradient-to-br from-indigo-400 via-[#1F1E39] to-blue-500 text-white animate-fade-in">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="animate-slide-in-left">
             <h2 className="text-4xl font-bold mb-6 animate-bounce">
               Crafting Excellence Since 
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300 animate-pulse">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-blue-300 animate-pulse">
                 Three Generations
               </span>
             </h2>
@@ -49,7 +49,7 @@ const AboutSection = () => {
             </p>
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-yellow-300 to-pink-400 text-gray-800 hover:from-yellow-400 hover:to-pink-500 font-semibold transform hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse"
+              className="bg-gradient-to-r from-yellow-300 to-blue-400 text-gray-800 hover:from-yellow-400 hover:to-blue-500 font-semibold transform hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse"
             >
               Our Story
             </Button>

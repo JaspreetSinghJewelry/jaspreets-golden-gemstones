@@ -39,11 +39,11 @@ const InstagramGallery = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-pink-200 to-purple-300 animate-fade-in">
+    <section className="py-16 bg-gradient-to-br from-blue-200 to-[#1F1E39]/30 animate-fade-in">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-slide-in-up">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <Instagram className="h-8 w-8 text-pink-600 animate-bounce" />
+            <Instagram className="h-8 w-8 text-[#1F1E39] animate-bounce" />
             <h2 className="text-4xl font-bold text-[#1F1E39] animate-pulse">
               Follow Us on Instagram
             </h2>
@@ -53,7 +53,7 @@ const InstagramGallery = () => {
           </p>
           <Button
             onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
-            className="bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl animate-pulse"
+            className="bg-gradient-to-r from-[#1F1E39] to-blue-600 text-white hover:from-blue-600 hover:to-[#1F1E39] font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl animate-pulse"
           >
             <Instagram className="h-5 w-5 mr-2 animate-spin" style={{animationDuration: '2s'}} />
             @jaspreetsinghjewelry
@@ -74,7 +74,7 @@ const InstagramGallery = () => {
                 alt={image.alt}
                 className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-pink-500/60 via-transparent to-purple-500/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1F1E39]/60 via-transparent to-blue-500/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
                 <Instagram className="h-8 w-8 text-white animate-bounce" />
               </div>
             </div>
@@ -85,7 +85,7 @@ const InstagramGallery = () => {
           <Button
             variant="outline"
             onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
-            className="border-2 border-pink-500 text-pink-600 hover:bg-pink-500 hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
+            className="border-2 border-[#1F1E39] text-[#1F1E39] hover:bg-[#1F1E39] hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
           >
             View More on Instagram
             <ExternalLink className="h-4 w-4 ml-2" />
