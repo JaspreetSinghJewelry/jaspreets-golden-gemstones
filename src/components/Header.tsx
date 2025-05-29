@@ -22,7 +22,13 @@ const Header = () => {
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
   const navItems = [
-    'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Lab Grown Diamonds', 'Collections', 'Bridal'
+    { name: 'Rings', path: '/rings' },
+    { name: 'Necklaces', path: '/necklaces' },
+    { name: 'Earrings', path: '/earrings' },
+    { name: 'Bracelets', path: '/bracelets' },
+    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
+    { name: 'Collections', path: '/collections' },
+    { name: 'Bridal', path: '/bridal' }
   ];
 
   useEffect(() => {
@@ -39,6 +45,11 @@ const Header = () => {
     if (!isAuthenticated) {
       navigate('/signin');
     }
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
   return (
@@ -64,16 +75,16 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item, index) => (
-              <a
-                key={item}
-                href="#"
+              <button
+                key={item.name}
+                onClick={() => handleNavigation(item.path)}
                 className={`hover:text-yellow-400 transition-all duration-300 font-medium transform hover:scale-110 animate-fade-in ${
-                  item === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
+                  item.name === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
                 }`}
                 style={{animationDelay: `${index * 0.1}s`}}
               >
-                {item}
-              </a>
+                {item.name}
+              </button>
             ))}
           </nav>
 
@@ -93,6 +104,7 @@ const Header = () => {
               variant="ghost" 
               size="icon" 
               className="text-white hover:text-yellow-400 relative hover:bg-white/10 transform hover:scale-110 transition-all duration-300"
+              onClick={() => navigate('/wishlist')}
             >
               <Heart className="h-5 w-5" />
               {wishlistCount > 0 && (
@@ -147,16 +159,16 @@ const Header = () => {
           <nav className="lg:hidden mt-4 pb-4 border-t border-white/30 pt-4 animate-slide-in-up">
             <div className="flex flex-col space-y-3">
               {navItems.map((item, index) => (
-                <a
-                  key={item}
-                  href="#"
-                  className={`hover:text-yellow-400 transition-colors duration-200 animate-fade-in transform hover:translate-x-2 ${
-                    item === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
+                <button
+                  key={item.name}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`text-left hover:text-yellow-400 transition-colors duration-200 animate-fade-in transform hover:translate-x-2 ${
+                    item.name === 'Lab Grown Diamonds' ? 'text-green-400 hover:text-green-300' : ''
                   }`}
                   style={{animationDelay: `${index * 0.1}s`}}
                 >
-                  {item}
-                </a>
+                  {item.name}
+                </button>
               ))}
             </div>
           </nav>
