@@ -24,38 +24,49 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
 
   const addToWishlist = (product: WishlistItem) => {
+    console.log('Adding to wishlist:', product);
     setWishlistItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       
       if (!existingItem) {
+        const newItems = [...prevItems, product];
+        console.log('Wishlist items after adding:', newItems);
         toast({
           title: "Added to Wishlist",
           description: `${product.name} has been added to your wishlist`,
         });
-        return [...prevItems, product];
+        return newItems;
       }
+      console.log('Product already in wishlist');
       return prevItems;
     });
   };
 
   const removeFromWishlist = (id: number) => {
+    console.log('Removing from wishlist, ID:', id);
     setWishlistItems(prevItems => {
       const item = prevItems.find(item => item.id === id);
       if (item) {
+        const newItems = prevItems.filter(item => item.id !== id);
+        console.log('Wishlist items after removing:', newItems);
         toast({
           title: "Removed from Wishlist",
           description: `${item.name} has been removed from your wishlist`,
         });
+        return newItems;
       }
-      return prevItems.filter(item => item.id !== id);
+      return prevItems;
     });
   };
 
   const isInWishlist = (id: number) => {
-    return wishlistItems.some(item => item.id === id);
+    const inWishlist = wishlistItems.some(item => item.id === id);
+    console.log(`Checking if product ${id} is in wishlist:`, inWishlist);
+    return inWishlist;
   };
 
   const wishlistCount = wishlistItems.length;
+  console.log('Current wishlist count:', wishlistCount);
 
   return (
     <WishlistContext.Provider value={{

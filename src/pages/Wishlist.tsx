@@ -15,6 +15,8 @@ const Wishlist = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
 
+  console.log('Wishlist page - Current wishlist items:', wishlistItems);
+
   const handleAddToCart = (product: typeof wishlistItems[0]) => {
     addToCart({
       id: product.id,
@@ -46,7 +48,7 @@ const Wishlist = () => {
             <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
               My Wishlist
             </FancyText>
-            <p className="text-gray-300 mt-2">Items you've saved for later</p>
+            <p className="text-gray-300 mt-2">Items you've saved for later ({wishlistItems.length} items)</p>
           </div>
 
           {wishlistItems.length === 0 ? (
@@ -55,7 +57,7 @@ const Wishlist = () => {
               <h3 className="text-2xl font-bold mb-2">Your wishlist is empty</h3>
               <p className="text-gray-300 mb-6">Start adding items you love to your wishlist</p>
               <Button 
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/')}
                 className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-[#0D0C29] hover:from-yellow-600 hover:to-yellow-700 font-semibold"
               >
                 Shop Now

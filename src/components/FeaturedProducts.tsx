@@ -66,6 +66,7 @@ const FeaturedProducts = () => {
   };
 
   const handleToggleWishlist = (product: typeof products[0]) => {
+    console.log('Featured Products - Toggle wishlist for product:', product.id, product.name);
     const wishlistItem = {
       id: product.id,
       name: product.name,
@@ -75,8 +76,10 @@ const FeaturedProducts = () => {
     };
 
     if (isInWishlist(product.id)) {
+      console.log('Featured Products - Removing from wishlist');
       removeFromWishlist(product.id);
     } else {
+      console.log('Featured Products - Adding to wishlist');
       addToWishlist(wishlistItem);
     }
   };
@@ -121,7 +124,10 @@ const FeaturedProducts = () => {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={() => handleToggleWishlist(product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleWishlist(product);
+                    }}
                     className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 transform hover:scale-125 ${
                       isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                     }`}
