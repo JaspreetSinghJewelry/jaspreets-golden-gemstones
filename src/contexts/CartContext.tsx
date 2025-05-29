@@ -18,6 +18,7 @@ interface CartContextType {
   updateQuantity: (id: number, quantity: number) => void;
   getCartTotal: () => number;
   cartCount: number;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -27,8 +28,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // Load cart items from localStorage on initialization
     try {
       const savedCart = localStorage.getItem('cartItems');
-      return savedCart ? JSON.parse(savedCart) : [];
-    } catch {
+      const parsed = savedCart ? JSON.parse(savedCart) : [];
+      console.log('Loaded cart from localStorage:', parsed);
+      return parsed;
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
       return [];
     }
   });
@@ -77,6 +81,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCartItems(prevItems => {
       const filtered = prevItems.filter(item => item.id !== id);
       console.log('Cart after removal:', filtered);
+      toast({
+        title: "Removed from Cart",
+        description: "Item has been removed from your cart",
+      });
       return filtered;
     });
   };
@@ -97,12 +105,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const clearCart = () => {
+    console.log('Clearing cart');
+    setCartItems([]);
+    toast({
+      title: "Cart Cleared",
+      description: "All items have been removed from your cart",
+    });
+  };
+
   const getCartTotal = () => {
     const total = cartItems.reduce((total, item) => {
       const price = parseInt(item.price.replace(/[₹,]/g, ''));
       return total + (price * item.quantity);
     }, 0);
-    console.log('Cart total:', total);
+    console.log('Cart total calculated:', total);
     return total;
   };
 
@@ -115,7 +132,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart,
       updateQuantity,
       getCartTotal,
-      cartCount
+      cartCount,
+      clearCart
     }}>
       {children}
     </CartContext.Provider>

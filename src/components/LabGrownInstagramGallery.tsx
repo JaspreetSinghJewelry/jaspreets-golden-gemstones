@@ -52,11 +52,11 @@ const LabGrownInstagramGallery = () => {
             Follow our sustainable jewelry journey and eco-friendly diamond creations
           </p>
           <Button
-            onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
+            onClick={() => window.open('https://www.instagram.com/jsj.labgrowndiamonds/', '_blank')}
             className="bg-gradient-to-r from-green-600 to-[#0D0C29] text-white hover:from-green-700 hover:to-[#2A2857] font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl animate-pulse"
           >
             <Leaf className="h-5 w-5 mr-2 animate-spin" style={{animationDuration: '3s'}} />
-            @jaspreetsinghjewelry - Lab Grown
+            @jsj.labgrowndiamonds
             <ExternalLink className="h-4 w-4 ml-2" />
           </Button>
         </div>
@@ -67,7 +67,7 @@ const LabGrownInstagramGallery = () => {
               key={image.id}
               className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer transform hover:scale-110 hover:rotate-3 transition-all duration-500 animate-fade-in shadow-xl hover:shadow-2xl"
               style={{animationDelay: `${index * 0.2}s`}}
-              onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
+              onClick={() => window.open('https://www.instagram.com/jsj.labgrowndiamonds/', '_blank')}
             >
               <img
                 src={image.src}
@@ -90,7 +90,7 @@ const LabGrownInstagramGallery = () => {
         <div className="text-center mt-8 animate-fade-in" style={{animationDelay: '1s'}}>
           <Button
             variant="outline"
-            onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
+            onClick={() => window.open('https://www.instagram.com/jsj.labgrowndiamonds/', '_blank')}
             className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
           >
             View More Lab Grown Jewelry
