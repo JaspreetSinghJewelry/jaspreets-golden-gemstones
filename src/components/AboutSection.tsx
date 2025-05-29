@@ -28,44 +28,45 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-[#1F1E39] text-white">
+    <section className="py-16 bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white animate-fade-in">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-4xl font-bold mb-6">
+          <div className="animate-slide-in-left">
+            <h2 className="text-4xl font-bold mb-6 animate-bounce">
               Crafting Excellence Since 
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300 animate-pulse">
                 Three Generations
               </span>
             </h2>
-            <p className="text-xl text-gray-300 mb-6 leading-relaxed">
+            <p className="text-xl text-gray-100 mb-6 leading-relaxed animate-fade-in" style={{animationDelay: '0.5s'}}>
               At Jaspreet Singh Jewelry, we combine traditional craftsmanship with contemporary 
               designs to create pieces that tell your unique story. Each piece is meticulously 
               crafted using the finest materials and time-honored techniques.
             </p>
-            <p className="text-lg text-gray-400 mb-8">
+            <p className="text-lg text-gray-200 mb-8 animate-fade-in" style={{animationDelay: '1s'}}>
               Our commitment to excellence has made us a trusted name in luxury jewelry, 
               serving families for over 50 years with integrity and passion.
             </p>
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700 font-semibold"
+              className="bg-gradient-to-r from-yellow-300 to-pink-400 text-gray-800 hover:from-yellow-400 hover:to-pink-500 font-semibold transform hover:scale-110 transition-all duration-300 shadow-2xl animate-pulse"
             >
               Our Story
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 animate-slide-in-right">
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-opacity-20 transition-all duration-300"
+                className="bg-white/20 backdrop-blur-sm rounded-lg p-6 text-center hover:bg-white/30 transition-all duration-500 transform hover:scale-110 hover:-translate-y-2 animate-fade-in shadow-xl"
+                style={{animationDelay: `${index * 0.3}s`}}
               >
-                <div className="text-yellow-400 mb-4 flex justify-center">
+                <div className="text-yellow-300 mb-4 flex justify-center animate-bounce" style={{animationDelay: `${index * 0.2}s`}}>
                   {feature.icon}
                 </div>
-                <h3 className="font-bold mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-300">{feature.description}</p>
+                <h3 className="font-bold mb-2 animate-pulse">{feature.title}</h3>
+                <p className="text-sm text-gray-200">{feature.description}</p>
               </div>
             ))}
           </div>

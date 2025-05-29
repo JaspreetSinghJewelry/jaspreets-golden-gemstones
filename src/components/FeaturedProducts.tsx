@@ -62,48 +62,49 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-gradient-to-br from-yellow-100 to-pink-200 animate-fade-in">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-[#1F1E39] mb-4">
+        <div className="text-center mb-12 animate-slide-in-up">
+          <h2 className="text-4xl font-bold text-[#1F1E39] mb-4 animate-bounce">
             Featured Products
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-700 max-w-2xl mx-auto animate-fade-in" style={{animationDelay: '0.5s'}}>
             Discover our most popular and exclusive jewelry pieces
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <Card 
               key={product.id}
-              className="group hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden"
+              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4 hover:rotate-1 animate-fade-in border-2 border-transparent hover:border-pink-300"
+              style={{animationDelay: `${index * 0.2}s`}}
             >
               <CardContent className="p-0">
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center overflow-hidden">
+                <div className="relative overflow-hidden">
+                  <div className="bg-gradient-to-br from-blue-100 to-purple-200 h-64 flex items-center justify-center overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-125 group-hover:rotate-3 transition-transform duration-700 animate-fade-in"
                     />
                   </div>
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] px-3 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute top-4 left-4 animate-bounce">
+                    <span className="bg-gradient-to-r from-pink-400 to-yellow-400 text-gray-800 px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
                       {product.badge}
                     </span>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="absolute top-4 right-4 bg-white hover:bg-gray-100 text-gray-600 hover:text-red-500"
+                    className="absolute top-4 right-4 bg-white/80 hover:bg-pink-100 text-gray-600 hover:text-red-500 transform hover:scale-125 transition-all duration-300 animate-pulse"
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
                 </div>
                 
-                <div className="p-6">
-                  <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-yellow-600 transition-colors">
+                <div className="p-6 bg-gradient-to-b from-white to-blue-50">
+                  <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-pink-600 transition-colors duration-300 transform group-hover:scale-105">
                     {product.name}
                   </h3>
                   
@@ -112,7 +113,7 @@ const FeaturedProducts = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current animate-pulse' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
@@ -121,14 +122,14 @@ const FeaturedProducts = () => {
                   
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <span className="text-2xl font-bold text-[#1F1E39]">{product.price}</span>
+                      <span className="text-2xl font-bold text-[#1F1E39] animate-pulse">{product.price}</span>
                       <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
                     </div>
                   </div>
                   
                   <Button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700 font-semibold"
+                    className="w-full bg-gradient-to-r from-pink-400 to-yellow-400 text-gray-800 hover:from-pink-500 hover:to-yellow-500 font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-pink-300/50 animate-pulse"
                   >
                     Add to Cart
                   </Button>
@@ -138,11 +139,11 @@ const FeaturedProducts = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 animate-fade-in" style={{animationDelay: '1s'}}>
           <Button 
             variant="outline"
             size="lg"
-            className="border-[#1F1E39] text-[#1F1E39] hover:bg-[#1F1E39] hover:text-white"
+            className="border-2 border-pink-400 text-pink-600 hover:bg-pink-400 hover:text-white transform hover:scale-110 transition-all duration-300 shadow-lg"
           >
             View All Products
           </Button>

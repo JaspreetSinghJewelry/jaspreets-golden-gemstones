@@ -5,36 +5,37 @@ import { FancyText } from '@/components/ui/fancy-text';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-[#1F1E39] via-[#2A2951] to-[#1F1E39] text-white py-20 overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-transparent"></div>
-      <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-400/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-10 left-10 w-48 h-48 bg-yellow-400/5 rounded-full blur-2xl"></div>
+    <section className="relative bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 text-white py-20 overflow-hidden animate-fade-in">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/20 to-pink-300/20 animate-pulse"></div>
+      <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-300/30 rounded-full blur-3xl animate-bounce"></div>
+      <div className="absolute bottom-10 left-10 w-48 h-48 bg-pink-300/30 rounded-full blur-2xl animate-pulse"></div>
+      <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-purple-300/20 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s'}}></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
-          <div className="space-y-8">
+          <div className="space-y-8 animate-slide-in-left">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                <FancyText variant="glow" size="xl" className="block mb-2">
+                <FancyText variant="glow" size="xl" className="block mb-2 animate-fade-in" style={{animationDelay: '0.5s'}}>
                   Exquisite
                 </FancyText>
-                <FancyText variant="gradient" size="xl" className="block mb-2">
+                <FancyText variant="gradient" size="xl" className="block mb-2 animate-fade-in" style={{animationDelay: '1s'}}>
                   Jewelry
                 </FancyText>
-                <span className="text-white">Collection</span>
+                <span className="text-white drop-shadow-lg animate-fade-in" style={{animationDelay: '1.5s'}}>Collection</span>
               </h1>
-              <p className="text-xl text-gray-300 max-w-lg leading-relaxed">
+              <p className="text-xl text-gray-100 max-w-lg leading-relaxed drop-shadow-md animate-fade-in" style={{animationDelay: '2s'}}>
                 Discover our handcrafted collection of premium jewelry pieces, 
                 designed to celebrate life's most precious moments.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{animationDelay: '2.5s'}}>
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700 font-semibold px-8 py-4 text-lg transform hover:scale-105 transition-all duration-200"
+                className="bg-gradient-to-r from-yellow-300 to-orange-400 text-gray-800 hover:from-yellow-400 hover:to-orange-500 font-semibold px-8 py-4 text-lg transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-yellow-300/50 animate-pulse"
               >
                 <FancyText variant="elegant">
                   Shop Now
@@ -43,45 +44,45 @@ const HeroSection = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-2 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#1F1E39] font-semibold px-8 py-4 text-lg transition-all duration-200"
+                className="border-2 border-yellow-300 text-yellow-100 hover:bg-yellow-300 hover:text-gray-800 font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-300/30"
               >
                 View Collections
               </Button>
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-gray-700">
-              <div className="text-center">
-                <FancyText variant="gold" className="text-2xl font-bold block mb-1">
+            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/30 animate-fade-in" style={{animationDelay: '3s'}}>
+              <div className="text-center transform hover:scale-110 transition-all duration-300">
+                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce">
                   15+
                 </FancyText>
-                <p className="text-sm text-gray-400">Years Experience</p>
+                <p className="text-sm text-gray-100">Years Experience</p>
               </div>
-              <div className="text-center">
-                <FancyText variant="gold" className="text-2xl font-bold block mb-1">
+              <div className="text-center transform hover:scale-110 transition-all duration-300">
+                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce" style={{animationDelay: '0.5s'}}>
                   500+
                 </FancyText>
-                <p className="text-sm text-gray-400">Happy Customers</p>
+                <p className="text-sm text-gray-100">Happy Customers</p>
               </div>
-              <div className="text-center">
-                <FancyText variant="gold" className="text-2xl font-bold block mb-1">
+              <div className="text-center transform hover:scale-110 transition-all duration-300">
+                <FancyText variant="gold" className="text-2xl font-bold block mb-1 animate-bounce" style={{animationDelay: '1s'}}>
                   100%
                 </FancyText>
-                <p className="text-sm text-gray-400">Certified Gold</p>
+                <p className="text-sm text-gray-100">Certified Gold</p>
               </div>
             </div>
           </div>
 
           {/* Image */}
-          <div className="relative">
-            <div className="bg-gradient-to-br from-yellow-400/20 to-transparent rounded-3xl p-8 backdrop-blur-sm">
+          <div className="relative animate-slide-in-right">
+            <div className="bg-gradient-to-br from-white/30 to-yellow-200/30 rounded-3xl p-8 backdrop-blur-sm shadow-2xl transform hover:rotate-2 transition-all duration-500 animate-float">
               <img 
                 src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=600&fit=crop" 
                 alt="Premium Jewelry Collection"
-                className="w-full h-96 object-cover rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                className="w-full h-96 object-cover rounded-2xl shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-fade-in"
               />
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-xl">
-                <FancyText variant="elegant" className="text-[#1F1E39] font-bold">
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full flex items-center justify-center shadow-xl animate-spin" style={{animationDuration: '3s'}}>
+                <FancyText variant="elegant" className="text-gray-800 font-bold animate-pulse">
                   NEW
                 </FancyText>
               </div>
