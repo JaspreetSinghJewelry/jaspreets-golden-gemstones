@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +7,13 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, MapPin, ShoppingBag, CreditCard, Truck, Shield, User, Mail, Phone, Home, Plus, Minus, Trash2 } from 'lucide-react';
+import PaymentOptions from '@/components/PaymentOptions';
 
 const Checkout = () => {
   const { cartItems, getCartTotal, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState('card');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -65,7 +66,8 @@ const Checkout = () => {
       items: cartItems, 
       customer: formData, 
       total: totalAmount,
-      location: location 
+      location: location,
+      paymentMethod: selectedPayment
     });
     navigate('/order-success');
   };
@@ -134,8 +136,8 @@ const Checkout = () => {
               <Truck className="h-4 w-4" />
               <span>Shipping</span>
             </div>
-            <div className="h-1 w-8 bg-gray-300 rounded"></div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-full text-gray-600">
+            <div className="h-1 w-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded"></div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full text-[#0D0C29] font-semibold">
               <CreditCard className="h-4 w-4" />
               <span>Payment</span>
             </div>
@@ -316,6 +318,12 @@ const Checkout = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Payment Options */}
+            <PaymentOptions 
+              selectedPayment={selectedPayment}
+              onPaymentChange={setSelectedPayment}
+            />
           </div>
 
           {/* Right Column - Order Summary */}
