@@ -8,9 +8,11 @@ import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
 import { FancyText } from '@/components/ui/fancy-text';
 import { useAuth } from '@/hooks/useAuth';
+import SearchModal from './SearchModal';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { cartCount } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -26,9 +28,9 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-[#1e3a8a] via-[#1e3a8a] to-[#1e3a8a] text-white sticky top-0 z-50 shadow-2xl">
+    <header className="bg-gradient-to-r from-[#0D0C29] via-[#0D0C29] to-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#1e3a8a] py-2">
+      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#0D0C29] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
           <FancyText variant="elegant">
             Free Shipping on Orders Above ₹10,000 | Certified Jewelry
@@ -63,7 +65,12 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 hover:bg-white/10">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:text-yellow-400 hover:bg-white/10"
+              onClick={() => setIsSearchOpen(true)}
+            >
               <Search className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
@@ -91,7 +98,7 @@ const Header = () => {
               <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#1e3a8a] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
                     {cartCount}
                   </span>
                 )}
@@ -127,6 +134,8 @@ const Header = () => {
           </nav>
         )}
       </div>
+
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };

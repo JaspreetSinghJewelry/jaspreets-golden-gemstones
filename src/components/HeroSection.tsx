@@ -1,14 +1,15 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { FancyText } from '@/components/ui/fancy-text';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-yellow-600 text-white py-20 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-[#0D0C29] via-[#2563eb] to-yellow-600 text-white py-20 overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-[#1e3a8a]/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-[#0D0C29]/20"></div>
       <div className="absolute top-10 right-10 w-64 h-64 bg-yellow-500/30 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-10 left-10 w-48 h-48 bg-[#1e3a8a]/30 rounded-full blur-2xl"></div>
+      <div className="absolute bottom-10 left-10 w-48 h-48 bg-[#0D0C29]/30 rounded-full blur-2xl"></div>
       <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-yellow-400/20 rounded-full blur-xl"></div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -48,7 +49,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#1F1E39] hover:from-yellow-600 hover:to-yellow-500 font-semibold px-8 py-4 text-lg shadow-2xl"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] hover:from-yellow-600 hover:to-yellow-500 font-semibold px-8 py-4 text-lg shadow-2xl"
               >
                 <FancyText variant="elegant">
                   Shop Now
@@ -57,7 +58,7 @@ const HeroSection = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-2 border-yellow-400 text-yellow-100 hover:bg-yellow-400 hover:text-[#1F1E39] font-semibold px-8 py-4 text-lg transition-all duration-300 shadow-lg"
+                className="border-2 border-yellow-400 text-yellow-100 hover:bg-yellow-400 hover:text-[#0D0C29] font-semibold px-8 py-4 text-lg transition-all duration-300 shadow-lg"
               >
                 View Collections
               </Button>
