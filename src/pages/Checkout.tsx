@@ -7,10 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
-import { ArrowLeft, MapPin, ShoppingBag, CreditCard, Truck, Shield, User, Mail, Phone, Home } from 'lucide-react';
+import { ArrowLeft, MapPin, ShoppingBag, CreditCard, Truck, Shield, User, Mail, Phone, Home, Plus, Minus, Trash2 } from 'lucide-react';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal } = useCart();
+  const { cartItems, getCartTotal, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [formData, setFormData] = useState({
@@ -24,16 +24,18 @@ const Checkout = () => {
     state: ''
   });
 
-  console.log('Checkout page - Cart items:', cartItems);
-  console.log('Checkout page - Cart total:', getCartTotal());
+  console.log('Checkout page rendered - Cart items:', cartItems);
+  console.log('Checkout page rendered - Cart total:', getCartTotal());
+  console.log('Checkout page rendered - Cart items length:', cartItems.length);
 
   const subTotal = getCartTotal();
   const taxes = Math.round(subTotal * 0.18); // 18% GST
   const totalAmount = subTotal + taxes;
 
   useEffect(() => {
+    console.log('Checkout useEffect - Cart items changed:', cartItems);
     requestLocation();
-  }, []);
+  }, [cartItems]);
 
   const requestLocation = () => {
     if (navigator.geolocation) {
@@ -68,12 +70,22 @@ const Checkout = () => {
     navigate('/order-success');
   };
 
+  const handleQuantityChange = (id: number, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    updateQuantity(id, newQuantity);
+  };
+
+  const handleRemoveItem = (id: number) => {
+    removeFromCart(id);
+  };
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100 flex items-center justify-center">
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 text-[#0D0C29] mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4 text-[#0D0C29]">Your cart is empty</h2>
+          <p className="text-gray-600 mb-6">Add some beautiful jewelry to your cart to proceed with checkout</p>
           <Button 
             onClick={() => navigate('/')}
             className="bg-gradient-to-r from-yellow-400 to-amber-500 text-[#0D0C29] hover:from-yellow-500 hover:to-amber-600 font-bold"
@@ -318,7 +330,7 @@ const Checkout = () => {
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {/* Cart Items */}
-                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
                     {cartItems.map((item) => (
                       <div key={item.id} className="flex gap-3 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-200">
                         <img 
@@ -328,8 +340,34 @@ const Checkout = () => {
                         />
                         <div className="flex-1">
                           <p className="font-semibold text-[#0D0C29] text-sm">{item.name}</p>
-                          <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                           <p className="font-bold text-[#0D0C29]">{item.price}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="text-sm font-medium min-w-[20px] text-center">{item.quantity}</span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleRemoveItem(item.id)}
+                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}

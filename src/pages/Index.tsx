@@ -3,7 +3,9 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Categories from "@/components/Categories";
+import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
+import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/contexts/CartContext";
@@ -20,7 +22,9 @@ const Index = () => {
             <HeroSection />
             <Categories />
             <FeaturedProducts />
+            <LabGrownDiamonds />
             <InstagramGallery />
+            <LabGrownInstagramGallery />
             <AboutSection />
             <Footer />
           </div>
