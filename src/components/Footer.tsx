@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -92,21 +92,24 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Contact Info */}
+            {/* Contact Info & Location */}
             <div>
-              <h4 className="text-lg font-bold mb-6">Contact Us</h4>
+              <h4 className="text-lg font-bold mb-6">Visit Our Store</h4>
               <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-yellow-400" />
-                  <span className="text-gray-400">123 Jewelry Street, Mumbai, India</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-yellow-400" />
-                  <span className="text-gray-400">+91 98765 43210</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-5 w-5 text-yellow-400" />
-                  <span className="text-gray-400">info@jaspreetsinghjewelry.com</span>
+                <div className="flex items-start space-x-3">
+                  <MapPin className="h-5 w-5 text-yellow-400 mt-1" />
+                  <div>
+                    <span className="text-gray-400 block mb-2">123 Jewelry Street, Mumbai, India</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#1F1E39] text-xs"
+                      onClick={() => window.open('https://www.google.com/maps/place/Jaspreet+Singh+Jewelry/@28.6508732,77.1944579,17z/data=!3m1!4b1!4m6!3m5!1s0x390d0340ec032af1:0x308f4120a3d3baa5!8m2!3d28.6508732!4d77.1944579!16s%2Fg%2F11sy3t7knv?entry=ttu&g_ep=EgoyMDI1MDUyNi4wIKXMDSoASAFQAw%3D%3D', '_blank')}
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      Get Directions
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
