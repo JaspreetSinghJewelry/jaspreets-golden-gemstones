@@ -32,15 +32,6 @@ const Header = () => {
 
   return (
     <header className="bg-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
-      {/* Top Bar */}
-      <div className="bg-[#0D0C29] text-white py-2">
-        <div className="container mx-auto px-4 text-center text-sm font-medium">
-          <FancyText variant="elegant">
-            Free Shipping on Orders Above ₹10,000 | Certified Jewelry
-          </FancyText>
-        </div>
-      </div>
-
       {/* Main Header */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
