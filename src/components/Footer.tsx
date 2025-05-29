@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -45,17 +45,21 @@ const Footer = () => {
                 Crafting exquisite jewelry with passion and precision for over three generations.
               </p>
               <div className="flex space-x-4">
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-400">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-400 hover:text-yellow-400"
+                  onClick={() => window.open('https://www.facebook.com/jaspreetsinghjewelry/?locale=es_ES', '_blank')}
+                >
                   <Facebook className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-400">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-400 hover:text-yellow-400"
+                  onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
+                >
                   <Instagram className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-400">
-                  <Twitter className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-400">
-                  <Youtube className="h-5 w-5" />
                 </Button>
               </div>
             </div>
