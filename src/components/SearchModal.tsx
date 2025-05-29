@@ -25,7 +25,9 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
     'Wedding Rings',
     'Engagement Rings',
     'Chain Necklaces',
-    'Stud Earrings'
+    'Stud Earrings',
+    'Tennis Bracelet',
+    'Emerald Ring'
   ];
 
   const filteredSuggestions = searchSuggestions.filter(suggestion =>
@@ -45,7 +47,7 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
   const handleSearch = (term?: string) => {
     const searchQuery = term || searchTerm;
     if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       onClose();
       setSearchTerm('');
     }
@@ -105,20 +107,24 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
           </Button>
         </div>
         
-        {searchTerm && filteredSuggestions.length > 0 && (
+        {searchTerm && (
           <div className="border-t pt-3">
-            <p className="text-sm text-gray-600 mb-2">Suggestions:</p>
-            <div className="space-y-1">
-              {filteredSuggestions.slice(0, 4).map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSearch(suggestion)}
-                  className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100 rounded transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-gray-600 mb-2">
+              {filteredSuggestions.length > 0 ? 'Suggestions:' : 'No suggestions found'}
+            </p>
+            {filteredSuggestions.length > 0 && (
+              <div className="space-y-1">
+                {filteredSuggestions.slice(0, 4).map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSearch(suggestion)}
+                    className="w-full text-left px-2 py-1 text-sm hover:bg-gray-100 rounded transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

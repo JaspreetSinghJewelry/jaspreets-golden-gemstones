@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { useWishlist } from '@/contexts/WishlistContext';
 
@@ -12,7 +12,15 @@ const Products = () => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+  }, [searchParams]);
 
   const allProducts = [
     {
@@ -94,6 +102,26 @@ const Products = () => {
       reviews: 134,
       image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=300&fit=crop',
       category: 'bracelets'
+    },
+    {
+      id: 9,
+      name: 'Ruby Wedding Ring',
+      price: '₹55,999',
+      originalPrice: '₹65,999',
+      rating: 4.9,
+      reviews: 87,
+      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
+      category: 'rings'
+    },
+    {
+      id: 10,
+      name: 'Platinum Chain Necklace',
+      price: '₹42,999',
+      originalPrice: '₹49,999',
+      rating: 4.8,
+      reviews: 95,
+      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
+      category: 'necklaces'
     }
   ];
 
@@ -151,6 +179,11 @@ const Products = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
+          {searchTerm && (
+            <p className="text-yellow-200 mt-2">
+              Showing {filteredProducts.length} results for "{searchTerm}"
+            </p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -215,6 +248,13 @@ const Products = () => {
             </Card>
           ))}
         </div>
+
+        {filteredProducts.length === 0 && searchTerm && (
+          <div className="text-center text-white mt-8">
+            <p className="text-xl">No products found for "{searchTerm}"</p>
+            <p className="text-gray-300 mt-2">Try searching for rings, necklaces, earrings, or bracelets</p>
+          </div>
+        )}
       </div>
     </div>
   );

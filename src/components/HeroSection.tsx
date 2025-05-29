@@ -67,12 +67,13 @@ const HeroSection = () => {
                 </FancyText>
               </Button>
               <Button 
-                variant="outline" 
                 size="lg"
                 onClick={handleViewCollections}
-                className="border-2 border-yellow-400 text-yellow-100 hover:bg-yellow-400 hover:text-[#0D0C29] font-semibold px-8 py-4 text-lg transition-all duration-300 shadow-lg"
+                className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] hover:from-yellow-600 hover:to-yellow-500 font-semibold px-8 py-4 text-lg shadow-2xl"
               >
-                View Collections
+                <FancyText variant="elegant">
+                  View Collections
+                </FancyText>
               </Button>
             </div>
 
