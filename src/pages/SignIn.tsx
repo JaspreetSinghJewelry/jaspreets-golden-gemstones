@@ -9,6 +9,7 @@ import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 const SignIn = () => {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -16,6 +17,7 @@ const SignIn = () => {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSendOTP = async () => {
     if (!phoneNumber || phoneNumber.length !== 10) {
@@ -52,6 +54,7 @@ const SignIn = () => {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
+      login(phoneNumber);
       toast({
         title: "Welcome!",
         description: "Successfully signed in to your account",

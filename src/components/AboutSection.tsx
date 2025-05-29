@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Award, Shield, Truck, Headphones } from 'lucide-react';
+import { Award, Truck } from 'lucide-react';
 
 const AboutSection = () => {
   const features = [
@@ -11,19 +11,9 @@ const AboutSection = () => {
       description: 'All our jewelry comes with quality certificates'
     },
     {
-      icon: <Shield className="h-8 w-8" />,
-      title: 'Lifetime Warranty',
-      description: 'Comprehensive warranty on all our products'
-    },
-    {
       icon: <Truck className="h-8 w-8" />,
       title: 'Free Shipping',
       description: 'Free delivery on orders above ₹10,000'
-    },
-    {
-      icon: <Headphones className="h-8 w-8" />,
-      title: '24/7 Support',
-      description: 'Round-the-clock customer support'
     }
   ];
 

@@ -1,20 +1,30 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User, Heart, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import CartDrawer from './CartDrawer';
 import { FancyText } from '@/components/ui/fancy-text';
+import { useAuth } from '@/hooks/useAuth';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
     'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Collections', 'Bridal'
   ];
+
+  const handleUserAction = () => {
+    if (isAuthenticated) {
+      logout();
+    } else {
+      navigate('/signin');
+    }
+  };
 
   return (
     <header className="bg-gradient-to-r from-[#1F1E39] via-[#2A2857] to-[#1F1E39] text-white sticky top-0 z-50 shadow-2xl animate-fade-in">
@@ -71,9 +81,9 @@ const Header = () => {
               variant="ghost" 
               size="icon" 
               className="text-white hover:text-yellow-400 transform hover:scale-125 transition-all duration-300"
-              onClick={() => navigate('/signin')}
+              onClick={handleUserAction}
             >
-              <User className="h-5 w-5" />
+              {isAuthenticated ? <LogOut className="h-5 w-5" /> : <User className="h-5 w-5" />}
             </Button>
             <CartDrawer>
               <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative hover:bg-white/10">

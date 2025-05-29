@@ -49,14 +49,14 @@ const Categories = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-yellow-50 to-[#1F1E39]/5 animate-fade-in">
+    <section className="py-20 bg-gradient-to-b from-yellow-50 to-[#1F1E39]/5">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16 animate-slide-in-up">
-          <h2 className="text-5xl font-bold text-[#1F1E39] mb-6 animate-bounce">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold text-[#1F1E39] mb-6">
             Shop by Category
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-[#1F1E39] mx-auto mb-6 animate-pulse"></div>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed animate-fade-in" style={{animationDelay: '0.5s'}}>
+          <div className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-[#1F1E39] mx-auto mb-6"></div>
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
             Explore our diverse collection of handcrafted jewelry designed for every occasion and celebration
           </p>
         </div>
@@ -65,15 +65,13 @@ const Categories = () => {
           {categories.map((category, index) => (
             <Card 
               key={index}
-              className="group hover:shadow-2xl transition-all duration-700 cursor-pointer transform hover:-translate-y-6 hover:rotate-2 border-0 shadow-lg animate-fade-in hover:animate-pulse"
-              style={{animationDelay: `${index * 0.2}s`}}
+              className="group hover:shadow-2xl transition-all duration-300 cursor-pointer border-0 shadow-lg"
             >
               <CardContent className="p-8 text-center">
-                <div className={`w-20 h-20 mx-auto rounded-full ${category.bgColor} ${category.hoverColor} flex items-center justify-center mb-6 group-hover:scale-150 group-hover:rotate-12 transition-all duration-700 shadow-lg animate-bounce`}
-                     style={{animationDelay: `${index * 0.3}s`}}>
-                  <span className="text-3xl animate-pulse">{category.icon}</span>
+                <div className={`w-20 h-20 mx-auto rounded-full ${category.bgColor} ${category.hoverColor} flex items-center justify-center mb-6 transition-all duration-300 shadow-lg`}>
+                  <span className="text-3xl">{category.icon}</span>
                 </div>
-                <h3 className="font-bold text-[#1F1E39] mb-3 text-lg group-hover:text-yellow-600 transition-colors duration-500 transform group-hover:scale-110">{category.name}</h3>
+                <h3 className="font-bold text-[#1F1E39] mb-3 text-lg group-hover:text-yellow-600 transition-colors duration-300">{category.name}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{category.description}</p>
               </CardContent>
             </Card>
