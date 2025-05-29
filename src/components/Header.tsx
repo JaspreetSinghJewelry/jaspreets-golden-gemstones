@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
+import { useNavigate } from 'react-router-dom';
+import CartDrawer from './CartDrawer';
+import { FancyText } from '@/components/ui/fancy-text';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
+  const navigate = useNavigate();
 
   const navItems = [
     'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Collections', 'Bridal'
@@ -17,7 +21,9 @@ const Header = () => {
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
-          Free Shipping on Orders Above ₹10,000 | Certified Jewelry
+          <FancyText variant="elegant">
+            Free Shipping on Orders Above ₹10,000 | Certified Jewelry
+          </FancyText>
         </div>
       </div>
 
@@ -25,12 +31,14 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
               <span className="text-[#1F1E39] font-bold text-lg">JS</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold">Jaspreet Singh</h1>
+              <FancyText variant="glow" className="text-xl font-bold">
+                Jaspreet Singh
+              </FancyText>
               <p className="text-sm text-yellow-400">Jewelry</p>
             </div>
           </div>
@@ -41,7 +49,7 @@ const Header = () => {
               <a
                 key={item}
                 href="#"
-                className="hover:text-yellow-400 transition-colors duration-200"
+                className="hover:text-yellow-400 transition-colors duration-200 font-medium"
               >
                 {item}
               </a>
@@ -56,17 +64,24 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:text-yellow-400"
+              onClick={() => navigate('/signin')}
+            >
               <User className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative">
-              <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-yellow-400 text-[#1F1E39] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                  {cartCount}
-                </span>
-              )}
-            </Button>
+            <CartDrawer>
+              <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400 relative">
+                <ShoppingBag className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-400 text-[#1F1E39] text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </CartDrawer>
             
             {/* Mobile Menu Button */}
             <Button
