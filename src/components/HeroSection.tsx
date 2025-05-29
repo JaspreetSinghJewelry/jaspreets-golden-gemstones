@@ -1,9 +1,19 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { FancyText } from '@/components/ui/fancy-text';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
+  const handleShopNow = () => {
+    navigate('/products');
+  };
+
+  const handleViewCollections = () => {
+    navigate('/products');
+  };
+
   return (
     <section className="relative bg-[#0D0C29] text-white py-20 overflow-hidden">
       {/* Animated Background Elements */}
@@ -49,6 +59,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg"
+                onClick={handleShopNow}
                 className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-[#0D0C29] hover:from-yellow-600 hover:to-yellow-500 font-semibold px-8 py-4 text-lg shadow-2xl"
               >
                 <FancyText variant="elegant">
@@ -58,6 +69,7 @@ const HeroSection = () => {
               <Button 
                 variant="outline" 
                 size="lg"
+                onClick={handleViewCollections}
                 className="border-2 border-yellow-400 text-yellow-100 hover:bg-yellow-400 hover:text-[#0D0C29] font-semibold px-8 py-4 text-lg transition-all duration-300 shadow-lg"
               >
                 View Collections

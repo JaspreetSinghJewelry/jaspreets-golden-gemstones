@@ -1,7 +1,9 @@
+
 import React, { useState, useRef } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { useNavigate } from 'react-router-dom';
 import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
@@ -13,6 +15,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
@@ -30,7 +33,7 @@ const Header = () => {
   return (
     <header className="bg-[#0D0C29] text-white sticky top-0 z-50 shadow-2xl">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-[#0D0C29] py-2">
+      <div className="bg-[#0D0C29] text-white py-2">
         <div className="container mx-auto px-4 text-center text-sm font-medium">
           <FancyText variant="elegant">
             Free Shipping on Orders Above ₹10,000 | Certified Jewelry
@@ -74,8 +77,18 @@ const Header = () => {
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:text-yellow-400">
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:text-yellow-400 relative hover:bg-white/10"
+            >
               <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-400 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg">
+                  {wishlistCount}
+                </span>
+              )}
             </Button>
             
             {isAuthenticated ? (
