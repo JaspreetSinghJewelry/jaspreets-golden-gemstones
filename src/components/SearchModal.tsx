@@ -57,6 +57,7 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
   const handleSearch = (term?: string) => {
     const searchQuery = term || searchTerm;
     if (searchQuery.trim()) {
+      console.log('SearchModal - Navigating to products with search:', searchQuery.trim());
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       onClose();
       setSearchTerm('');
@@ -65,12 +66,30 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleSearch();
     }
     if (e.key === 'Escape') {
       onClose();
     }
   };
+
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
