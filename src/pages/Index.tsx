@@ -8,29 +8,20 @@ import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
-import { CartProvider } from "@/contexts/CartContext";
-import { WishlistProvider } from "@/contexts/WishlistContext";
-import { AuthProvider } from "@/hooks/useAuth";
 
 const Index = () => {
   return (
-    <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <div className="min-h-screen bg-white">
-            <Header />
-            <HeroSection />
-            <Categories />
-            <FeaturedProducts />
-            <LabGrownDiamonds />
-            <InstagramGallery />
-            <LabGrownInstagramGallery />
-            <AboutSection />
-            <Footer />
-          </div>
-        </CartProvider>
-      </WishlistProvider>
-    </AuthProvider>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <HeroSection />
+      <Categories />
+      <FeaturedProducts />
+      <LabGrownDiamonds />
+      <InstagramGallery />
+      <LabGrownInstagramGallery />
+      <AboutSection />
+      <Footer />
+    </div>
   );
 };
 

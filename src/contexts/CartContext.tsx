@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,7 +31,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     try {
       const savedCart = localStorage.getItem('cartItems');
       const parsed = savedCart ? JSON.parse(savedCart) : [];
-      console.log('Loaded cart from localStorage:', parsed);
+      console.log('CartContext initialized - Loaded cart from localStorage:', parsed);
       return parsed;
     } catch (error) {
       console.error('Error loading cart from localStorage:', error);
@@ -42,7 +43,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     try {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
-      console.log('Cart saved to localStorage:', cartItems);
+      console.log('CartContext - Cart saved to localStorage:', cartItems);
+      console.log('CartContext - Current cart count:', cartItems.length);
     } catch (error) {
       console.error('Failed to save cart to localStorage:', error);
     }
@@ -58,7 +60,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    console.log('Adding to cart:', product);
+    console.log('CartContext - Adding to cart:', product);
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       
@@ -72,7 +74,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-        console.log('Updated cart items:', updatedItems);
+        console.log('CartContext - Updated cart items:', updatedItems);
         return updatedItems;
       } else {
         toast({
@@ -80,17 +82,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           description: `${product.name} has been added to your cart`,
         });
         const newItems = [...prevItems, { ...product, quantity: 1 }];
-        console.log('New cart items:', newItems);
+        console.log('CartContext - New cart items:', newItems);
         return newItems;
       }
     });
   };
 
   const removeFromCart = (id: number) => {
-    console.log('Removing from cart:', id);
+    console.log('CartContext - Removing from cart:', id);
     setCartItems(prevItems => {
       const filtered = prevItems.filter(item => item.id !== id);
-      console.log('Cart after removal:', filtered);
+      console.log('CartContext - Cart after removal:', filtered);
       toast({
         title: "Removed from Cart",
         description: "Item has been removed from your cart",
@@ -100,7 +102,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateQuantity = (id: number, quantity: number) => {
-    console.log('Updating quantity:', id, quantity);
+    console.log('CartContext - Updating quantity:', id, quantity);
     if (quantity === 0) {
       removeFromCart(id);
       return;
@@ -110,13 +112,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const updated = prevItems.map(item =>
         item.id === id ? { ...item, quantity } : item
       );
-      console.log('Cart after quantity update:', updated);
+      console.log('CartContext - Cart after quantity update:', updated);
       return updated;
     });
   };
 
   const clearCart = () => {
-    console.log('Clearing cart');
+    console.log('CartContext - Clearing cart');
     setCartItems([]);
     toast({
       title: "Cart Cleared",
@@ -129,11 +131,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const price = parseInt(item.price.replace(/[₹,]/g, ''));
       return total + (price * item.quantity);
     }, 0);
-    console.log('Cart total calculated:', total);
+    console.log('CartContext - Cart total calculated:', total, 'for items:', cartItems.length);
     return total;
   };
 
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  console.log('CartContext - Rendering with cart items:', cartItems.length, 'items');
 
   return (
     <CartContext.Provider value={{
