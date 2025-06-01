@@ -16,10 +16,10 @@ export const FancyText = ({
   className 
 }: FancyTextProps) => {
   const variants = {
-    gradient: 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent',
-    glow: 'text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]',
-    elegant: 'text-[#1F1E39] font-serif tracking-wide',
-    gold: 'text-yellow-600 font-bold tracking-wider'
+    gradient: 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent',
+    glow: 'text-blue-600 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]',
+    elegant: 'text-gray-800 font-serif tracking-wide',
+    gold: 'text-amber-600 font-bold tracking-wider'
   };
 
   const sizes = {
