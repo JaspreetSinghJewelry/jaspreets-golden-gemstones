@@ -14,8 +14,8 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
-      <Categories />
       <FeaturedProducts />
+      <Categories />
       <LabGrownDiamonds />
       <InstagramGallery />
       <LabGrownInstagramGallery />
