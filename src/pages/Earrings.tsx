@@ -13,21 +13,21 @@ const Earrings = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="bg-[#0D0C29] py-8 min-h-[80vh]">
+      <div className="bg-white py-8 min-h-[80vh]">
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-yellow-400"
+              className="mb-4 text-gray-800 hover:text-yellow-600"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
+            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-gray-800">
               Earrings Collection
             </FancyText>
-            <p className="text-gray-300 mt-2">Beautiful earrings coming soon...</p>
+            <p className="text-gray-600 mt-2">Beautiful earrings coming soon...</p>
           </div>
         </div>
       </div>

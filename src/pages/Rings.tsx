@@ -169,7 +169,7 @@ const Rings = () => {
                     
                     <Button 
                       onClick={() => handleAddToCart(product)}
-                      className="w-full bg-gradient-to-r from-gray-800 to-yellow-500 text-white hover:from-gray-900 hover:to-yellow-600 font-semibold shadow-lg"
+                      className="w-full bg-black text-white hover:bg-gray-800 font-semibold shadow-lg"
                     >
                       Add to Cart
                     </Button>

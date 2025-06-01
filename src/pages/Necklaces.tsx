@@ -81,21 +81,21 @@ const Necklaces = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="bg-[#0D0C29] py-8">
+      <div className="bg-white py-8">
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-gray-400"
+              className="mb-4 text-gray-800 hover:text-yellow-600"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
+            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-gray-800">
               Necklaces Collection
             </FancyText>
-            <p className="text-gray-300 mt-2">Elegant necklaces for every style and occasion</p>
+            <p className="text-gray-600 mt-2">Elegant necklaces for every style and occasion</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,7 +106,7 @@ const Necklaces = () => {
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <div className="bg-gradient-to-br from-gray-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
+                    <div className="bg-gradient-to-br from-yellow-100 to-gray-50 h-64 flex items-center justify-center overflow-hidden">
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -117,7 +117,7 @@ const Necklaces = () => {
                       variant="ghost" 
                       size="icon"
                       onClick={() => handleToggleWishlist(product)}
-                      className={`absolute top-4 right-4 bg-white/80 hover:bg-gray-100 transition-all duration-300 ${
+                      className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 ${
                         isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                       }`}
                     >
@@ -125,8 +125,8 @@ const Necklaces = () => {
                     </Button>
                   </div>
                   
-                  <div className="p-6 bg-gradient-to-b from-white to-gray-50">
-                    <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-black transition-colors duration-300">
+                  <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
+                    <h3 className="font-bold text-gray-800 mb-2 group-hover:text-yellow-600 transition-colors duration-300">
                       {product.name}
                     </h3>
                     
@@ -135,7 +135,7 @@ const Necklaces = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i} 
-                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-black fill-current' : 'text-gray-300'}`} 
+                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
                           />
                         ))}
                       </div>
@@ -144,7 +144,7 @@ const Necklaces = () => {
                     
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-2xl font-bold text-[#1F1E39]">{product.price}</span>
+                        <span className="text-2xl font-bold text-gray-800">{product.price}</span>
                         <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
                       </div>
                     </div>
