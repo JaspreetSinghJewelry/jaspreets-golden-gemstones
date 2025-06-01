@@ -7,6 +7,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { useWishlist } from '@/contexts/WishlistContext';
+import FilterSort from '@/components/FilterSort';
 
 const Products = () => {
   const { addToCart } = useCart();
@@ -155,18 +156,18 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0C29] py-8">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50 py-8">
       <div className="container mx-auto px-4">
         <div className="mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/')}
-            className="mb-4 text-white hover:text-yellow-400"
+            className="mb-4 text-gray-800 hover:text-amber-600"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
-          <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
+          <FancyText variant="gold" size="xl" className="text-4xl font-bold text-gray-800">
             All Products
           </FancyText>
         </div>
@@ -177,24 +178,26 @@ const Products = () => {
             placeholder="Search for rings, necklaces, earrings, bracelets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-400"
           />
           {searchTerm && (
-            <p className="text-yellow-200 mt-2">
+            <p className="text-amber-700 mt-2">
               Showing {filteredProducts.length} results for "{searchTerm}"
             </p>
           )}
         </div>
 
+        <FilterSort />
+
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <Card 
               key={product.id}
-              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4"
+              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4 bg-white"
             >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden">
-                  <div className="bg-gradient-to-br from-yellow-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
+                  <div className="bg-gradient-to-br from-amber-50 to-stone-50 h-64 flex items-center justify-center overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
@@ -205,7 +208,7 @@ const Products = () => {
                     variant="ghost" 
                     size="icon"
                     onClick={() => handleToggleWishlist(product)}
-                    className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 ${
+                    className={`absolute top-4 right-4 bg-white/80 hover:bg-amber-50 transition-all duration-300 ${
                       isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                     }`}
                   >
@@ -213,8 +216,8 @@ const Products = () => {
                   </Button>
                 </div>
                 
-                <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                  <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                <div className="p-6 bg-gradient-to-b from-white to-amber-50">
+                  <h3 className="font-bold text-gray-800 mb-2 group-hover:text-amber-600 transition-colors duration-300">
                     {product.name}
                   </h3>
                   
@@ -223,7 +226,7 @@ const Products = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-amber-500 fill-current' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
@@ -232,14 +235,14 @@ const Products = () => {
                   
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <span className="text-2xl font-bold text-[#1F1E39]">{product.price}</span>
+                      <span className="text-2xl font-bold text-gray-800">{product.price}</span>
                       <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
                     </div>
                   </div>
                   
                   <Button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-[#1F1E39] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-semibold shadow-lg"
+                    className="w-full bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600 font-semibold shadow-lg"
                   >
                     Add to Cart
                   </Button>
@@ -250,9 +253,9 @@ const Products = () => {
         </div>
 
         {filteredProducts.length === 0 && searchTerm && (
-          <div className="text-center text-white mt-8">
+          <div className="text-center text-gray-800 mt-8">
             <p className="text-xl">No products found for "{searchTerm}"</p>
-            <p className="text-gray-300 mt-2">Try searching for rings, necklaces, earrings, or bracelets</p>
+            <p className="text-gray-600 mt-2">Try searching for rings, necklaces, earrings, or bracelets</p>
           </div>
         )}
       </div>

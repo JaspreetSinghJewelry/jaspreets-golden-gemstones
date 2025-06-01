@@ -40,7 +40,7 @@ const Categories = () => {
   ];
 
   return (
-    <section className="px-6 py-20 bg-rose-100">
+    <section className="px-6 py-20 bg-gradient-to-br from-stone-50 to-amber-50">
       <h3 className="text-3xl font-semibold text-center mb-10 text-gray-800">Explore Our Collections</h3>
       <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
         {categories.map((category) => (
@@ -59,7 +59,7 @@ const Categories = () => {
               </div>
               <div className="flex-1 flex items-center justify-center text-center p-4">
                 <div>
-                  <h4 className="text-xl font-medium text-rose-600 mb-2">{category.name}</h4>
+                  <h4 className="text-xl font-medium text-amber-600 mb-2">{category.name}</h4>
                   <p className="text-sm text-gray-500">{category.description}</p>
                 </div>
               </div>
