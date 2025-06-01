@@ -43,19 +43,19 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-black text-black hover:bg-gray-100"
           >
             <Filter className="h-4 w-4" />
             Filters
           </Button>
           
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
+            <SlidersHorizontal className="h-4 w-4 text-black" />
             <Select onValueChange={onSortChange}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-48 border-black text-black">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="price-low">Price: Low to High</SelectItem>
                 <SelectItem value="price-high">Price: High to Low</SelectItem>
                 <SelectItem value="newest">Newest First</SelectItem>
@@ -68,12 +68,12 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
       </div>
 
       {showFilters && (
-        <Card className="mt-4">
+        <Card className="mt-4 bg-white">
           <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Price Range */}
               <div>
-                <h4 className="font-medium mb-3 text-gray-800">Price Range</h4>
+                <h4 className="font-medium mb-3 text-black">Price Range</h4>
                 <Slider
                   value={priceRange}
                   onValueChange={setPriceRange}
@@ -90,7 +90,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
 
               {/* Jewelry Type */}
               <div>
-                <h4 className="font-medium mb-3 text-gray-800">Jewelry Type</h4>
+                <h4 className="font-medium mb-3 text-black">Jewelry Type</h4>
                 <div className="space-y-2">
                   {jewelryTypes.map((type) => (
                     <div key={type} className="flex items-center space-x-2">
@@ -100,7 +100,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
                           handleFilterChange('jewelryType', type, checked as boolean)
                         }
                       />
-                      <label htmlFor={type} className="text-sm text-gray-600">
+                      <label htmlFor={type} className="text-sm text-gray-700">
                         {type}
                       </label>
                     </div>
@@ -110,7 +110,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
 
               {/* Purity */}
               <div>
-                <h4 className="font-medium mb-3 text-gray-800">Purity</h4>
+                <h4 className="font-medium mb-3 text-black">Purity</h4>
                 <div className="space-y-2">
                   {purityOptions.map((purity) => (
                     <div key={purity} className="flex items-center space-x-2">
@@ -120,7 +120,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
                           handleFilterChange('purity', purity, checked as boolean)
                         }
                       />
-                      <label htmlFor={purity} className="text-sm text-gray-600">
+                      <label htmlFor={purity} className="text-sm text-gray-700">
                         {purity}
                       </label>
                     </div>
@@ -130,7 +130,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
 
               {/* Diamond Clarity */}
               <div>
-                <h4 className="font-medium mb-3 text-gray-800">Diamond Clarity</h4>
+                <h4 className="font-medium mb-3 text-black">Diamond Clarity</h4>
                 <div className="space-y-2">
                   {diamondClarityOptions.map((clarity) => (
                     <div key={clarity} className="flex items-center space-x-2">
@@ -140,7 +140,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
                           handleFilterChange('diamondClarity', clarity, checked as boolean)
                         }
                       />
-                      <label htmlFor={clarity} className="text-sm text-gray-600">
+                      <label htmlFor={clarity} className="text-sm text-gray-700">
                         {clarity}
                       </label>
                     </div>
@@ -150,7 +150,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
 
               {/* Metal Color */}
               <div>
-                <h4 className="font-medium mb-3 text-gray-800">Metal Color</h4>
+                <h4 className="font-medium mb-3 text-black">Metal Color</h4>
                 <div className="space-y-2">
                   {metalColors.map((color) => (
                     <div key={color} className="flex items-center space-x-2">
@@ -160,7 +160,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
                           handleFilterChange('metalColor', color, checked as boolean)
                         }
                       />
-                      <label htmlFor={color} className="text-sm text-gray-600">
+                      <label htmlFor={color} className="text-sm text-gray-700">
                         {color}
                       </label>
                     </div>
@@ -172,7 +172,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
             <div className="flex gap-4 mt-6">
               <Button 
                 onClick={() => onFiltersChange?.(selectedFilters)}
-                className="bg-amber-600 hover:bg-amber-700 text-white"
+                className="bg-black hover:bg-gray-800 text-white"
               >
                 Apply Filters
               </Button>
@@ -187,6 +187,7 @@ const FilterSort = ({ onFiltersChange, onSortChange }: FilterSortProps) => {
                   });
                   setPriceRange([0, 100000]);
                 }}
+                className="border-black text-black hover:bg-gray-100"
               >
                 Clear All
               </Button>

@@ -40,13 +40,13 @@ const Categories = () => {
   ];
 
   return (
-    <section className="px-6 py-20 bg-gradient-to-br from-stone-50 to-amber-50">
-      <h3 className="text-3xl font-semibold text-center mb-10 text-gray-800">Explore Our Collections</h3>
+    <section className="px-6 py-20 bg-white">
+      <h3 className="text-3xl font-semibold text-center mb-10 text-black">Explore Our Collections</h3>
       <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
         {categories.map((category) => (
           <Card 
             key={category.name}
-            className="w-72 h-72 bg-white rounded-xl shadow-md hover:shadow-lg transition cursor-pointer group"
+            className="w-72 h-72 bg-white rounded-xl shadow-md hover:shadow-lg transition cursor-pointer group border"
             onClick={() => navigate(category.path)}
           >
             <CardContent className="p-0 h-full flex flex-col">
@@ -59,8 +59,8 @@ const Categories = () => {
               </div>
               <div className="flex-1 flex items-center justify-center text-center p-4">
                 <div>
-                  <h4 className="text-xl font-medium text-amber-600 mb-2">{category.name}</h4>
-                  <p className="text-sm text-gray-500">{category.description}</p>
+                  <h4 className="text-xl font-medium text-black mb-2">{category.name}</h4>
+                  <p className="text-sm text-gray-600">{category.description}</p>
                 </div>
               </div>
             </CardContent>

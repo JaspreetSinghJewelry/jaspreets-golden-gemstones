@@ -156,18 +156,18 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="container mx-auto px-4">
         <div className="mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/')}
-            className="mb-4 text-gray-800 hover:text-amber-600"
+            className="mb-4 text-black hover:text-gray-600"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
-          <FancyText variant="gold" size="xl" className="text-4xl font-bold text-gray-800">
+          <FancyText variant="elegant" size="xl" className="text-4xl font-bold text-black">
             All Products
           </FancyText>
         </div>
@@ -178,10 +178,10 @@ const Products = () => {
             placeholder="Search for rings, necklaces, earrings, bracelets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-black"
           />
           {searchTerm && (
-            <p className="text-amber-700 mt-2">
+            <p className="text-black mt-2">
               Showing {filteredProducts.length} results for "{searchTerm}"
             </p>
           )}
@@ -197,7 +197,7 @@ const Products = () => {
             >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden">
-                  <div className="bg-gradient-to-br from-amber-50 to-stone-50 h-64 flex items-center justify-center overflow-hidden">
+                  <div className="bg-white h-64 flex items-center justify-center overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
@@ -208,7 +208,7 @@ const Products = () => {
                     variant="ghost" 
                     size="icon"
                     onClick={() => handleToggleWishlist(product)}
-                    className={`absolute top-4 right-4 bg-white/80 hover:bg-amber-50 transition-all duration-300 ${
+                    className={`absolute top-4 right-4 bg-white/80 hover:bg-white transition-all duration-300 ${
                       isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                     }`}
                   >
@@ -216,8 +216,8 @@ const Products = () => {
                   </Button>
                 </div>
                 
-                <div className="p-6 bg-gradient-to-b from-white to-amber-50">
-                  <h3 className="font-bold text-gray-800 mb-2 group-hover:text-amber-600 transition-colors duration-300">
+                <div className="p-6 bg-white">
+                  <h3 className="font-bold text-black mb-2 group-hover:text-gray-600 transition-colors duration-300">
                     {product.name}
                   </h3>
                   
@@ -226,7 +226,7 @@ const Products = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-amber-500 fill-current' : 'text-gray-300'}`} 
+                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-black fill-current' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
@@ -235,14 +235,14 @@ const Products = () => {
                   
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <span className="text-2xl font-bold text-gray-800">{product.price}</span>
+                      <span className="text-2xl font-bold text-black">{product.price}</span>
                       <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
                     </div>
                   </div>
                   
                   <Button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600 font-semibold shadow-lg"
+                    className="w-full bg-black text-white hover:bg-gray-800 font-semibold shadow-lg"
                   >
                     Add to Cart
                   </Button>
@@ -253,7 +253,7 @@ const Products = () => {
         </div>
 
         {filteredProducts.length === 0 && searchTerm && (
-          <div className="text-center text-gray-800 mt-8">
+          <div className="text-center text-black mt-8">
             <p className="text-xl">No products found for "{searchTerm}"</p>
             <p className="text-gray-600 mt-2">Try searching for rings, necklaces, earrings, or bracelets</p>
           </div>
