@@ -12,7 +12,7 @@ const GiftingGuide = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-6 py-12">
         <Button 
           variant="ghost" 
           onClick={() => navigate('/')}
@@ -50,11 +50,9 @@ const GiftingGuide = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p>
-                With Jaspreet Singh Jewelry, your gold gift will be as meaningful as the occasion itself.
-              </p>
-            </div>
+            <p>
+              With Jaspreet Singh Jewelry, your gold gift will be as meaningful as the occasion itself.
+            </p>
           </div>
         </div>
       </div>

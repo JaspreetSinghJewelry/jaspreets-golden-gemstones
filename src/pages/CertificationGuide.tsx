@@ -12,7 +12,7 @@ const CertificationGuide = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-6 py-12">
         <Button 
           variant="ghost" 
           onClick={() => navigate('/')}
@@ -32,13 +32,16 @@ const CertificationGuide = () => {
             
             <div>
               <h3 className="text-xl font-semibold mb-4">Gold Jewelry Certification:</h3>
-              <p className="mb-3"><strong>BIS Hallmark (India):</strong> Confirms the purity of the gold, such as 22K or 18K, under government standards.</p>
-              <p className="mb-2"><strong>Certificate includes:</strong></p>
-              <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Karat value (e.g., 22K = 91.6% pure gold)</li>
-                <li>BIS Hallmark logo and license number</li>
-                <li>Jeweler's identification</li>
-                <li>Year of marking</li>
+              <ul className="list-disc list-inside space-y-2">
+                <li><strong>BIS Hallmark (India):</strong> Confirms the purity of the gold, such as 22K or 18K, under government standards.</li>
+                <li><strong>Certificate includes:</strong>
+                  <ul className="list-disc list-inside ml-6 mt-2 space-y-1">
+                    <li>Karat value (e.g., 22K = 91.6% pure gold)</li>
+                    <li>BIS Hallmark logo and license number</li>
+                    <li>Jeweler's identification</li>
+                    <li>Year of marking</li>
+                  </ul>
+                </li>
               </ul>
             </div>
 
@@ -51,11 +54,9 @@ const CertificationGuide = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p>
-                All gold jewelry at Jaspreet Singh Jewelry is BIS hallmarked and comes with an official certification for your peace of mind.
-              </p>
-            </div>
+            <p>
+              All gold jewelry at Jaspreet Singh Jewelry is BIS hallmarked and comes with an official certification for your peace of mind.
+            </p>
           </div>
         </div>
       </div>

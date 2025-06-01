@@ -12,7 +12,7 @@ const GemstoneGuide = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-6 py-12">
         <Button 
           variant="ghost" 
           onClick={() => navigate('/')}
@@ -49,11 +49,9 @@ const GemstoneGuide = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p>
-                At Jaspreet Singh Jewelry, all gemstone gold pieces are made using authentic, natural stones certified by reputable gemological labs.
-              </p>
-            </div>
+            <p>
+              At Jaspreet Singh Jewelry, all gemstone gold pieces are made using authentic, natural stones certified by reputable gemological labs.
+            </p>
           </div>
         </div>
       </div>

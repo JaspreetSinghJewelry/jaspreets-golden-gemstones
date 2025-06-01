@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +7,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { useWishlist } from '@/contexts/WishlistContext';
 import FilterSort from '@/components/FilterSort';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const Products = () => {
   const { addToCart } = useCart();
@@ -156,8 +157,9 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-white">
+      <Header />
+      <div className="container mx-auto px-6 py-8">
         <div className="mb-6">
           <Button 
             variant="ghost" 
@@ -259,6 +261,7 @@ const Products = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };
