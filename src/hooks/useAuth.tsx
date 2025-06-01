@@ -1,5 +1,5 @@
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
 interface User {
   id: string;
@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Session timeout: 24 hours
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const isSessionValid = () => {
@@ -48,7 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('user');
       }
     }
+  }, []);
 
+  useEffect(() => {
     // Set up session check interval
     const sessionCheckInterval = setInterval(() => {
       if (user && !isSessionValid()) {
