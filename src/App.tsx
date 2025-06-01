@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import Index from "./pages/Index";
@@ -24,31 +25,33 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <CartProvider>
-      <WishlistProvider>
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/rings" element={<Rings />} />
-              <Route path="/necklaces" element={<Necklaces />} />
-              <Route path="/earrings" element={<Earrings />} />
-              <Route path="/bracelets" element={<Bracelets />} />
-              <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
-              <Route path="/collections" element={<Collections />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/order-success" element={<OrderSuccess />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </WishlistProvider>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <WishlistProvider>
+          <TooltipProvider>
+            <Toaster />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/rings" element={<Rings />} />
+                <Route path="/necklaces" element={<Necklaces />} />
+                <Route path="/earrings" element={<Earrings />} />
+                <Route path="/bracelets" element={<Bracelets />} />
+                <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
+                <Route path="/collections" element={<Collections />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment" element={<Payment />} />
+                <Route path="/order-success" element={<OrderSuccess />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </WishlistProvider>
+      </CartProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
