@@ -113,7 +113,7 @@ const Footer = () => {
               <h4 className="text-lg font-bold mb-6 text-black">Policies</h4>
               <ul className="space-y-3">
                 {[
-                  '30-Day Returns Policy',
+                  '7-Day Defective Product Replace Policy',
                   'Lifetime Exchange & Buyback Policy',
                   'Privacy Policy',
                   'Terms & Conditions',
