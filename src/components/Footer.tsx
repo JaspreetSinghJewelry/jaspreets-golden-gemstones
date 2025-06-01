@@ -114,10 +114,24 @@ const Footer = () => {
               <ul className="space-y-3">
                 {[
                   '7-Day Defective Product Replace Policy',
+      7-Day Defective Product Replace Policy
+At Jaspreet Singh Jewelry, we ensure the highest quality standards in craftsmanship and materials. However, if your product arrives damaged or has a manufacturing defect, you may request a return or exchange within 7 days of receiving the product.
+Conditions for Replace:
+1. Replace are only accepted for defective or damaged items.
+2. You must report the defect within 7 calendar days of delivery.
+3. Product must be unused, in original condition, and with all tags, certificates, and packaging intact.
+4. A replace will be accepted only after inspection and approval by our Quality Control team.
+ Please Note:
+5. We do not accept replace for reasons such as change of mind, size issues, or personal preferences.
+6. Customized, engraved, or made-to-order items are non-replacable unless defective.
+To initiate a return, please contact our support team at:  i@jaspreetsinghjewelry.com | 📞 +91-9289061999 , LANDLINE- +91-40452999
+
+
                   'Lifetime Exchange & Buyback Policy',
                   'Privacy Policy',
                   'Terms & Conditions',
                   'Fraud Warning Disclaimer'
+      
                 ].map((policy) => (
                   <li key={policy}>
                     <a href="#" className="text-gray-600 hover:text-black transition-colors">
