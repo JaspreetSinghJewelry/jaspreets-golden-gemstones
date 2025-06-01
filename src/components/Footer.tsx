@@ -5,18 +5,18 @@ import { Button } from '@/components/ui/button';
 
 const Footer = () => {
   return (
-    <footer className="bg-rose-600 text-white">
+    <footer className="bg-white text-black border-t border-gray-200">
       {/* Newsletter Section */}
-      <div className="px-6 py-10 text-center border-b border-rose-500">
-        <h4 className="text-xl font-semibold mb-4">Stay Connected</h4>
-        <p className="mb-6">Sign up for exclusive offers and new arrivals</p>
+      <div className="px-6 py-10 text-center border-b border-gray-200">
+        <h4 className="text-xl font-semibold mb-4 text-black">Stay Connected</h4>
+        <p className="mb-6 text-gray-600">Sign up for exclusive offers and new arrivals</p>
         <div className="flex justify-center max-w-md mx-auto">
           <input 
             type="email" 
             placeholder="Your email address" 
-            className="px-4 py-2 rounded-l-full flex-1 text-gray-800"
+            className="px-4 py-2 rounded-l-full flex-1 text-gray-800 border border-gray-300"
           />
-          <Button className="bg-white text-rose-600 px-6 py-2 rounded-r-full hover:bg-gray-100">
+          <Button className="bg-black text-white px-6 py-2 rounded-r-full hover:bg-gray-800">
             Subscribe
           </Button>
         </div>
@@ -29,22 +29,22 @@ const Footer = () => {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-2 mb-6">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                  <span className="text-rose-600 font-bold text-lg">JS</span>
+                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">JS</span>
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold">Jaspreet Singh</h4>
-                  <p className="text-sm text-rose-200">Jewelry</p>
+                  <h4 className="text-xl font-bold text-black">Jewelry Store</h4>
+                  <p className="text-sm text-gray-600">Premium Jewelry</p>
                 </div>
               </div>
-              <p className="text-rose-100 mb-6">
+              <p className="text-gray-600 mb-6">
                 Crafting exquisite jewelry with passion and precision for over three generations.
               </p>
               <div className="flex space-x-4">
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-rose-100 hover:text-white hover:bg-rose-700"
+                  className="text-gray-600 hover:text-black hover:bg-gray-100"
                   onClick={() => window.open('https://www.facebook.com/jaspreetsinghjewelry/?locale=es_ES', '_blank')}
                 >
                   <Facebook className="h-5 w-5" />
@@ -52,7 +52,7 @@ const Footer = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-rose-100 hover:text-white hover:bg-rose-700"
+                  className="text-gray-600 hover:text-black hover:bg-gray-100"
                   onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
                 >
                   <Instagram className="h-5 w-5" />
@@ -62,11 +62,11 @@ const Footer = () => {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-lg font-bold mb-6">Quick Links</h4>
+              <h4 className="text-lg font-bold mb-6 text-black">Quick Links</h4>
               <ul className="space-y-3">
                 {['About Us', 'Collections', 'Custom Design', 'Size Guide', 'Care Instructions', 'Certificates'].map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-rose-100 hover:text-white transition-colors">
+                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
                       {link}
                     </a>
                   </li>
@@ -76,11 +76,11 @@ const Footer = () => {
 
             {/* Categories */}
             <div>
-              <h4 className="text-lg font-bold mb-6">Categories</h4>
+              <h4 className="text-lg font-bold mb-6 text-black">Categories</h4>
               <ul className="space-y-3">
                 {['Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Lab Grown Diamonds'].map((category) => (
                   <li key={category}>
-                    <a href="#" className="text-rose-100 hover:text-white transition-colors">
+                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
                       {category}
                     </a>
                   </li>
@@ -90,16 +90,16 @@ const Footer = () => {
 
             {/* Contact Info & Location */}
             <div>
-              <h4 className="text-lg font-bold mb-6">Visit Our Store</h4>
+              <h4 className="text-lg font-bold mb-6 text-black">Visit Our Store</h4>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-rose-200 mt-1" />
+                  <MapPin className="h-5 w-5 text-gray-600 mt-1" />
                   <div>
-                    <span className="text-rose-100 block mb-2">Karol Bagh, New Delhi</span>
+                    <span className="text-gray-600 block mb-2">Karol Bagh, New Delhi</span>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-rose-200 text-rose-200 hover:bg-rose-200 hover:text-rose-600 text-xs"
+                      className="border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-black text-xs"
                       onClick={() => window.open('https://www.google.com/maps/place/Jaspreet+Singh+Jewelry/@28.6508732,77.1944579,17z/data=!3m1!4b1!4m6!3m5!1s0x390d0340ec032af1:0x308f4120a3d3baa5!8m2!3d28.6508732!4d77.1944579!16s%2Fg%2F11sy3t7knv?entry=ttu&g_ep=EgoyMDI1MDUyNi4wIKXMDSoASAFQAw%3D%3D', '_blank')}
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
@@ -114,20 +114,20 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-rose-500 py-6">
+      <div className="border-t border-gray-200 py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-rose-200">
-              © 2025 Jaspreet Singh Jewelry. All rights reserved.
+            <p className="text-gray-600">
+              © 2025 Jewelry Store. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-rose-200 hover:text-white transition-colors">
+              <a href="#" className="text-gray-600 hover:text-black transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-rose-200 hover:text-white transition-colors">
+              <a href="#" className="text-gray-600 hover:text-black transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-rose-200 hover:text-white transition-colors">
+              <a href="#" className="text-gray-600 hover:text-black transition-colors">
                 Return Policy
               </a>
             </div>
