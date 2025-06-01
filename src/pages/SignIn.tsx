@@ -17,17 +17,37 @@ const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [otpAttempts, setOtpAttempts] = useState(0);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSendOTP = async () => {
-    if (!name.trim()) {
+  // Input sanitization functions
+  const sanitizeName = (input: string) => {
+    return input.trim().replace(/[<>\"'&]/g, '').substring(0, 50);
+  };
+
+  const sanitizePhone = (input: string) => {
+    return input.replace(/\D/g, '').slice(0, 10);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeName(e.target.value);
+    setName(sanitized);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizePhone(e.target.value);
+    setPhoneNumber(sanitized);
+  };
+
+  const validateInputs = () => {
+    if (!name.trim() || name.length < 2) {
       toast({
-        title: "Name Required",
-        description: "Please enter your full name",
+        title: "Invalid Name",
+        description: "Please enter a valid name (at least 2 characters)",
         variant: "destructive"
       });
-      return;
+      return false;
     }
 
     if (!phoneNumber || phoneNumber.length !== 10) {
@@ -36,11 +56,17 @@ const SignIn = () => {
         description: "Please enter a valid 10-digit phone number",
         variant: "destructive"
       });
-      return;
+      return false;
     }
 
+    return true;
+  };
+
+  const handleSendOTP = async () => {
+    if (!validateInputs()) return;
+
     setIsLoading(true);
-    // Simulate API call
+    // Simulate API call with more realistic timing
     setTimeout(() => {
       toast({
         title: "OTP Sent",
@@ -48,7 +74,8 @@ const SignIn = () => {
       });
       setStep('otp');
       setIsLoading(false);
-    }, 2000);
+      setOtpAttempts(0);
+    }, 1500);
   };
 
   const handleVerifyOTP = async () => {
@@ -61,24 +88,55 @@ const SignIn = () => {
       return;
     }
 
+    // Rate limiting for OTP attempts
+    if (otpAttempts >= 3) {
+      toast({
+        title: "Too Many Attempts",
+        description: "Please try again after some time",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
+    setOtpAttempts(prev => prev + 1);
+
     // Simulate API call
     setTimeout(() => {
-      login(phoneNumber, name);
-      toast({
-        title: "Welcome!",
-        description: `Successfully signed in, ${name}!`,
-      });
-      setIsLoading(false);
-      navigate('/');
-    }, 2000);
+      try {
+        login(phoneNumber, name);
+        toast({
+          title: "Welcome!",
+          description: `Successfully signed in, ${name}!`,
+        });
+        setIsLoading(false);
+        navigate('/');
+      } catch (error) {
+        toast({
+          title: "Login Failed",
+          description: "An error occurred during login. Please try again.",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+      }
+    }, 1500);
   };
 
   const handleResendOTP = () => {
+    if (otpAttempts >= 3) {
+      toast({
+        title: "Too Many Attempts",
+        description: "Please wait before requesting another OTP",
+        variant: "destructive"
+      });
+      return;
+    }
+
     toast({
       title: "OTP Resent",
       description: `New verification code sent to +91${phoneNumber}`,
     });
+    setOtpAttempts(0);
   };
 
   return (
@@ -122,8 +180,9 @@ const SignIn = () => {
                     type="text"
                     placeholder="Enter your full name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleNameChange}
                     className="mt-1"
+                    maxLength={50}
                   />
                 </div>
                 <div>
@@ -137,7 +196,7 @@ const SignIn = () => {
                       type="tel"
                       placeholder="9876543210"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onChange={handlePhoneChange}
                       className="rounded-l-none"
                       maxLength={10}
                     />
@@ -158,7 +217,7 @@ const SignIn = () => {
                   <InputOTP
                     maxLength={6}
                     value={otp}
-                    onChange={(value) => setOtp(value)}
+                    onChange={(value) => setOtp(value.replace(/\D/g, ''))}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
@@ -170,9 +229,14 @@ const SignIn = () => {
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
+                {otpAttempts > 0 && (
+                  <p className="text-sm text-amber-600 text-center">
+                    Attempts remaining: {3 - otpAttempts}
+                  </p>
+                )}
                 <Button 
                   onClick={handleVerifyOTP}
-                  disabled={isLoading || otp.length !== 6}
+                  disabled={isLoading || otp.length !== 6 || otpAttempts >= 3}
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700"
                   size="lg"
                 >
@@ -183,6 +247,7 @@ const SignIn = () => {
                     variant="ghost" 
                     onClick={handleResendOTP}
                     className="text-sm"
+                    disabled={otpAttempts >= 3}
                   >
                     Didn't receive code? Resend OTP
                   </Button>

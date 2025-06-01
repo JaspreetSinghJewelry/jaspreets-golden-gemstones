@@ -33,6 +33,19 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
     'Eco-Friendly Jewelry'
   ];
 
+  // Sanitize search input to prevent XSS
+  const sanitizeSearchInput = (input: string): string => {
+    return input
+      .trim()
+      .replace(/[<>\"'&]/g, '') // Remove potential XSS characters
+      .substring(0, 100); // Limit length
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sanitized = sanitizeSearchInput(e.target.value);
+    setSearchTerm(sanitized);
+  };
+
   const filteredSuggestions = searchSuggestions.filter(suggestion =>
     suggestion.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -55,7 +68,11 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
   }, [isOpen, triggerRef]);
 
   const handleSearch = (term?: string) => {
-    const searchQuery = term || searchTerm;
+    const searchQuery = sanitizeSearchInput(term || searchTerm);
+    if (searchQuery.length < 2) {
+      return; // Minimum search length
+    }
+    
     if (searchQuery.trim()) {
       console.log('SearchModal - Navigating to products with search:', searchQuery.trim());
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
@@ -128,14 +145,16 @@ const SearchModal = ({ isOpen, onClose, triggerRef }: SearchModalProps) => {
             ref={inputRef}
             placeholder="Search for rings, necklaces, earrings..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchInputChange}
             onKeyDown={handleKeyDown}
             className="flex-1 border-2 border-gray-300 focus:border-[#0D0C29] focus:ring-[#0D0C29] bg-white text-gray-900 placeholder:text-gray-500"
+            maxLength={100}
           />
           <Button 
             onClick={() => handleSearch()} 
             size="icon"
             className="bg-[#0D0C29] hover:bg-[#2A2857]"
+            disabled={searchTerm.length < 2}
           >
             <Search className="h-4 w-4" />
           </Button>
