@@ -30,13 +30,11 @@ const Footer = () => {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-2 mb-6">
-                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">JS</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-black">Jewelry Store</h4>
-                  <p className="text-sm text-gray-600">Premium Jewelry</p>
-                </div>
+                <img 
+                  src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
+                  alt="Jaspreet Singh Jewelry" 
+                  className="h-16 w-auto"
+                />
               </div>
               <p className="text-gray-600 mb-6">
                 Crafting exquisite jewelry with passion and precision for over three generations.
@@ -188,7 +186,7 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-600">
-              © 2025 Jewelry Store. All rights reserved.
+              © 2025 Jaspreet Singh Jewelry. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-600 hover:text-black transition-colors">

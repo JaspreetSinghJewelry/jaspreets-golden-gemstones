@@ -42,7 +42,11 @@ const Header = () => {
     <header className="flex justify-between items-center px-6 py-4 shadow-sm sticky top-0 bg-white z-50">
       {/* Logo */}
       <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-        <h1 className="text-2xl font-bold tracking-wide text-black">Jewelry Store</h1>
+        <img 
+          src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
+          alt="Jaspreet Singh Jewelry" 
+          className="h-12 w-auto"
+        />
       </div>
 
       {/* Desktop Navigation */}
