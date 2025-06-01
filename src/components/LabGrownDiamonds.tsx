@@ -78,13 +78,13 @@ const LabGrownDiamonds = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-[#0D0C29]/5 to-yellow-50">
+    <section className="py-20 bg-gradient-to-b from-[#0D0C29]/5 to-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-5xl font-bold text-[#0D0C29] mb-6">
             Lab Grown Diamonds & Jewellery
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-[#0D0C29] mx-auto mb-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-black to-[#0D0C29] mx-auto mb-6"></div>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
             Discover our exquisite collection of ethically sourced lab-grown diamonds - 
             beautiful, sustainable, and identical to mined diamonds
@@ -100,7 +100,7 @@ const LabGrownDiamonds = () => {
             >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden">
-                  <div className="bg-gradient-to-br from-yellow-100 to-[#0D0C29]/20 h-64 flex items-center justify-center overflow-hidden">
+                  <div className="bg-gradient-to-br from-gray-100 to-[#0D0C29]/20 h-64 flex items-center justify-center overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name}
@@ -111,7 +111,7 @@ const LabGrownDiamonds = () => {
                     variant="ghost" 
                     size="icon"
                     onClick={() => handleToggleWishlist(product)}
-                    className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 ${
+                    className={`absolute top-4 right-4 bg-white/80 hover:bg-gray-100 transition-all duration-300 ${
                       isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                     }`}
                   >
@@ -122,8 +122,8 @@ const LabGrownDiamonds = () => {
                   </div>
                 </div>
                 
-                <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                  <h3 className="font-bold text-[#0D0C29] mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                <div className="p-6 bg-gradient-to-b from-white to-gray-50">
+                  <h3 className="font-bold text-[#0D0C29] mb-2 group-hover:text-black transition-colors duration-300">
                     {product.name}
                   </h3>
                   
@@ -132,7 +132,7 @@ const LabGrownDiamonds = () => {
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-black fill-current' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
@@ -148,7 +148,7 @@ const LabGrownDiamonds = () => {
                   
                   <Button 
                     onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-[#0D0C29] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
+                    className="w-full bg-black text-white hover:bg-gray-800 font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
                   >
                     Add to Cart
                   </Button>
@@ -160,7 +160,7 @@ const LabGrownDiamonds = () => {
 
         <div className="text-center mt-12">
           <Button 
-            className="bg-gradient-to-r from-[#0D0C29] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-bold px-8 py-3 text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-black text-white hover:bg-gray-800 font-bold px-8 py-3 text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             View All Lab Grown Collection
           </Button>

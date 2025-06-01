@@ -40,7 +40,7 @@ const Wishlist = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-yellow-400"
+              className="mb-4 text-white hover:text-gray-400"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
@@ -58,7 +58,7 @@ const Wishlist = () => {
               <p className="text-gray-300 mb-6">Start adding items you love to your wishlist</p>
               <Button 
                 onClick={() => navigate('/')}
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-[#0D0C29] hover:from-yellow-600 hover:to-yellow-700 font-semibold"
+                className="bg-black text-white hover:bg-gray-800 font-semibold"
               >
                 Shop Now
               </Button>
@@ -72,7 +72,7 @@ const Wishlist = () => {
                 >
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
-                      <div className="bg-gradient-to-br from-yellow-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
+                      <div className="bg-gradient-to-br from-gray-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
                         <img 
                           src={product.image} 
                           alt={product.name}
@@ -89,8 +89,8 @@ const Wishlist = () => {
                       </Button>
                     </div>
                     
-                    <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                      <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                    <div className="p-6 bg-gradient-to-b from-white to-gray-50">
+                      <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-black transition-colors duration-300">
                         {product.name}
                       </h3>
                       
@@ -104,7 +104,7 @@ const Wishlist = () => {
                       <div className="flex gap-2">
                         <Button 
                           onClick={() => handleAddToCart(product)}
-                          className="flex-1 bg-gradient-to-r from-[#1F1E39] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-semibold shadow-lg"
+                          className="flex-1 bg-black text-white hover:bg-gray-800 font-semibold shadow-lg"
                         >
                           <ShoppingBag className="h-4 w-4 mr-2" />
                           Add to Cart

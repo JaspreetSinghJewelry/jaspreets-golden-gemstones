@@ -87,7 +87,7 @@ const Necklaces = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-yellow-400"
+              className="mb-4 text-white hover:text-gray-400"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
@@ -106,7 +106,7 @@ const Necklaces = () => {
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <div className="bg-gradient-to-br from-yellow-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
+                    <div className="bg-gradient-to-br from-gray-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -117,7 +117,7 @@ const Necklaces = () => {
                       variant="ghost" 
                       size="icon"
                       onClick={() => handleToggleWishlist(product)}
-                      className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 ${
+                      className={`absolute top-4 right-4 bg-white/80 hover:bg-gray-100 transition-all duration-300 ${
                         isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                       }`}
                     >
@@ -125,8 +125,8 @@ const Necklaces = () => {
                     </Button>
                   </div>
                   
-                  <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                    <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                  <div className="p-6 bg-gradient-to-b from-white to-gray-50">
+                    <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-black transition-colors duration-300">
                       {product.name}
                     </h3>
                     
@@ -135,7 +135,7 @@ const Necklaces = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i} 
-                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-black fill-current' : 'text-gray-300'}`} 
                           />
                         ))}
                       </div>
@@ -151,7 +151,7 @@ const Necklaces = () => {
                     
                     <Button 
                       onClick={() => handleAddToCart(product)}
-                      className="w-full bg-gradient-to-r from-[#1F1E39] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-semibold shadow-lg"
+                      className="w-full bg-black text-white hover:bg-gray-800 font-semibold shadow-lg"
                     >
                       Add to Cart
                     </Button>
