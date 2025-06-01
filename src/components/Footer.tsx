@@ -132,12 +132,12 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li>
                   <Link to="/policies/defective-product" className="text-gray-600 hover:text-black transition-colors">
-                    7-Day Defective Product Replace Policy
+                    Refund & Replacement Policy
                   </Link>
                 </li>
                 <li>
                   <Link to="/policies/exchange-buyback" className="text-gray-600 hover:text-black transition-colors">
-                    Lifetime Exchange & Buyback Policy
+                    Buyback Policy
                   </Link>
                 </li>
                 <li>
