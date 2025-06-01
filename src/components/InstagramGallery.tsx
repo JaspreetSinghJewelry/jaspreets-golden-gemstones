@@ -53,7 +53,7 @@ const InstagramGallery = () => {
           </p>
           <Button
             onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
-            className="bg-gradient-to-r from-[#1F1E39] to-yellow-600 text-white hover:from-[#2A2857] hover:to-yellow-700 font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl"
+            className="bg-gradient-to-r from-[#1F1E39] to-black text-white hover:from-[#2A2857] hover:to-gray-800 font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl"
           >
             <Instagram className="h-5 w-5 mr-2" />
             @jaspreetsinghjewelry
@@ -61,7 +61,7 @@ const InstagramGallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {jewelryImages.map((image, index) => (
             <div
               key={image.id}
@@ -74,7 +74,7 @@ const InstagramGallery = () => {
                 alt={image.alt}
                 className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1F1E39]/60 via-transparent to-yellow-500/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1F1E39]/60 via-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
                 <Instagram className="h-8 w-8 text-white" />
               </div>
             </div>

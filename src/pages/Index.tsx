@@ -17,8 +17,10 @@ const Index = () => {
       <FeaturedProducts />
       <Categories />
       <LabGrownDiamonds />
-      <InstagramGallery />
-      <LabGrownInstagramGallery />
+      <div className="grid lg:grid-cols-2 gap-0">
+        <InstagramGallery />
+        <LabGrownInstagramGallery />
+      </div>
       <AboutUsSection />
       <Footer />
     </div>

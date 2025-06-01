@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Instagram, ExternalLink, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -61,7 +60,7 @@ const LabGrownInstagramGallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {labGrownImages.map((image, index) => (
             <div
               key={image.id}
