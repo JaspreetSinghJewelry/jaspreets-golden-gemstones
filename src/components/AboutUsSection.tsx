@@ -1,62 +1,26 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 
 const AboutUsSection = () => {
   return (
     <section className="px-6 py-20 bg-white">
-      <h3 className="text-3xl font-semibold text-center mb-12 text-gray-800">What Our Customers Say</h3>
-      <div className="max-w-4xl mx-auto grid gap-8 md:grid-cols-2 mb-16">
-        <div className="border p-6 rounded-xl shadow-sm">
-          <p className="text-gray-600 mb-2">"Absolutely stunning ring! The packaging, the quality, everything was perfect."</p>
-          <p className="font-semibold text-rose-600">— Anika R.</p>
-        </div>
-        <div className="border p-6 rounded-xl shadow-sm">
-          <p className="text-gray-600 mb-2">"I gifted the necklace to my sister and she hasn't taken it off since."</p>
-          <p className="font-semibold text-rose-600">— Maira T.</p>
-        </div>
-      </div>
-
       {/* About Us Content */}
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl font-bold text-gray-800 mb-8">About Us</h2>
         <div className="w-24 h-1 bg-rose-600 mx-auto mb-12"></div>
         
-        <div className="space-y-6 text-lg text-gray-700 leading-relaxed mb-12">
+        <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
           <p>
-            Discover our handcrafted collection of premium jewelry pieces, designed to celebrate 
-            life's most precious moments. Each piece tells a unique story of elegance, 
-            craftsmanship, and timeless beauty.
+            At Jaspreet Singh Jewelry, we specialize in crafting timeless elegance with our exquisite collection of Polki, Jadau, solitaires and natural diamond jewelry. With over 17 years of experience, we have established ourselves as a trusted name in the world of fine jewelry, standing out from the competition with our dedication to quality and craftsmanship.
           </p>
           
           <p>
-            From engagement rings that symbolize eternal love to statement necklaces that 
-            capture attention, our collection features the finest materials including certified 
-            diamonds, pure gold, and precious gemstones. Every piece is meticulously crafted 
-            by skilled artisans who have perfected their craft over generations.
+            Based in the vibrant hub of Karol Bagh, New Delhi, we take pride in offering personalized service and unmatched honesty in every piece we create. Whether it's a bespoke design or a timeless classic, our jewelry embodies the perfect blend of tradition and modernity.
           </p>
           
           <p>
-            Experience the luxury of owning jewelry that not only enhances your beauty but also 
-            becomes a treasured heirloom for future generations. Our commitment to quality and 
-            excellence ensures that every purchase is an investment in lasting elegance.
+            With a commitment to excellence, we offer worldwide shipping, ensuring that our artistry reaches discerning customers across the globe. At Jaspreet Singh Jewelry, we don't just create jewelry; we craft stories that last a lifetime.
           </p>
-        </div>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-gray-200">
-          <div className="text-center">
-            <span className="text-4xl font-bold block mb-2 text-rose-600">15+</span>
-            <p className="text-gray-600">Years Experience</p>
-          </div>
-          <div className="text-center">
-            <span className="text-4xl font-bold block mb-2 text-rose-600">500+</span>
-            <p className="text-gray-600">Happy Customers</p>
-          </div>
-          <div className="text-center">
-            <span className="text-4xl font-bold block mb-2 text-rose-600">100%</span>
-            <p className="text-gray-600">Certified Gold</p>
-          </div>
         </div>
       </div>
     </section>
