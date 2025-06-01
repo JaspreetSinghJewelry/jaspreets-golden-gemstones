@@ -37,7 +37,7 @@ const Footer = () => {
                 />
               </div>
               <p className="text-gray-600 mb-6">
-                Crafting exquisite jewelry with passion and precision for over three generations.
+                Crafting exquisite jewelry with passion and precision.
               </p>
               <div className="flex space-x-4">
                 <Button 
