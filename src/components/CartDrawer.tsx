@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,9 +29,6 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
             <ShoppingBag className="h-5 w-5 animate-bounce" />
             Shopping Cart
           </SheetTitle>
-          <SheetDescription className="text-[#1F1E39]/70">
-            Review your selected items and proceed to checkout
-          </SheetDescription>
         </SheetHeader>
         
         <div className="flex flex-col h-full">
@@ -59,16 +56,16 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
                           size="sm"
                           variant="outline"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="border-[#1F1E39] text-[#1F1E39] hover:bg-blue-100 transform hover:scale-110 transition-all duration-200 h-6 w-6 p-0"
+                          className="border-[#1F1E39] text-[#1F1E39] hover:bg-blue-100 transform hover:scale-110 transition-all duration-200"
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
-                        <span className="text-sm font-medium text-[#1F1E39] bg-blue-100 px-2 py-1 rounded animate-pulse min-w-[24px] text-center">{item.quantity}</span>
+                        <span className="text-sm font-medium text-[#1F1E39] bg-blue-100 px-2 py-1 rounded animate-pulse">{item.quantity}</span>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="border-[#1F1E39] text-[#1F1E39] hover:bg-blue-100 transform hover:scale-110 transition-all duration-200 h-6 w-6 p-0"
+                          className="border-[#1F1E39] text-[#1F1E39] hover:bg-blue-100 transform hover:scale-110 transition-all duration-200"
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -76,7 +73,7 @@ const CartDrawer = ({ children }: CartDrawerProps) => {
                           size="sm"
                           variant="ghost"
                           onClick={() => removeFromCart(item.id)}
-                          className="ml-auto text-red-500 hover:bg-red-100 transform hover:scale-110 transition-all duration-200 h-6 w-6 p-0"
+                          className="ml-auto text-red-500 hover:bg-red-100 transform hover:scale-110 transition-all duration-200"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>

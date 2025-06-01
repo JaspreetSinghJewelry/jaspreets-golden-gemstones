@@ -91,24 +91,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeFromCart = (id: number) => {
     console.log('CartContext - Removing from cart:', id);
     setCartItems(prevItems => {
-      const itemToRemove = prevItems.find(item => item.id === id);
       const filtered = prevItems.filter(item => item.id !== id);
       console.log('CartContext - Cart after removal:', filtered);
-      
-      if (itemToRemove) {
-        toast({
-          title: "Removed from Cart",
-          description: `${itemToRemove.name} has been removed from your cart`,
-        });
-      }
-      
+      toast({
+        title: "Removed from Cart",
+        description: "Item has been removed from your cart",
+      });
       return filtered;
     });
   };
 
   const updateQuantity = (id: number, quantity: number) => {
     console.log('CartContext - Updating quantity:', id, quantity);
-    if (quantity <= 0) {
+    if (quantity === 0) {
       removeFromCart(id);
       return;
     }
@@ -144,18 +139,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   console.log('CartContext - Rendering with cart items:', cartItems.length, 'items');
 
-  const contextValue = {
-    cartItems,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    getCartTotal,
-    cartCount,
-    clearCart
-  };
-
   return (
-    <CartContext.Provider value={contextValue}>
+    <CartContext.Provider value={{
+      cartItems,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      getCartTotal,
+      cartCount,
+      clearCart
+    }}>
       {children}
     </CartContext.Provider>
   );
