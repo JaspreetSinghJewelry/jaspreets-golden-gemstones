@@ -28,17 +28,7 @@ const Footer = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8">
             {/* Company Info */}
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <img 
-                  src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
-                  alt="Jaspreet Singh Jewelry" 
-                  className="h-16 w-auto"
-                />
-              </div>
-              <p className="text-gray-600 mb-6">
-                Crafting exquisite jewelry with passion and precision.
-              </p>
+            
               <div className="flex space-x-4">
                 <Button 
                   variant="ghost" 
