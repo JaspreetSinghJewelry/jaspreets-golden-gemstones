@@ -93,19 +93,36 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold mb-6 text-black">Jewellery Guide</h4>
               <ul className="space-y-3">
-                {[
-                  'Buying and Price Guide',
-                  'Certification Guide',
-                  'Diamond and Solitaire Guide',
-                  'Gemstone Guide',
-                  'Gifting Guide'
-                ].map((guide) => (
-                  <li key={guide}>
-                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
-                      {guide}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <Link to="/guides/buying-price" className="text-gray-600 hover:text-black transition-colors">
+                    Buying and Price Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/guides/certification" className="text-gray-600 hover:text-black transition-colors">
+                    Certification Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/guides/diamond-solitaire" className="text-gray-600 hover:text-black transition-colors">
+                    Diamond and Solitaire Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/guides/gemstone" className="text-gray-600 hover:text-black transition-colors">
+                    Gemstone Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/guides/gifting" className="text-gray-600 hover:text-black transition-colors">
+                    Gifting Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/guides/jewelry-care" className="text-gray-600 hover:text-black transition-colors">
+                    Jewelry Care Guide
+                  </Link>
+                </li>
               </ul>
             </div>
 

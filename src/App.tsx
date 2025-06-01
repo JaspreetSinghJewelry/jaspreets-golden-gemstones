@@ -24,6 +24,12 @@ import ExchangeBuybackPolicy from "./pages/ExchangeBuybackPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import FraudWarning from "./pages/FraudWarning";
+import BuyingPriceGuide from "./pages/BuyingPriceGuide";
+import CertificationGuide from "./pages/CertificationGuide";
+import DiamondSolitaireGuide from "./pages/DiamondSolitaireGuide";
+import GemstoneGuide from "./pages/GemstoneGuide";
+import GiftingGuide from "./pages/GiftingGuide";
+import JewelryCareGuide from "./pages/JewelryCareGuide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +61,12 @@ const App = () => (
                 <Route path="/policies/privacy" element={<PrivacyPolicy />} />
                 <Route path="/policies/terms-conditions" element={<TermsConditions />} />
                 <Route path="/policies/fraud-warning" element={<FraudWarning />} />
+                <Route path="/guides/buying-price" element={<BuyingPriceGuide />} />
+                <Route path="/guides/certification" element={<CertificationGuide />} />
+                <Route path="/guides/diamond-solitaire" element={<DiamondSolitaireGuide />} />
+                <Route path="/guides/gemstone" element={<GemstoneGuide />} />
+                <Route path="/guides/gifting" element={<GiftingGuide />} />
+                <Route path="/guides/jewelry-care" element={<JewelryCareGuide />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
