@@ -99,21 +99,21 @@ const Rings = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="bg-[#0D0C29] py-8">
+      <div className="bg-white py-8">
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-yellow-400"
+              className="mb-4 text-gray-800 hover:text-yellow-600"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
+            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-gray-800">
               Rings Collection
             </FancyText>
-            <p className="text-gray-300 mt-2">Discover our exquisite collection of rings for every occasion</p>
+            <p className="text-gray-600 mt-2">Discover our exquisite collection of rings for every occasion</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -124,7 +124,7 @@ const Rings = () => {
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <div className="bg-gradient-to-br from-yellow-100 to-[#1F1E39]/20 h-64 flex items-center justify-center overflow-hidden">
+                    <div className="bg-gradient-to-br from-yellow-100 to-gray-50 h-64 flex items-center justify-center overflow-hidden">
                       <img 
                         src={product.image} 
                         alt={product.name}
@@ -144,7 +144,7 @@ const Rings = () => {
                   </div>
                   
                   <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                    <h3 className="font-bold text-[#1F1E39] mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                    <h3 className="font-bold text-gray-800 mb-2 group-hover:text-yellow-600 transition-colors duration-300">
                       {product.name}
                     </h3>
                     
@@ -162,14 +162,14 @@ const Rings = () => {
                     
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-2xl font-bold text-[#1F1E39]">{product.price}</span>
+                        <span className="text-2xl font-bold text-gray-800">{product.price}</span>
                         <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
                       </div>
                     </div>
                     
                     <Button 
                       onClick={() => handleAddToCart(product)}
-                      className="w-full bg-gradient-to-r from-[#1F1E39] to-yellow-500 text-white hover:from-[#2A2857] hover:to-yellow-600 font-semibold shadow-lg"
+                      className="w-full bg-gradient-to-r from-gray-800 to-yellow-500 text-white hover:from-gray-900 hover:to-yellow-600 font-semibold shadow-lg"
                     >
                       Add to Cart
                     </Button>
