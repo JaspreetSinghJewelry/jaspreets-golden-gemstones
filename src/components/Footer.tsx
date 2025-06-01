@@ -26,39 +26,7 @@ const Footer = () => {
       {/* Main Footer */}
       <div className="py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8">
-            {/* Company Info */}
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <img 
-                  src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
-                  alt="Jaspreet Singh Jewelry" 
-                  className="h-16 w-auto"
-                />
-              </div>
-              <p className="text-gray-600 mb-6">
-                Crafting exquisite jewelry with passion and precision.
-              </p>
-              <div className="flex space-x-4">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-gray-600 hover:text-black hover:bg-gray-100"
-                  onClick={() => window.open('https://www.facebook.com/jaspreetsinghjewelry/?locale=es_ES', '_blank')}
-                >
-                  <Facebook className="h-5 w-5" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-gray-600 hover:text-black hover:bg-gray-100"
-                  onClick={() => window.open('https://www.instagram.com/jaspreetsinghjewelry/', '_blank')}
-                >
-                  <Instagram className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Quick Links */}
             <div>
               <h4 className="text-lg font-bold mb-6 text-black">Quick Links</h4>
