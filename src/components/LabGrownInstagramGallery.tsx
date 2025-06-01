@@ -42,9 +42,9 @@ const LabGrownInstagramGallery = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-slide-in-up">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <Leaf className="h-8 w-8 text-green-600 animate-bounce" />
-            <Instagram className="h-8 w-8 text-[#0D0C29] animate-bounce" />
-            <h2 className="text-4xl font-bold text-[#0D0C29] animate-pulse">
+            <Leaf className="h-8 w-8 text-green-600" />
+            <Instagram className="h-8 w-8 text-[#0D0C29]" />
+            <h2 className="text-4xl font-bold text-[#0D0C29]">
               Lab Grown Collection on Instagram
             </h2>
           </div>
@@ -53,9 +53,9 @@ const LabGrownInstagramGallery = () => {
           </p>
           <Button
             onClick={() => window.open('https://www.instagram.com/jsj.labgrowndiamonds/', '_blank')}
-            className="bg-gradient-to-r from-green-600 to-[#0D0C29] text-white hover:from-green-700 hover:to-[#2A2857] font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl animate-pulse"
+            className="bg-gradient-to-r from-green-600 to-[#0D0C29] text-white hover:from-green-700 hover:to-[#2A2857] font-semibold transform hover:scale-110 transition-all duration-300 shadow-xl"
           >
-            <Leaf className="h-5 w-5 mr-2 animate-spin" style={{animationDuration: '3s'}} />
+            <Leaf className="h-5 w-5 mr-2" />
             @jsj.labgrowndiamonds
             <ExternalLink className="h-4 w-4 ml-2" />
           </Button>
@@ -76,8 +76,8 @@ const LabGrownInstagramGallery = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-green-600/60 via-transparent to-[#0D0C29]/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
                 <div className="flex items-center space-x-2">
-                  <Leaf className="h-6 w-6 text-white animate-bounce" />
-                  <Instagram className="h-6 w-6 text-white animate-bounce" />
+                  <Leaf className="h-6 w-6 text-white" />
+                  <Instagram className="h-6 w-6 text-white" />
                 </div>
               </div>
               <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 text-xs font-semibold rounded opacity-90">

@@ -6,7 +6,7 @@ import Categories from "@/components/Categories";
 import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
-import AboutSection from "@/components/AboutSection";
+import AboutUsSection from "@/components/AboutUsSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -19,7 +19,7 @@ const Index = () => {
       <LabGrownDiamonds />
       <InstagramGallery />
       <LabGrownInstagramGallery />
-      <AboutSection />
+      <AboutUsSection />
       <Footer />
     </div>
   );
