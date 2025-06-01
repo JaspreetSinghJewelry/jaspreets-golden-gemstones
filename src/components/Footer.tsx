@@ -2,6 +2,7 @@
 import React from 'react';
 import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -112,20 +113,31 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-bold mb-6 text-black">Policies</h4>
               <ul className="space-y-3">
-                {[
-                  '7-Day Defective Product Replace Policy',
-                  'Lifetime Exchange & Buyback Policy',
-                  'Privacy Policy',
-                  'Terms & Conditions',
-                  'Fraud Warning Disclaimer'
-      
-                ].map((policy) => (
-                  <li key={policy}>
-                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
-                      {policy}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <Link to="/policies/defective-product" className="text-gray-600 hover:text-black transition-colors">
+                    7-Day Defective Product Replace Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/policies/exchange-buyback" className="text-gray-600 hover:text-black transition-colors">
+                    Lifetime Exchange & Buyback Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/policies/privacy" className="text-gray-600 hover:text-black transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/policies/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/policies/fraud-warning" className="text-gray-600 hover:text-black transition-colors">
+                    Fraud Warning Disclaimer
+                  </Link>
+                </li>
               </ul>
             </div>
 
