@@ -30,7 +30,15 @@ const Footer = () => {
             {/* Company Info */}
             <div>
               <div className="flex items-center space-x-2 mb-6">
-                
+                <img 
+                  src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
+                  alt="Jaspreet Singh Jewelry" 
+                  className="h-16 w-auto"
+                />
+              </div>
+              <p className="text-gray-600 mb-6">
+                Crafting exquisite jewelry with passion and precision.
+              </p>
               <div className="flex space-x-4">
                 <Button 
                   variant="ghost" 
