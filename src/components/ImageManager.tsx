@@ -302,6 +302,11 @@ const ImageManager = () => {
       case 'featured': return 'Featured Products';
       case 'categories': return 'Categories';
       case 'lab-grown': return 'Lab Grown Diamonds';
+      case 'rings': return 'Rings';
+      case 'necklaces': return 'Necklaces';
+      case 'earrings': return 'Earrings';
+      case 'bracelets': return 'Bracelets';
+      case 'shop-now': return 'Shop Now';
       default: return location || 'Unknown';
     }
   };
@@ -361,6 +366,11 @@ const ImageManager = () => {
                   <SelectItem value="featured">Featured Products</SelectItem>
                   <SelectItem value="categories">Categories</SelectItem>
                   <SelectItem value="lab-grown">Lab Grown Diamonds</SelectItem>
+                  <SelectItem value="rings">Rings</SelectItem>
+                  <SelectItem value="necklaces">Necklaces</SelectItem>
+                  <SelectItem value="earrings">Earrings</SelectItem>
+                  <SelectItem value="bracelets">Bracelets</SelectItem>
+                  <SelectItem value="shop-now">Shop Now</SelectItem>
                 </SelectContent>
               </Select>
             </div>

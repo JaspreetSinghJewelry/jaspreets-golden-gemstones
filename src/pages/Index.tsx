@@ -20,6 +20,7 @@ const Index = () => {
       <Categories />
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown" title="Lab Grown Diamond Collection" />
+      <UploadedImages location="shop-now" title="Shop Our Complete Collection" />
       <div className="grid lg:grid-cols-2 gap-0">
         <InstagramGallery />
         <LabGrownInstagramGallery />

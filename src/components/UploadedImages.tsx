@@ -19,7 +19,7 @@ interface UploadedImage {
 }
 
 interface UploadedImagesProps {
-  location: 'home' | 'featured' | 'categories' | 'lab-grown';
+  location: 'home' | 'featured' | 'categories' | 'lab-grown' | 'rings' | 'necklaces' | 'earrings' | 'bracelets' | 'shop-now';
   title?: string;
   className?: string;
 }
@@ -40,11 +40,17 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({
 
   const fetchImages = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('images')
         .select('*')
-        .eq('display_location', location)
-        .eq('is_active', true)
+        .eq('is_active', true);
+
+      // For "shop-now", fetch all images regardless of location
+      if (location !== 'shop-now') {
+        query = query.eq('display_location', location);
+      }
+
+      const { data, error } = await query
         .order('sort_order', { ascending: true })
         .order('uploaded_at', { ascending: false });
 
