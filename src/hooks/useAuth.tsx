@@ -47,13 +47,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
       console.log('Attempting signup for:', email);
-      const redirectUrl = `${window.location.origin}/`;
       
+      // Clean and validate email
+      const cleanEmail = email.trim().toLowerCase();
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        return { error: { message: 'Please enter a valid email address' } };
+      }
+
+      // Validate password
+      if (password.length < 6) {
+        return { error: { message: 'Password must be at least 6 characters long' } };
+      }
+
+      // Validate required fields
+      if (!fullName.trim()) {
+        return { error: { message: 'Full name is required' } };
+      }
+
+      if (!phone.trim()) {
+        return { error: { message: 'Phone number is required' } };
+      }
+
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
+        email: cleanEmail,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName.trim(),
             phone: phone.trim()
@@ -62,26 +83,59 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       console.log('Signup response:', { data, error });
-      return { error };
+      
+      if (error) {
+        // Handle specific Supabase errors
+        if (error.message?.includes('User already registered')) {
+          return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
+        }
+        if (error.message?.includes('invalid')) {
+          return { error: { message: 'Please check your email address and try again.' } };
+        }
+        return { error };
+      }
+
+      return { error: null };
     } catch (err) {
       console.error('Signup error:', err);
-      return { error: err };
+      return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
       console.log('Attempting signin for:', email);
+      
+      // Clean email
+      const cleanEmail = email.trim().toLowerCase();
+      
+      // Basic validation
+      if (!cleanEmail || !password) {
+        return { error: { message: 'Please enter both email and password' } };
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: cleanEmail,
         password
       });
       
       console.log('Signin response:', { data, error });
-      return { error };
+      
+      if (error) {
+        // Handle specific errors
+        if (error.message?.includes('Invalid login credentials')) {
+          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
+        }
+        if (error.message?.includes('Email not confirmed')) {
+          return { error: { message: 'Please check your email and confirm your account before signing in.' } };
+        }
+        return { error };
+      }
+
+      return { error: null };
     } catch (err) {
       console.error('Signin error:', err);
-      return { error: err };
+      return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
 
@@ -110,7 +164,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     <AuthContext.Provider value={{
       user,
       session,
-      isAuthenticated: !!user,
+      isAuthenticated: !!user && !!session,
       signUp,
       signIn,
       signOut,

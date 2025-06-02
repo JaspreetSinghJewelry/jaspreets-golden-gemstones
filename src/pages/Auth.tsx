@@ -29,7 +29,7 @@ const Auth = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return emailRegex.test(email.trim());
   };
 
   const validateInputs = () => {
@@ -99,7 +99,7 @@ const Auth = () => {
           console.error('Sign in error:', error);
           toast({
             title: "Sign In Failed",
-            description: error.message || "Invalid email or password. Please try again.",
+            description: error.message || "Please check your credentials and try again.",
             variant: "destructive"
           });
         } else {
@@ -113,28 +113,21 @@ const Auth = () => {
         const { error } = await signUp(email, password, fullName, phone);
         if (error) {
           console.error('Sign up error:', error);
-          let errorMessage = "Failed to create account. Please try again.";
-          
-          if (error.message?.includes('email')) {
-            errorMessage = "Please check your email address and try again.";
-          } else if (error.message?.includes('password')) {
-            errorMessage = "Password must be at least 6 characters long.";
-          } else if (error.message?.includes('already registered')) {
-            errorMessage = "An account with this email already exists. Please sign in instead.";
-          }
-          
           toast({
             title: "Sign Up Failed", 
-            description: errorMessage,
+            description: error.message || "Failed to create account. Please try again.",
             variant: "destructive"
           });
         } else {
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account.",
+            description: "Please check your email to verify your account before signing in.",
           });
+          // Switch to signin mode after successful signup
           setMode('signin');
           setPassword('');
+          setFullName('');
+          setPhone('');
         }
       }
     } catch (error) {
@@ -151,6 +144,7 @@ const Auth = () => {
 
   const toggleMode = () => {
     setMode(mode === 'signin' ? 'signup' : 'signin');
+    // Clear form when switching modes
     setEmail('');
     setPassword('');
     setFullName('');
@@ -208,6 +202,7 @@ const Auth = () => {
                         onChange={(e) => setFullName(e.target.value)}
                         className="pl-10"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -223,6 +218,7 @@ const Auth = () => {
                         onChange={(e) => setPhone(e.target.value)}
                         className="pl-10"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -241,6 +237,7 @@ const Auth = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -258,6 +255,7 @@ const Auth = () => {
                     className="pl-10"
                     required
                     minLength={6}
+                    disabled={isLoading}
                   />
                 </div>
               </div>
