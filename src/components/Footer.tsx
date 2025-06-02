@@ -78,16 +78,13 @@ const Footer = () => {
                     Jewelry Care Guide
                   </Link>
                 </li>
-              </ul>
-            </div>
-             <li>
+                <li>
                   <Link to="/guides/size-Guide" className="text-gray-600 hover:text-black transition-colors">
-                   Size Guide
+                    Size Guide
                   </Link>
                 </li>
               </ul>
             </div>
-
 
             {/* Policies */}
             <div>
