@@ -87,7 +87,7 @@ const Necklaces = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-gray-800 hover:text-yellow-600"
+              className="mb-4 text-gray-800"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
