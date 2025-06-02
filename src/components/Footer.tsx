@@ -11,30 +11,7 @@ const Footer = () => {
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Quick Links</h4>
-              <ul className="space-y-3">
-                <li>
-                  <Link to="/about-us" className="text-gray-600 hover:text-black transition-colors">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="text-gray-600 hover:text-black transition-colors">
-                    Contact Us
-                  </Link>
-                </li>
-                {['Certificates'].map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
+           
             {/* Categories */}
             <div>
               <h4 className="text-lg font-bold mb-6 text-black">Categories</h4>
