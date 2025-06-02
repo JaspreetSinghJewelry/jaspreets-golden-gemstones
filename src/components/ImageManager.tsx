@@ -104,11 +104,6 @@ const ImageManager = () => {
 
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
-        if (uploadError.message.includes('Bucket not found')) {
-          throw new Error('Storage bucket not configured. Please contact administrator.');
-        } else if (uploadError.message.includes('Policy')) {
-          throw new Error('Upload permission denied. Please check storage policies.');
-        }
         throw new Error(`Upload failed: ${uploadError.message}`);
       }
 
