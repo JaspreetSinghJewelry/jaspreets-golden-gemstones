@@ -39,14 +39,14 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Phone className="h-6 w-6 text-rose-600 mt-1" />
+                  <Phone className="h-6 w-6 text-black mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
                     <a 
                       href="https://wa.me/919289061999" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-rose-600 transition-colors block mb-1"
+                      className="text-gray-600 hover:text-black transition-colors block mb-1"
                     >
                       📞 +91-9289061999 (WhatsApp)
                     </a>
@@ -67,7 +67,7 @@ const ContactUs = () => {
                     </address>
                     <Button
                       variant="outline"
-                      className="border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white"
+                      className="border-black text-black hover:bg-black hover:text-white"
                       onClick={() => window.open('https://www.google.com/maps/place/Jaspreet+Singh+Jewelry/@28.6508732,77.1944579,17z/data=!3m1!4b1!4m6!3m5!1s0x390d0340ec032af1:0x308f4120a3d3baa5!8m2!3d28.6508732!4d77.1944579!16s%2Fg%2F11sy3t7knv?entry=ttu&g_ep=EgoyMDI1MDUyNi4wIKXMDSoASAFQAw%3D%3D', '_blank')}
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
@@ -84,8 +84,8 @@ const ContactUs = () => {
                   <div>
                     <h4 className="font-medium text-gray-700 mb-2">Store Hours</h4>
                     <p className="text-gray-600">
-                      Monday - Saturday: 10:00 AM - 8:00 PM<br />
-                      Sunday: 11:00 AM - 6:00 PM
+                      Monday - Sunday: 10:00 AM - 7:00 PM<br />
+          
                     </p>
                   </div>
                   
