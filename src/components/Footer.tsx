@@ -20,6 +20,11 @@ const Footer = () => {
                     About Us
                   </Link>
                 </li>
+                <li>
+                  <Link to="/contact-us" className="text-gray-600 hover:text-black transition-colors">
+                    Contact Us
+                  </Link>
+                </li>
                 {['Collections', 'Custom Design', 'Certificates'].map((link) => (
                   <li key={link}>
                     <a href="#" className="text-gray-600 hover:text-black transition-colors">
