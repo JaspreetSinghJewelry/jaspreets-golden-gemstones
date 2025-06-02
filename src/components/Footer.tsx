@@ -10,7 +10,7 @@ const Footer = () => {
       {/* Main Footer */}
       <div className="py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Quick Links */}
             <div>
               <h4 className="text-lg font-bold mb-6 text-black">Quick Links</h4>
@@ -121,54 +121,6 @@ const Footer = () => {
                   </Link>
                 </li>
               </ul>
-            </div>
-
-            {/* Contact Us */}
-            <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Contact Us</h4>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-2">
-                  <Mail className="h-4 w-4 text-gray-600 mt-1" />
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Email us at</p>
-                    <a href="mailto:i@jaspreetsinghjewelry.com" className="text-gray-600 hover:text-black transition-colors text-sm">
-                      📧 i@jaspreetsinghjewelry.com
-                    </a>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <Phone className="h-4 w-4 text-gray-600 mt-1" />
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Call Us at</p>
-                    <a 
-                      href="https://wa.me/919289061999" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-black transition-colors text-sm block"
-                    >
-                      📞 +91-9289061999
-                    </a>
-                    <p className="text-gray-600 text-sm mt-1">
-                      LANDLINE: +91-40452999
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-2">
-                  <MapPin className="h-4 w-4 text-gray-600 mt-1" />
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Meet Us at</p>
-                    <span className="text-gray-600 text-sm block">
-                      103, Poonam chambers 2645 Bank Street,
-                      <br />
-                      Karol Bagh, New Delhi
-                      <br />
-                      Pincode- 110005
-                    </span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Visit Our Store */}
