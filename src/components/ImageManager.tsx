@@ -93,6 +93,31 @@ const ImageManager = () => {
       
       console.log('Generated filename:', fileName);
 
+      // First, check if the storage bucket exists and create if needed
+      console.log('Checking storage bucket...');
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      
+      if (bucketsError) {
+        console.error('Error listing buckets:', bucketsError);
+      } else {
+        console.log('Available buckets:', buckets);
+        const imagesBucket = buckets.find(bucket => bucket.name === 'images');
+        if (!imagesBucket) {
+          console.log('Images bucket not found, creating it...');
+          const { data: newBucket, error: createError } = await supabase.storage.createBucket('images', {
+            public: true,
+            allowedMimeTypes: ['image/*'],
+            fileSizeLimit: 10485760 // 10MB
+          });
+          
+          if (createError) {
+            console.error('Error creating bucket:', createError);
+            throw new Error(`Failed to create storage bucket: ${createError.message}`);
+          }
+          console.log('Bucket created successfully:', newBucket);
+        }
+      }
+
       // Upload to storage with detailed error handling
       console.log('Uploading to storage...');
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -245,7 +270,7 @@ const ImageManager = () => {
               />
               {selectedFile && (
                 <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-                  <span>Selected: {selectedFile.name}</span>
+                  <span>Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})</span>
                   <Button
                     type="button"
                     variant="ghost"
