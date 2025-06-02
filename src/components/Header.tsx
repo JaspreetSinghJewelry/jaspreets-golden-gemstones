@@ -39,7 +39,7 @@ const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center px-20 py-3 shadow-sm sticky top-0 bg-white z-50">
+    <header className="flex justify-between items-center px-20 py-3 shadow-sm sticky top-0 bg-white z-52">
       {/* Logo */}
       <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
         <img 
