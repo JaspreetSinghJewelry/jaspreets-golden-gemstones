@@ -27,17 +27,79 @@ const Auth = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateInputs = () => {
+    if (!email.trim()) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!validateEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (!password || password.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if (mode === 'signup') {
+      if (!fullName.trim()) {
+        toast({
+          title: "Name Required",
+          description: "Please enter your full name.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      if (!phone.trim()) {
+        toast({
+          title: "Phone Required",
+          description: "Please enter your phone number.",
+          variant: "destructive"
+        });
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateInputs()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       if (mode === 'signin') {
         const { error } = await signIn(email, password);
         if (error) {
+          console.error('Sign in error:', error);
           toast({
             title: "Sign In Failed",
-            description: error.message,
+            description: error.message || "Invalid email or password. Please try again.",
             variant: "destructive"
           });
         } else {
@@ -50,9 +112,20 @@ const Auth = () => {
       } else {
         const { error } = await signUp(email, password, fullName, phone);
         if (error) {
+          console.error('Sign up error:', error);
+          let errorMessage = "Failed to create account. Please try again.";
+          
+          if (error.message?.includes('email')) {
+            errorMessage = "Please check your email address and try again.";
+          } else if (error.message?.includes('password')) {
+            errorMessage = "Password must be at least 6 characters long.";
+          } else if (error.message?.includes('already registered')) {
+            errorMessage = "An account with this email already exists. Please sign in instead.";
+          }
+          
           toast({
             title: "Sign Up Failed", 
-            description: error.message,
+            description: errorMessage,
             variant: "destructive"
           });
         } else {
@@ -60,9 +133,12 @@ const Auth = () => {
             title: "Account Created!",
             description: "Please check your email to verify your account.",
           });
+          setMode('signin');
+          setPassword('');
         }
       }
     } catch (error) {
+      console.error('Authentication error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
@@ -205,6 +281,7 @@ const Auth = () => {
                 variant="ghost" 
                 onClick={toggleMode}
                 className="text-sm"
+                disabled={isLoading}
               >
                 {mode === 'signin' 
                   ? "Don't have an account? Sign up" 
