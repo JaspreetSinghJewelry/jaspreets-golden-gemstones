@@ -117,7 +117,7 @@ const Necklaces = () => {
                       variant="ghost" 
                       size="icon"
                       onClick={() => handleToggleWishlist(product)}
-                      className={`absolute top-4 right-4 bg-white/80 hover:bg-yellow-100 transition-all duration-300 ${
+                      className={`absolute top-4 right-4 bg-white/80 transition-all duration-300 ${
                         isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                       }`}
                     >
@@ -125,8 +125,8 @@ const Necklaces = () => {
                     </Button>
                   </div>
                   
-                  <div className="p-6 bg-gradient-to-b from-white to-yellow-50">
-                    <h3 className="font-bold text-gray-800 mb-2 group-hover:text-yellow-600 transition-colors duration-300">
+                  <div className="p-6 bg-gradient-to-b from-white">
+                    <h3 className="font-bold text-gray-800 mb-2 transition-colors duration-300">
                       {product.name}
                     </h3>
                     
@@ -135,7 +135,7 @@ const Necklaces = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star 
                             key={i} 
-                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
+                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? : 'text-gray-300'}`} 
                           />
                         ))}
                       </div>
