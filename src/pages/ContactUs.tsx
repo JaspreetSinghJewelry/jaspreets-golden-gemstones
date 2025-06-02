@@ -57,7 +57,7 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <MapPin className="h-6 w-6 text-rose-600 mt-1" />
+                  <MapPin className="h-6 w-6 text-black mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Visit Our Store</h3>
                     <address className="text-gray-600 not-italic mb-4">
