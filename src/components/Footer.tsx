@@ -25,7 +25,7 @@ const Footer = () => {
                     Contact Us
                   </Link>
                 </li>
-                {['Collections', 'Custom Design', 'Certificates'].map((link) => (
+                {['Collections', 'Certificates'].map((link) => (
                   <li key={link}>
                     <a href="#" className="text-gray-600 hover:text-black transition-colors">
                       {link}
