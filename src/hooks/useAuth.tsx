@@ -11,6 +11,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  isSessionValid: () => boolean;
+  login: (phoneNumber: string, name: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +73,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('cartItems');
   };
 
+  const isSessionValid = () => {
+    return !!session && !!user;
+  };
+
+  const login = (phoneNumber: string, name: string) => {
+    // This is a mock function for the phone-based login
+    // In a real implementation, this would integrate with your phone auth system
+    console.log('Phone login attempted:', phoneNumber, name);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -79,7 +91,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       signUp,
       signIn,
       signOut,
-      loading
+      loading,
+      isSessionValid,
+      login
     }}>
       {children}
     </AuthContext.Provider>
