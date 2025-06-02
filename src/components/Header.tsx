@@ -90,6 +90,12 @@ const Header = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
+       <li>
+                  <Link to="/about-us" className="text-gray-600 hover:text-black transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
 
       {/* Actions */}
       <div className="flex items-center space-x-4">
