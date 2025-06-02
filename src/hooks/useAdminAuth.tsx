@@ -29,13 +29,18 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const setAdminContext = async (userId: string) => {
     try {
-      // Set admin context for RLS policies
-      await supabase.rpc('set_config', {
+      // Set admin context for RLS policies - this might not be needed for image uploads
+      const { error } = await supabase.rpc('set_config', {
         setting_name: 'app.admin_user_id',
         setting_value: userId,
         is_local: true
       });
-      console.log('Admin context set successfully');
+      
+      if (error) {
+        console.error('Failed to set admin context:', error);
+      } else {
+        console.log('Admin context set successfully');
+      }
     } catch (error) {
       console.error('Failed to set admin context:', error);
     }

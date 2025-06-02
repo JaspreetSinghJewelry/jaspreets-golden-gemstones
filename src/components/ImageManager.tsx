@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Trash2, Eye } from 'lucide-react';
+import { Upload, Trash2, Eye, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -22,6 +22,7 @@ const ImageManager = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchImages();
@@ -53,46 +54,61 @@ const ImageManager = () => {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (file) {
+      setSelectedFile(file);
+      console.log('File selected:', file.name, file.type, file.size);
+    }
+  };
 
-    console.log('Starting file upload for:', file.name);
+  const handleFileUpload = async () => {
+    if (!selectedFile) {
+      toast({
+        title: "No File Selected",
+        description: "Please select a file to upload",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    console.log('Starting file upload for:', selectedFile.name);
     setUploading(true);
     
     try {
+      // Validate file type
+      if (!selectedFile.type.startsWith('image/')) {
+        throw new Error('Please select a valid image file');
+      }
+
+      // Validate file size (10MB limit)
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        throw new Error('File size must be less than 10MB');
+      }
+
       // Generate a unique filename
-      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const fileExt = selectedFile.name.split('.').pop()?.toLowerCase();
       const timestamp = Date.now();
       const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       console.log('Generated filename:', fileName);
 
-      // First, check if bucket exists
-      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-      console.log('Available buckets:', buckets);
-      
-      if (bucketsError) {
-        console.error('Error listing buckets:', bucketsError);
-        throw new Error(`Bucket error: ${bucketsError.message}`);
-      }
-
-      const imagesBucket = buckets?.find(bucket => bucket.id === 'images');
-      if (!imagesBucket) {
-        throw new Error('Images bucket not found. Please contact administrator.');
-      }
-
-      // Upload to storage
+      // Upload to storage with detailed error handling
       console.log('Uploading to storage...');
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('images')
-        .upload(fileName, file, {
+        .upload(fileName, selectedFile, {
           cacheControl: '3600',
           upsert: false
         });
 
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
+        if (uploadError.message.includes('Bucket not found')) {
+          throw new Error('Storage bucket not configured. Please contact administrator.');
+        } else if (uploadError.message.includes('Policy')) {
+          throw new Error('Upload permission denied. Please check storage policies.');
+        }
         throw new Error(`Upload failed: ${uploadError.message}`);
       }
 
@@ -104,17 +120,17 @@ const ImageManager = () => {
         .from('images')
         .insert({
           filename: fileName,
-          original_name: file.name,
+          original_name: selectedFile.name,
           file_path: fileName,
-          file_size: file.size,
-          mime_type: file.type
+          file_size: selectedFile.size,
+          mime_type: selectedFile.type
         })
         .select()
         .single();
 
       if (dbError) {
         console.error('Database insert error:', dbError);
-        // If database insert fails, try to clean up the uploaded file
+        // Clean up uploaded file if database insert fails
         await supabase.storage.from('images').remove([fileName]);
         throw new Error(`Database error: ${dbError.message}`);
       }
@@ -127,9 +143,12 @@ const ImageManager = () => {
       });
 
       fetchImages();
+      setSelectedFile(null);
       
       // Reset file input
-      event.target.value = '';
+      const fileInput = document.getElementById('imageFile') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+      
     } catch (error: any) {
       console.error('Upload error:', error);
       toast({
@@ -150,16 +169,7 @@ const ImageManager = () => {
     try {
       console.log('Deleting image:', image.filename);
       
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from('images')
-        .remove([image.file_path]);
-
-      if (storageError) {
-        console.error('Storage delete error:', storageError);
-      }
-
-      // Delete from database
+      // Delete from database first
       const { error: dbError } = await supabase
         .from('images')
         .delete()
@@ -167,6 +177,16 @@ const ImageManager = () => {
 
       if (dbError) {
         throw dbError;
+      }
+
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('images')
+        .remove([image.file_path]);
+
+      if (storageError) {
+        console.error('Storage delete error (non-critical):', storageError);
+        // Don't throw here as the database record is already deleted
       }
 
       toast({
@@ -224,13 +244,35 @@ const ImageManager = () => {
                 id="imageFile"
                 type="file"
                 accept="image/*"
-                onChange={handleFileUpload}
+                onChange={handleFileSelect}
                 disabled={uploading}
                 className="mt-1"
               />
+              {selectedFile && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                  <span>Selected: {selectedFile.name}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedFile(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
+            
+            <Button 
+              onClick={handleFileUpload}
+              disabled={uploading || !selectedFile}
+              className="w-full"
+            >
+              {uploading ? 'Uploading...' : 'Upload Image'}
+            </Button>
+            
             {uploading && (
-              <div className="text-sm text-blue-600">Uploading image...</div>
+              <div className="text-sm text-blue-600">Processing upload...</div>
             )}
           </div>
         </CardContent>
