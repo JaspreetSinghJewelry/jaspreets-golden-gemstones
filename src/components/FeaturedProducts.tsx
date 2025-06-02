@@ -19,6 +19,16 @@ interface UploadedImage {
   is_active: boolean | null;
 }
 
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  originalPrice: string;
+  image: string;
+  isUploaded?: boolean;
+}
+
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
@@ -56,7 +66,7 @@ const FeaturedProducts = () => {
     return data.publicUrl;
   };
 
-  const products = [
+  const products: Product[] = [
     {
       id: 1,
       name: 'Radiant Gold Ring',
@@ -84,7 +94,7 @@ const FeaturedProducts = () => {
   ];
 
   // Convert uploaded images to product format
-  const uploadedProducts = uploadedImages.map((image) => ({
+  const uploadedProducts: Product[] = uploadedImages.map((image) => ({
     id: parseInt(image.id.replace(/-/g, '').substring(0, 8), 16),
     name: image.description || image.original_name || 'Beautiful Jewelry',
     description: image.description || 'Handcrafted with care',
@@ -97,7 +107,7 @@ const FeaturedProducts = () => {
   // Combine uploaded and default products, prioritizing uploaded ones
   const allProducts = [...uploadedProducts, ...products].slice(0, 3);
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addToCart({
       id: product.id,
       name: product.name,
@@ -107,7 +117,7 @@ const FeaturedProducts = () => {
     });
   };
 
-  const handleWishlistToggle = (product: any) => {
+  const handleWishlistToggle = (product: Product) => {
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
     } else {
