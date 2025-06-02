@@ -20,7 +20,7 @@ const Footer = () => {
                     About Us
                   </Link>
                 </li>
-                {['Collections', 'Custom Design', 'Size Guide', 'Certificates'].map((link) => (
+                {['Collections', 'Custom Design', 'Certificates'].map((link) => (
                   <li key={link}>
                     <a href="#" className="text-gray-600 hover:text-black transition-colors">
                       {link}
@@ -80,6 +80,14 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
+             <li>
+                  <Link to="/guides/size-Guide" className="text-gray-600 hover:text-black transition-colors">
+                   Size Guide
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
 
             {/* Policies */}
             <div>
