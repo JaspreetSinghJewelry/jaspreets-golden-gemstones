@@ -45,7 +45,7 @@ const Header = () => {
         <img 
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
-          className="h-24 w-auto"
+          className="h-30 w-auto"
         />
       </div>
 
