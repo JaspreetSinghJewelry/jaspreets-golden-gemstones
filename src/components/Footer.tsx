@@ -16,12 +16,12 @@ const Footer = () => {
               <h4 className="text-lg font-bold mb-6 text-black">Quick Links</h4>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/about-us" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/about" className="text-gray-600 hover:text-black transition-colors">
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact-us" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/contact" className="text-gray-600 hover:text-black transition-colors">
                     Contact Us
                   </Link>
                 </li>
@@ -54,32 +54,32 @@ const Footer = () => {
               <h4 className="text-lg font-bold mb-6 text-black">Jewellery Guide</h4>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/guides/buying-price" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/buying-price-guide" className="text-gray-600 hover:text-black transition-colors">
                     Buying and Price Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/certification" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/certification-guide" className="text-gray-600 hover:text-black transition-colors">
                     Certification Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/diamond-solitaire" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/diamond-solitaire-guide" className="text-gray-600 hover:text-black transition-colors">
                     Diamond and Solitaire Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/gemstone" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/gemstone-guide" className="text-gray-600 hover:text-black transition-colors">
                     Gemstone Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/gifting" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/gifting-guide" className="text-gray-600 hover:text-black transition-colors">
                     Gifting Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/jewelry-care" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/jewelry-care-guide" className="text-gray-600 hover:text-black transition-colors">
                     Jewelry Care Guide
                   </Link>
                 </li>
@@ -101,22 +101,22 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/policies/exchange-buyback" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/exchange-buyback-policy" className="text-gray-600 hover:text-black transition-colors">
                     Buyback Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/policies/privacy" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/policies/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
                     Terms & Conditions
                   </Link>
                 </li>
                 <li>
-                  <Link to="/policies/fraud-warning" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/fraud-warning" className="text-gray-600 hover:text-black transition-colors">
                     Fraud Warning Disclaimer
                   </Link>
                 </li>
@@ -162,15 +162,15 @@ const Footer = () => {
               © 2025 Jaspreet Singh Jewelry. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-600 hover:text-black transition-colors">
+              <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors">
                 Privacy Policy
-              </a>
-              <a href="#" className="text-gray-600 hover:text-black transition-colors">
+              </Link>
+              <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
                 Terms of Service
-              </a>
-              <a href="#" className="text-gray-600 hover:text-black transition-colors">
+              </Link>
+              <Link to="/policies/defective-product" className="text-gray-600 hover:text-black transition-colors">
                 Return Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
