@@ -62,8 +62,8 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
   ];
 
   return (
-    <Card className="border-2 border-yellow-200 bg-white/90 backdrop-blur-sm shadow-xl">
-      <CardHeader className="bg-gradient-to-r from-yellow-400 to-amber-500 text-[#0D0C29] rounded-t-lg">
+    <Card className="border-2 border-cream-200 bg-white/90 backdrop-blur-sm shadow-xl">
+      <CardHeader className="bg-cream-900 text-cream-50 rounded-t-lg">
         <CardTitle className="flex items-center gap-2 font-bold">
           <CreditCard className="h-5 w-5" />
           Choose Payment Method
@@ -89,45 +89,45 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
                 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="cardName" className="text-sm font-semibold text-gray-700">Cardholder Name *</Label>
+                    <Label htmlFor="cardName" className="text-sm font-semibold text-cream-700">Cardholder Name *</Label>
                     <Input
                       id="cardName"
                       placeholder="Enter name as on card"
                       value={cardDetails.name}
                       onChange={(e) => setCardDetails({...cardDetails, name: e.target.value.toUpperCase()})}
-                      className="mt-1"
+                      className="mt-1 border-cream-300 focus:border-cream-500"
                       required
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="cardNumber" className="text-sm font-semibold text-gray-700">Card Number *</Label>
+                    <Label htmlFor="cardNumber" className="text-sm font-semibold text-cream-700">Card Number *</Label>
                     <Input
                       id="cardNumber"
                       placeholder="1234 5678 9012 3456"
                       value={cardDetails.number}
                       onChange={(e) => setCardDetails({...cardDetails, number: formatCardNumber(e.target.value)})}
                       maxLength={19}
-                      className="mt-1"
+                      className="mt-1 border-cream-300 focus:border-cream-500"
                       required
                     />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="expiry" className="text-sm font-semibold text-gray-700">Expiry Date *</Label>
+                      <Label htmlFor="expiry" className="text-sm font-semibold text-cream-700">Expiry Date *</Label>
                       <Input
                         id="expiry"
                         placeholder="MM/YY"
                         value={cardDetails.expiry}
                         onChange={(e) => setCardDetails({...cardDetails, expiry: formatExpiry(e.target.value)})}
                         maxLength={5}
-                        className="mt-1"
+                        className="mt-1 border-cream-300 focus:border-cream-500"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="cvv" className="text-sm font-semibold text-gray-700">CVV *</Label>
+                      <Label htmlFor="cvv" className="text-sm font-semibold text-cream-700">CVV *</Label>
                       <Input
                         id="cvv"
                         placeholder="123"
@@ -135,14 +135,14 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
                         onChange={(e) => setCardDetails({...cardDetails, cvv: e.target.value.replace(/\D/g, '')})}
                         maxLength={4}
                         type="password"
-                        className="mt-1"
+                        className="mt-1 border-cream-300 focus:border-cream-500"
                         required
                       />
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded">
+                <div className="flex items-start gap-2 text-xs text-cream-600 bg-cream-50 p-3 rounded">
                   <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   <span>Your card details are encrypted and secure. We don't store your card information.</span>
                 </div>
@@ -167,18 +167,18 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
                 </div>
                 
                 <div>
-                  <Label htmlFor="upiId" className="text-sm font-semibold text-gray-700">UPI ID *</Label>
+                  <Label htmlFor="upiId" className="text-sm font-semibold text-cream-700">UPI ID *</Label>
                   <Input
                     id="upiId"
                     placeholder="yourname@paytm / yourname@phonepe"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value.toLowerCase())}
-                    className="mt-1"
+                    className="mt-1 border-cream-300 focus:border-cream-500"
                     required
                   />
                 </div>
                 
-                <div className="flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded mt-4">
+                <div className="flex items-start gap-2 text-xs text-cream-600 bg-cream-50 p-3 rounded mt-4">
                   <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   <span>Enter your UPI ID to proceed. You'll receive a payment request on your UPI app.</span>
                 </div>
@@ -203,9 +203,9 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
                 </div>
                 
                 <div>
-                  <Label htmlFor="bank" className="text-sm font-semibold text-gray-700">Select Your Bank *</Label>
+                  <Label htmlFor="bank" className="text-sm font-semibold text-cream-700">Select Your Bank *</Label>
                   <Select value={selectedBank} onValueChange={setSelectedBank} required>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1 border-cream-300 focus:border-cream-500">
                       <SelectValue placeholder="Choose your bank" />
                     </SelectTrigger>
                     <SelectContent>
@@ -218,7 +218,7 @@ const PaymentOptions = ({ selectedPayment, onPaymentChange }: PaymentOptionsProp
                   </Select>
                 </div>
                 
-                <div className="flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded mt-4">
+                <div className="flex items-start gap-2 text-xs text-cream-600 bg-cream-50 p-3 rounded mt-4">
                   <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
                   <span>You'll be redirected to your bank's secure website to complete the payment. Please keep your login credentials ready.</span>
                 </div>
