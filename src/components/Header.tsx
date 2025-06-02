@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,7 @@ const Header = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Collections', path: '/rings','/necklaces','/earrings','/bracelets' },
+    { name: 'Collections', path: '/collections' },
     { name: 'Rings', path: '/rings' },
     { name: 'Necklaces', path: '/necklaces' },
     { name: 'Earrings', path: '/earrings' },
