@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Trash2, Eye, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -15,6 +18,11 @@ interface ImageFile {
   file_size: number | null;
   mime_type: string | null;
   uploaded_at: string;
+  display_location: string | null;
+  description: string | null;
+  price: number | null;
+  is_active: boolean | null;
+  sort_order: number | null;
 }
 
 const ImageManager = () => {
@@ -22,6 +30,9 @@ const ImageManager = () => {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [displayLocation, setDisplayLocation] = useState('home');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
 
   useEffect(() => {
     fetchImages();
@@ -105,6 +116,24 @@ const ImageManager = () => {
       return;
     }
 
+    if (!description.trim()) {
+      toast({
+        title: "Description Required",
+        description: "Please enter a description for the image",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!price.trim() || isNaN(Number(price))) {
+      toast({
+        title: "Valid Price Required",
+        description: "Please enter a valid price for the image",
+        variant: "destructive"
+      });
+      return;
+    }
+
     console.log('Starting file upload for:', selectedFile.name);
     setUploading(true);
     
@@ -157,7 +186,12 @@ const ImageManager = () => {
           original_name: selectedFile.name,
           file_path: fileName,
           file_size: selectedFile.size,
-          mime_type: selectedFile.type
+          mime_type: selectedFile.type,
+          display_location: displayLocation,
+          description: description.trim(),
+          price: Number(price),
+          is_active: true,
+          sort_order: 0
         })
         .select()
         .single();
@@ -179,6 +213,9 @@ const ImageManager = () => {
       // Refresh the images list
       await fetchImages();
       setSelectedFile(null);
+      setDescription('');
+      setPrice('');
+      setDisplayLocation('home');
       
       // Reset file input
       const fileInput = document.getElementById('imageFile') as HTMLInputElement;
@@ -254,6 +291,21 @@ const ImageManager = () => {
     return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
   };
 
+  const formatPrice = (price: number | null) => {
+    if (!price) return 'No price';
+    return `₹${price.toLocaleString()}`;
+  };
+
+  const getLocationLabel = (location: string | null) => {
+    switch (location) {
+      case 'home': return 'Home Page';
+      case 'featured': return 'Featured Products';
+      case 'categories': return 'Categories';
+      case 'lab-grown': return 'Lab Grown Diamonds';
+      default: return location || 'Unknown';
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -297,6 +349,49 @@ const ImageManager = () => {
                 </div>
               )}
             </div>
+
+            <div>
+              <Label htmlFor="displayLocation">Display Location</Label>
+              <Select value={displayLocation} onValueChange={setDisplayLocation}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select where to display this image" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="home">Home Page</SelectItem>
+                  <SelectItem value="featured">Featured Products</SelectItem>
+                  <SelectItem value="categories">Categories</SelectItem>
+                  <SelectItem value="lab-grown">Lab Grown Diamonds</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Enter a description for this jewelry piece..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={uploading}
+                className="mt-1"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="price">Price (₹)</Label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="Enter price in rupees"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                disabled={uploading}
+                className="mt-1"
+                min="0"
+                step="0.01"
+              />
+            </div>
             
             <Button 
               onClick={handleFileUpload}
@@ -329,7 +424,7 @@ const ImageManager = () => {
                   <div className="aspect-square overflow-hidden rounded-md bg-gray-100">
                     <img
                       src={getImageUrl(image.file_path)}
-                      alt={image.original_name || 'Uploaded image'}
+                      alt={image.description || image.original_name || 'Uploaded image'}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         console.error('Image load error for:', image.file_path);
@@ -342,11 +437,17 @@ const ImageManager = () => {
                     <p className="font-medium text-sm truncate" title={image.original_name || ''}>
                       {image.original_name || image.filename}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {formatFileSize(image.file_size)}
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      {image.description || 'No description'}
+                    </p>
+                    <p className="text-sm font-semibold text-green-600">
+                      {formatPrice(image.price)}
+                    </p>
+                    <p className="text-xs text-blue-600">
+                      {getLocationLabel(image.display_location)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {new Date(image.uploaded_at).toLocaleDateString()}
+                      {formatFileSize(image.file_size)} • {new Date(image.uploaded_at).toLocaleDateString()}
                     </p>
                   </div>
 

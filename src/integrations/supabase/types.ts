@@ -32,34 +32,49 @@ export type Database = {
       }
       images: {
         Row: {
+          description: string | null
+          display_location: string | null
           file_path: string
           file_size: number | null
           filename: string
           id: string
+          is_active: boolean | null
           mime_type: string | null
           original_name: string | null
+          price: number | null
+          sort_order: number | null
           updated_at: string
           uploaded_at: string
           user_id: string | null
         }
         Insert: {
+          description?: string | null
+          display_location?: string | null
           file_path: string
           file_size?: number | null
           filename: string
           id?: string
+          is_active?: boolean | null
           mime_type?: string | null
           original_name?: string | null
+          price?: number | null
+          sort_order?: number | null
           updated_at?: string
           uploaded_at?: string
           user_id?: string | null
         }
         Update: {
+          description?: string | null
+          display_location?: string | null
           file_path?: string
           file_size?: number | null
           filename?: string
           id?: string
+          is_active?: boolean | null
           mime_type?: string | null
           original_name?: string | null
+          price?: number | null
+          sort_order?: number | null
           updated_at?: string
           uploaded_at?: string
           user_id?: string | null

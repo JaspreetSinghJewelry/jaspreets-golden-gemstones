@@ -2,6 +2,7 @@
 import Header from "@/components/Header";
 import ProductCarousel from "@/components/ProductCarousel";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import UploadedImages from "@/components/UploadedImages";
 import Categories from "@/components/Categories";
 import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
@@ -13,9 +14,12 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
+      <UploadedImages location="home" title="Latest from Our Collection" />
       <FeaturedProducts />
+      <UploadedImages location="featured" title="Featured Jewelry" />
       <Categories />
       <LabGrownDiamonds />
+      <UploadedImages location="lab-grown" title="Lab Grown Diamond Collection" />
       <div className="grid lg:grid-cols-2 gap-0">
         <InstagramGallery />
         <LabGrownInstagramGallery />
