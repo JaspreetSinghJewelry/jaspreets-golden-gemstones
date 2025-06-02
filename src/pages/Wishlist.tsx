@@ -34,28 +34,28 @@ const Wishlist = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="bg-[#0D0C29] py-8 min-h-[80vh]">
+      <div className="bg-white py-8 min-h-[80vh]">
         <div className="container mx-auto px-4">
           <div className="mb-6">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/')}
-              className="mb-4 text-white hover:text-gray-400"
+              className="mb-4 text-gray-600 hover:text-black"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-white">
+            <FancyText variant="gradient" size="xl" className="text-4xl font-bold text-[#1F1E39]">
               My Wishlist
             </FancyText>
-            <p className="text-gray-300 mt-2">Items you've saved for later ({wishlistItems.length} items)</p>
+            <p className="text-gray-600 mt-2">Items you've saved for later ({wishlistItems.length} items)</p>
           </div>
 
           {wishlistItems.length === 0 ? (
-            <div className="text-center text-white py-16">
+            <div className="text-center text-gray-600 py-16">
               <Heart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-2xl font-bold mb-2">Your wishlist is empty</h3>
-              <p className="text-gray-300 mb-6">Start adding items you love to your wishlist</p>
+              <p className="text-gray-500 mb-6">Start adding items you love to your wishlist</p>
               <Button 
                 onClick={() => navigate('/')}
                 className="bg-black text-white hover:bg-gray-800 font-semibold"

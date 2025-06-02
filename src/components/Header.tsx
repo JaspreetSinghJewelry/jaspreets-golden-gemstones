@@ -27,6 +27,8 @@ const Header = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about-us' },
+    { name: 'Contact Us', path: '/contact-us' },
   ];
 
   const collectionItems = [
@@ -49,7 +51,7 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center px-24 py-2 shadow-sm sticky top-0 bg-white z-50">
       {/* Logo */}
-      <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+      <div className="flex items-center cursor-pointer ml-8" onClick={() => navigate('/')}>
         <img 
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
