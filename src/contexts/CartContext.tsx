@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -99,15 +98,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Please Sign In",
-        description: "You need to sign in to add items to your cart",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (!validateProduct(product)) {
       toast({
         title: "Invalid Product",
@@ -115,6 +105,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive"
       });
       return;
+    }
+
+    if (!isAuthenticated) {
+      toast({
+        title: "Added to Cart",
+        description: `${product.name} added! Sign in to complete your purchase.`,
+      });
     }
 
     console.log('CartContext - Adding to cart:', product);
@@ -132,10 +129,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return prevItems;
         }
 
-        toast({
-          title: "Updated Cart",
-          description: `Increased quantity of ${product.name}`,
-        });
+        if (isAuthenticated) {
+          toast({
+            title: "Updated Cart",
+            description: `Increased quantity of ${product.name}`,
+          });
+        }
         const updatedItems = prevItems.map(item =>
           item.id === product.id
             ? { ...item, quantity: Math.min(item.quantity + 1, 99) }
@@ -154,10 +153,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return prevItems;
         }
 
-        toast({
-          title: "Added to Cart",
-          description: `${product.name} has been added to your cart`,
-        });
+        if (isAuthenticated) {
+          toast({
+            title: "Added to Cart",
+            description: `${product.name} has been added to your cart`,
+          });
+        }
         const newItems = [...prevItems, { ...product, quantity: 1 }];
         console.log('CartContext - New cart items:', newItems);
         return newItems;
