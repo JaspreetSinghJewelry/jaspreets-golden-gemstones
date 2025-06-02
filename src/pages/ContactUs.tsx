@@ -48,7 +48,7 @@ const ContactUs = () => {
                       rel="noopener noreferrer"
                       className="text-gray-600 hover:text-black transition-colors block mb-1"
                     >
-                       +91-9289061999 (WhatsApp)
+                       Chat with Us- +91-9289061999 
                     </a>
                     <p className="text-gray-600">
                       LANDLINE: +91-40452999
