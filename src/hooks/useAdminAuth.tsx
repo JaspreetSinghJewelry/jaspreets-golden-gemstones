@@ -21,30 +21,9 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
     const adminToken = localStorage.getItem('admin_session');
     if (adminToken) {
       setIsAdminAuthenticated(true);
-      // Set the admin context for database operations
-      setAdminContext('admin');
     }
     setLoading(false);
   }, []);
-
-  const setAdminContext = async (userId: string) => {
-    try {
-      // Set admin context for RLS policies - this might not be needed for image uploads
-      const { error } = await supabase.rpc('set_config', {
-        setting_name: 'app.admin_user_id',
-        setting_value: userId,
-        is_local: true
-      });
-      
-      if (error) {
-        console.error('Failed to set admin context:', error);
-      } else {
-        console.log('Admin context set successfully');
-      }
-    } catch (error) {
-      console.error('Failed to set admin context:', error);
-    }
-  };
 
   const adminLogin = async (userId: string, password: string): Promise<boolean> => {
     try {
@@ -53,9 +32,6 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
       // For demo purposes, using simple comparison
       // In production, you'd hash the password and compare with database
       if (userId === 'admin' && password === 'admin123') {
-        // Set admin session in database context
-        await setAdminContext(userId);
-        
         localStorage.setItem('admin_session', 'authenticated');
         setIsAdminAuthenticated(true);
         
