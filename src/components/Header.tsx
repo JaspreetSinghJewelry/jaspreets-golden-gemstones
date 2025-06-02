@@ -1,7 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, ShoppingBag, User, Heart } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +27,9 @@ const Header = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Collections', path: '/collections' },
+  ];
+
+  const collectionItems = [
     { name: 'Rings', path: '/rings' },
     { name: 'Necklaces', path: '/necklaces' },
     { name: 'Earrings', path: '/earrings' },
@@ -39,7 +47,7 @@ const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center px-20 py-3 shadow-sm sticky top-0 bg-white z-49">
+    <header className="flex justify-between items-center px-24 py-3 shadow-sm sticky top-0 bg-white z-49">
       {/* Logo */}
       <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
         <img 
@@ -60,6 +68,27 @@ const Header = () => {
             {item.name}
           </button>
         ))}
+        
+        {/* Collections Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-black hover:text-gray-600 transition-colors flex items-center">
+              Collections
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white border shadow-lg">
+            {collectionItems.map((item) => (
+              <DropdownMenuItem
+                key={item.name}
+                onClick={() => navigate(item.path)}
+                className="cursor-pointer hover:bg-gray-100"
+              >
+                {item.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
 
       {/* Actions */}
@@ -150,6 +179,21 @@ const Header = () => {
                 {item.name}
               </button>
             ))}
+            <div className="border-b border-gray-200 pb-2">
+              <span className="text-black font-medium py-2 block">Collections</span>
+              {collectionItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    navigate(item.path);
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-gray-600 hover:text-gray-800 transition-colors text-left py-1 pl-4 block"
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
             <Button
               className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm mt-4"
               onClick={() => {
