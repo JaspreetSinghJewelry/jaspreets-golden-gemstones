@@ -48,7 +48,7 @@ const ContactUs = () => {
                       rel="noopener noreferrer"
                       className="text-gray-600 hover:text-black transition-colors block mb-1"
                     >
-                       Chat with us- +91-9289061999 
+                       Chat with us: +91-9289061999 
                     </a>
                     <p className="text-gray-600">
                       Landline: +91-40452999
