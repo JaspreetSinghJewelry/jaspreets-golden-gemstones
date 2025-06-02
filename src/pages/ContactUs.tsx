@@ -26,12 +26,12 @@ const ContactUs = () => {
               {/* Contact Information */}
               <div className="space-y-8">
                 <div className="flex items-start space-x-4">
-                  <Mail className="h-6 w-6 text-rose-600 mt-1" />
+                  <Mail className="h-6 w-6 text-black mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
                     <a 
                       href="mailto:i@jaspreetsinghjewelry.com" 
-                      className="text-gray-600 hover:text-rose-600 transition-colors"
+                      className="text-gray-600 hover:text-black transition-colors"
                     >
                       📧 i@jaspreetsinghjewelry.com
                     </a>
