@@ -116,9 +116,7 @@ const Footer = () => {
                   <MapPin className="h-5 w-5 text-gray-600 mt-1" />
                   <div>
                     <span className="text-gray-600 block mb-2">
-                      103, 
-                      
-                      Poonam chambers 2645 bank street,
+                      103,                  Poonam chambers 2645 bank street,
                       
                       karol bagh,New delhi, 
 
