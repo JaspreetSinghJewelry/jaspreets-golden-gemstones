@@ -117,8 +117,12 @@ const Footer = () => {
                   <div>
                     <span className="text-gray-600 block mb-2">
                       103, 
+                      
                       Poonam chambers 2645 bank street,
+                      
                       karol bagh,New delhi, 
+
+                      
                       Pin Code - 110005
                     </span>
                     <Button
