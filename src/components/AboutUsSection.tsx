@@ -21,6 +21,12 @@ const AboutUsSection = () => {
           <p>
             With a commitment to excellence, we offer worldwide shipping, ensuring that our artistry reaches discerning customers across the globe. At Jaspreet Singh Jewelry, we don't just create jewelry; we craft stories that last a lifetime.
           </p>
+
+          <p>
+            103, Poonam chambers 2645 Bank Street,
+            Karol Bagh, New Delhi
+            Pincode- 110005
+          </p>
         </div>
       </div>
     </section>
