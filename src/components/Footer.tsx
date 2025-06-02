@@ -96,7 +96,7 @@ const Footer = () => {
               <h4 className="text-lg font-bold mb-6 text-black">Policies</h4>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/policies/defective-product" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/policies//defective-product-policy" className="text-gray-600 hover:text-black transition-colors">
                     Refund & Replacement Policy
                   </Link>
                 </li>
