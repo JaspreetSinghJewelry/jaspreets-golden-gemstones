@@ -8,7 +8,7 @@ const InstagramGallery = () => {
   const jewelryImages = [
     {
       id: 1,
-      src: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
+      src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//Screenshot%202025-06-02%20at%2011.42.03%20AM.png',
       alt: 'Diamond Ring'
     },
     {
