@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -33,6 +32,7 @@ import JewelryCareGuide from "./pages/JewelryCareGuide";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -56,7 +56,8 @@ const App = () => (
                 <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
                 <Route path="/collections" element={<Collections />} />
                 <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/signin" element={<SignIn />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/signin" element={<Auth />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/order-success" element={<OrderSuccess />} />

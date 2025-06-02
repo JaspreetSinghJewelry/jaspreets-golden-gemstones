@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   DropdownMenu,
@@ -10,13 +11,14 @@ import { Button } from '@/components/ui/button';
 import { User, Package, Truck, MessageCircle, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import TrackOrderModal from './TrackOrderModal';
+import { toast } from '@/hooks/use-toast';
 
 interface AccountMenuProps {
   children: React.ReactNode;
 }
 
 const AccountMenu = ({ children }: AccountMenuProps) => {
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const [isTrackOrderOpen, setIsTrackOrderOpen] = useState(false);
 
   const handleOrderHistory = () => {
@@ -36,8 +38,20 @@ const AccountMenu = ({ children }: AccountMenuProps) => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed Out",
+        description: "You have been successfully signed out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -48,7 +62,7 @@ const AccountMenu = ({ children }: AccountMenuProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end">
           <div className="px-2 py-1.5 text-sm font-medium text-gray-900">
-            Hello, {user?.name || 'User'}!
+            Hello, {user?.user_metadata?.full_name || user?.email || 'User'}!
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleOrderHistory} className="cursor-pointer">

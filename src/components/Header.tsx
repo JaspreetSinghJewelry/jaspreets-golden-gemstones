@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,9 +37,10 @@ const Header = () => {
     { name: 'About Us', path: '/about-us' },
     { name: 'Contact Us', path: '/contact-us' },
   ];
+  
   const handleUserAction = () => {
     if (!isAuthenticated) {
-      navigate('/signin');
+      navigate('/auth');
     }
   };
 

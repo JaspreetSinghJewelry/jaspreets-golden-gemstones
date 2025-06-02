@@ -1,106 +1,85 @@
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-
-interface User {
-  id: string;
-  phone: string;
-  name: string;
-  sessionExpiry: number;
-}
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: (phone: string, name: string) => void;
-  logout: () => void;
-  isSessionValid: () => boolean;
+  signUp: (email: string, password: string, fullName: string, phone: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Session timeout: 24 hours
-const SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-
-  const isSessionValid = () => {
-    if (!user) return false;
-    return Date.now() < user.sessionExpiry;
-  };
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on app load
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        // Check if session is still valid
-        if (parsedUser.sessionExpiry && Date.now() < parsedUser.sessionExpiry) {
-          setUser(parsedUser);
-        } else {
-          // Session expired, clear it
-          localStorage.removeItem('user');
-          localStorage.removeItem('cartItems');
-        }
-      } catch (error) {
-        console.error('Error parsing user session:', error);
-        localStorage.removeItem('user');
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
       }
-    }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    // Set up session check interval
-    const sessionCheckInterval = setInterval(() => {
-      if (user && !isSessionValid()) {
-        logout();
+  const signUp = async (email: string, password: string, fullName: string, phone: string) => {
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          full_name: fullName,
+          phone: phone
+        }
       }
-    }, 60000); // Check every minute
-
-    return () => clearInterval(sessionCheckInterval);
-  }, [user]);
-
-  const login = (phone: string, name: string) => {
-    // Input validation and sanitization
-    const sanitizedPhone = phone.replace(/\D/g, '').slice(0, 10);
-    const sanitizedName = name.trim().replace(/[<>]/g, ''); // Basic XSS protection
-    
-    if (sanitizedPhone.length !== 10 || !sanitizedName) {
-      throw new Error('Invalid input data');
-    }
-
-    const sessionExpiry = Date.now() + SESSION_TIMEOUT;
-    const newUser = { 
-      id: `user_${Date.now()}`, 
-      phone: sanitizedPhone, 
-      name: sanitizedName,
-      sessionExpiry
-    };
-    
-    setUser(newUser);
-    try {
-      localStorage.setItem('user', JSON.stringify(newUser));
-    } catch (error) {
-      console.error('Failed to save user session:', error);
-    }
+    });
+    return { error };
   };
 
-  const logout = () => {
-    setUser(null);
-    // Clear all user data securely
-    localStorage.removeItem('user');
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    return { error };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    // Clear cart data on logout
     localStorage.removeItem('cartItems');
-    // Clear any other sensitive data
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      isAuthenticated: !!user && isSessionValid(),
-      login,
-      logout,
-      isSessionValid
+      session,
+      isAuthenticated: !!user,
+      signUp,
+      signIn,
+      signOut,
+      loading
     }}>
       {children}
     </AuthContext.Provider>
