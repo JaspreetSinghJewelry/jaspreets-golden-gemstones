@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Trash2, Download, Eye } from 'lucide-react';
+import { Upload, Trash2, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -29,6 +29,7 @@ const ImageManager = () => {
 
   const fetchImages = async () => {
     try {
+      console.log('Fetching images...');
       const { data, error } = await supabase
         .from('images')
         .select('*')
@@ -38,10 +39,11 @@ const ImageManager = () => {
         console.error('Error fetching images:', error);
         toast({
           title: "Error",
-          description: "Failed to fetch images",
+          description: `Failed to fetch images: ${error.message}`,
           variant: "destructive"
         });
       } else {
+        console.log('Images fetched successfully:', data);
         setImages(data || []);
       }
     } catch (error) {
@@ -55,35 +57,69 @@ const ImageManager = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log('Starting file upload for:', file.name);
     setUploading(true);
+    
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = fileName;
+      // Generate a unique filename
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const timestamp = Date.now();
+      const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      console.log('Generated filename:', fileName);
 
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
+      // First, check if bucket exists
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      console.log('Available buckets:', buckets);
+      
+      if (bucketsError) {
+        console.error('Error listing buckets:', bucketsError);
+        throw new Error(`Bucket error: ${bucketsError.message}`);
       }
 
+      const imagesBucket = buckets?.find(bucket => bucket.id === 'images');
+      if (!imagesBucket) {
+        throw new Error('Images bucket not found. Please contact administrator.');
+      }
+
+      // Upload to storage
+      console.log('Uploading to storage...');
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      console.log('Upload successful:', uploadData);
+
       // Record in database
-      const { error: dbError } = await supabase
+      console.log('Recording in database...');
+      const { data: dbData, error: dbError } = await supabase
         .from('images')
         .insert({
           filename: fileName,
           original_name: file.name,
-          file_path: filePath,
+          file_path: fileName,
           file_size: file.size,
           mime_type: file.type
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) {
-        throw dbError;
+        console.error('Database insert error:', dbError);
+        // If database insert fails, try to clean up the uploaded file
+        await supabase.storage.from('images').remove([fileName]);
+        throw new Error(`Database error: ${dbError.message}`);
       }
+
+      console.log('Database record created:', dbData);
 
       toast({
         title: "Success",
@@ -94,11 +130,11 @@ const ImageManager = () => {
       
       // Reset file input
       event.target.value = '';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
       toast({
         title: "Upload Failed",
-        description: "Failed to upload image",
+        description: error.message || "Failed to upload image",
         variant: "destructive"
       });
     } finally {
@@ -112,6 +148,8 @@ const ImageManager = () => {
     }
 
     try {
+      console.log('Deleting image:', image.filename);
+      
       // Delete from storage
       const { error: storageError } = await supabase.storage
         .from('images')
@@ -137,11 +175,11 @@ const ImageManager = () => {
       });
 
       fetchImages();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete error:', error);
       toast({
         title: "Delete Failed",
-        description: "Failed to delete image",
+        description: error.message || "Failed to delete image",
         variant: "destructive"
       });
     }
@@ -216,6 +254,10 @@ const ImageManager = () => {
                       src={getImageUrl(image.file_path)}
                       alt={image.original_name || 'Uploaded image'}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Image load error for:', image.file_path);
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
                     />
                   </div>
                   
