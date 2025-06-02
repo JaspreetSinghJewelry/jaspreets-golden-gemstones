@@ -106,7 +106,7 @@ const Necklaces = () => {
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
-                    <div className="bg-gradient-to-br from-yellow-100 to-gray-50 h-64 flex items-center justify-center overflow-hidden">
+                    <div className="bg-gradient-to-br to-gray-50 h-64 flex items-center justify-center overflow-hidden">
                       <img 
                         src={product.image} 
                         alt={product.name}
