@@ -40,6 +40,7 @@ export type Database = {
           original_name: string | null
           updated_at: string
           uploaded_at: string
+          user_id: string | null
         }
         Insert: {
           file_path: string
@@ -50,6 +51,7 @@ export type Database = {
           original_name?: string | null
           updated_at?: string
           uploaded_at?: string
+          user_id?: string | null
         }
         Update: {
           file_path?: string
@@ -60,6 +62,7 @@ export type Database = {
           original_name?: string | null
           updated_at?: string
           uploaded_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

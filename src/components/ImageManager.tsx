@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,6 +61,40 @@ const ImageManager = () => {
     }
   };
 
+  const ensureStorageBucket = async () => {
+    try {
+      console.log('Checking storage bucket...');
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      
+      if (bucketsError) {
+        console.error('Error listing buckets:', bucketsError);
+        return false;
+      }
+
+      console.log('Available buckets:', buckets);
+      const imagesBucket = buckets.find(bucket => bucket.name === 'images');
+      
+      if (!imagesBucket) {
+        console.log('Images bucket not found, creating it...');
+        const { data: newBucket, error: createError } = await supabase.storage.createBucket('images', {
+          public: true,
+          allowedMimeTypes: ['image/*'],
+          fileSizeLimit: 10485760 // 10MB
+        });
+        
+        if (createError) {
+          console.error('Error creating bucket:', createError);
+          throw new Error(`Failed to create storage bucket: ${createError.message}`);
+        }
+        console.log('Bucket created successfully:', newBucket);
+      }
+      return true;
+    } catch (error) {
+      console.error('Error ensuring storage bucket:', error);
+      return false;
+    }
+  };
+
   const handleFileUpload = async () => {
     if (!selectedFile) {
       toast({
@@ -93,29 +126,10 @@ const ImageManager = () => {
       
       console.log('Generated filename:', fileName);
 
-      // First, check if the storage bucket exists and create if needed
-      console.log('Checking storage bucket...');
-      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-      
-      if (bucketsError) {
-        console.error('Error listing buckets:', bucketsError);
-      } else {
-        console.log('Available buckets:', buckets);
-        const imagesBucket = buckets.find(bucket => bucket.name === 'images');
-        if (!imagesBucket) {
-          console.log('Images bucket not found, creating it...');
-          const { data: newBucket, error: createError } = await supabase.storage.createBucket('images', {
-            public: true,
-            allowedMimeTypes: ['image/*'],
-            fileSizeLimit: 10485760 // 10MB
-          });
-          
-          if (createError) {
-            console.error('Error creating bucket:', createError);
-            throw new Error(`Failed to create storage bucket: ${createError.message}`);
-          }
-          console.log('Bucket created successfully:', newBucket);
-        }
+      // Ensure storage bucket exists
+      const bucketReady = await ensureStorageBucket();
+      if (!bucketReady) {
+        throw new Error('Failed to prepare storage bucket');
       }
 
       // Upload to storage with detailed error handling
@@ -159,10 +173,11 @@ const ImageManager = () => {
 
       toast({
         title: "Success",
-        description: "Image uploaded successfully"
+        description: `Image "${selectedFile.name}" uploaded successfully!`
       });
 
-      fetchImages();
+      // Refresh the images list
+      await fetchImages();
       setSelectedFile(null);
       
       // Reset file input
