@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Trash2, Eye, X } from 'lucide-react';
+import { Upload, Trash2, Eye, X, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -33,6 +33,7 @@ const ImageManager = () => {
   const [displayLocation, setDisplayLocation] = useState('rings');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     fetchImages();
@@ -267,6 +268,22 @@ const ImageManager = () => {
     }
   };
 
+  const getCategoryImages = (category: string) => {
+    if (category === 'all') return images;
+    return images.filter(image => image.display_location === category);
+  };
+
+  const categories = [
+    { value: 'all', label: 'All Collections' },
+    { value: 'rings', label: 'Rings' },
+    { value: 'necklaces', label: 'Necklaces' },
+    { value: 'earrings', label: 'Earrings' },
+    { value: 'bracelets', label: 'Bracelets' },
+    { value: 'lab-grown-diamonds', label: 'Lab Grown Diamonds' }
+  ];
+
+  const filteredImages = getCategoryImages(selectedCategory);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -277,11 +294,12 @@ const ImageManager = () => {
 
   return (
     <div className="space-y-6">
+      {/* Upload Form */}
       <Card className="upload-form">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Upload className="h-5 w-5" />
-            Upload New Image
+            Upload New Image to Collection
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -372,18 +390,42 @@ const ImageManager = () => {
         </CardContent>
       </Card>
 
+      {/* Images Display with Dropdown Filter */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Uploaded Images ({images.length})</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl">Collection Images</CardTitle>
+            <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="categoryFilter">Filter by Collection:</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-50">
+                    {categories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="text-sm text-gray-600">
+                {filteredImages.length} images
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          {images.length === 0 ? (
+          {filteredImages.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No images uploaded yet
+              No images uploaded in {selectedCategory === 'all' ? 'any collection' : getLocationLabel(selectedCategory)} yet
             </div>
           ) : (
             <div className="image-grid">
-              {images.map((image) => (
+              {filteredImages.map((image) => (
                 <div key={image.id} className="border rounded-lg p-4 space-y-3 bg-white">
                   <div className="aspect-square overflow-hidden rounded-md bg-gray-100">
                     <img

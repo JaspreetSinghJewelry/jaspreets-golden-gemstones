@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Upload, Trash2, Edit, Save, X, Plus, Eye } from 'lucide-react';
+import { Upload, Trash2, Edit, Save, X, Eye, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -41,6 +40,7 @@ const ProductManager = () => {
   const [uploading, setUploading] = useState(false);
   const [bulkLocation, setBulkLocation] = useState('rings');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     fetchProducts();
@@ -342,21 +342,22 @@ const ProductManager = () => {
     }
   };
 
-  const toggleProductSelection = (productId: string) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
+  const getCategoryProducts = (category: string) => {
+    if (category === 'all') return products;
+    return products.filter(product => product.display_location === category);
   };
 
-  const selectAllProducts = () => {
-    if (selectedProducts.length === products.length) {
-      setSelectedProducts([]);
-    } else {
-      setSelectedProducts(products.map(p => p.id));
-    }
-  };
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'rings', label: 'Rings' },
+    { value: 'necklaces', label: 'Necklaces' },
+    { value: 'earrings', label: 'Earrings' },
+    { value: 'bracelets', label: 'Bracelets' },
+    { value: 'lab-grown-diamonds', label: 'Lab Grown Diamonds' },
+    { value: 'best-sellers', label: 'Best Sellers' }
+  ];
+
+  const filteredProducts = getCategoryProducts(selectedCategory);
 
   if (loading) {
     return (
@@ -373,7 +374,7 @@ const ProductManager = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
-            Bulk Upload Products
+            Upload Products to Collection
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -397,7 +398,7 @@ const ProductManager = () => {
             </div>
 
             <div>
-              <Label htmlFor="bulkLocation">Default Category</Label>
+              <Label htmlFor="bulkLocation">Collection Category</Label>
               <Select value={bulkLocation} onValueChange={setBulkLocation}>
                 <SelectTrigger className="mt-2">
                   <SelectValue />
@@ -418,230 +419,175 @@ const ProductManager = () => {
               disabled={uploading || selectedFiles.length === 0}
               className="w-full"
             >
-              {uploading ? 'Uploading...' : `Upload ${selectedFiles.length} Images`}
+              {uploading ? 'Uploading...' : `Upload ${selectedFiles.length} Images to ${getLocationLabel(bulkLocation)}`}
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Product Management Table */}
+      {/* Collection Management */}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Product Management ({products.length} items)</CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={selectAllProducts}
-                size="sm"
-              >
-                {selectedProducts.length === products.length ? 'Deselect All' : 'Select All'}
-              </Button>
-              {selectedProducts.length > 0 && (
-                <Button
-                  variant="destructive"
-                  onClick={bulkDelete}
-                  size="sm"
-                >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete Selected ({selectedProducts.length})
-                </Button>
-              )}
+            <CardTitle>Collection Management</CardTitle>
+            <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="categoryFilter">Filter by Collection:</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border shadow-lg z-50">
+                    {categories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="text-sm text-gray-600">
+                {filteredProducts.length} items
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No products found
+              No products found in {selectedCategory === 'all' ? 'any category' : getLocationLabel(selectedCategory)}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.length === products.length}
-                        onChange={selectAllProducts}
-                      />
-                    </TableHead>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Size</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <input
-                          type="checkbox"
-                          checked={selectedProducts.includes(product.id)}
-                          onChange={() => toggleProductSelection(product.id)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <img
-                          src={getImageUrl(product.file_path)}
-                          alt={product.description || 'Product'}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {editingProduct?.id === product.id ? (
-                          <Textarea
-                            value={editingProduct.description}
-                            onChange={(e) => setEditingProduct({
-                              ...editingProduct,
-                              description: e.target.value
-                            })}
-                            className="min-h-[60px]"
-                          />
-                        ) : (
-                          <div className="max-w-xs">
-                            <div className="font-medium truncate">
-                              {product.original_name}
-                            </div>
-                            <div className="text-sm text-gray-500 line-clamp-2">
-                              {product.description || 'No description'}
-                            </div>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingProduct?.id === product.id ? (
-                          <Input
-                            type="number"
-                            value={editingProduct.price}
-                            onChange={(e) => setEditingProduct({
-                              ...editingProduct,
-                              price: e.target.value
-                            })}
-                            className="w-24"
-                          />
-                        ) : (
-                          formatPrice(product.price)
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingProduct?.id === product.id ? (
-                          <Select
-                            value={editingProduct.display_location}
-                            onValueChange={(value) => setEditingProduct({
-                              ...editingProduct,
-                              display_location: value
-                            })}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="rings">Rings</SelectItem>
-                              <SelectItem value="necklaces">Necklaces</SelectItem>
-                              <SelectItem value="earrings">Earrings</SelectItem>
-                              <SelectItem value="bracelets">Bracelets</SelectItem>
-                              <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
-                              <SelectItem value="best-sellers">Best Sellers</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          getLocationLabel(product.display_location)
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {editingProduct?.id === product.id ? (
-                          <Select
-                            value={editingProduct.is_active ? 'active' : 'inactive'}
-                            onValueChange={(value) => setEditingProduct({
-                              ...editingProduct,
-                              is_active: value === 'active'
-                            })}
-                          >
-                            <SelectTrigger className="w-24">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="inactive">Inactive</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            product.is_active 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {product.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs text-gray-500">
-                        {formatFileSize(product.file_size)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          {editingProduct?.id === product.id ? (
-                            <>
-                              <Button
-                                size="sm"
-                                onClick={saveEdit}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Save className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setEditingProduct(null)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => window.open(getImageUrl(product.file_path), '_blank')}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => startEditing(product)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => deleteProduct(product)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredProducts.map((product) => (
+                <Card key={product.id} className="border rounded-lg overflow-hidden">
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={getImageUrl(product.file_path)}
+                      alt={product.description || 'Product'}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                  </div>
+                  <CardContent className="p-3 space-y-2">
+                    <div className="font-medium text-sm truncate">
+                      {product.original_name}
+                    </div>
+                    <div className="text-xs text-gray-500 line-clamp-2">
+                      {product.description || 'No description'}
+                    </div>
+                    <div className="text-sm font-semibold text-green-600">
+                      {formatPrice(product.price)}
+                    </div>
+                    <div className="text-xs text-blue-600">
+                      {getLocationLabel(product.display_location)}
+                    </div>
+                    <div className="flex gap-1 mt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(getImageUrl(product.file_path), '_blank')}
+                        className="flex-1 h-8 text-xs"
+                      >
+                        <Eye className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startEditing(product)}
+                        className="flex-1 h-8 text-xs"
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => deleteProduct(product)}
+                        className="flex-1 h-8 text-xs"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Modal */}
+      {editingProduct && (
+        <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <CardContent className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Edit Product</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={editingProduct.description}
+                  onChange={(e) => setEditingProduct({
+                    ...editingProduct,
+                    description: e.target.value
+                  })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Price (₹)</Label>
+                <Input
+                  type="number"
+                  value={editingProduct.price}
+                  onChange={(e) => setEditingProduct({
+                    ...editingProduct,
+                    price: e.target.value
+                  })}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Collection</Label>
+                <Select
+                  value={editingProduct.display_location}
+                  onValueChange={(value) => setEditingProduct({
+                    ...editingProduct,
+                    display_location: value
+                  })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rings">Rings</SelectItem>
+                    <SelectItem value="necklaces">Necklaces</SelectItem>
+                    <SelectItem value="earrings">Earrings</SelectItem>
+                    <SelectItem value="bracelets">Bracelets</SelectItem>
+                    <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+                    <SelectItem value="best-sellers">Best Sellers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex gap-2 mt-6">
+                <Button onClick={saveEdit} className="flex-1">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setEditingProduct(null)}
+                  className="flex-1"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
