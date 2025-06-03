@@ -1,0 +1,647 @@
+
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Upload, Trash2, Edit, Save, X, Plus, Eye } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+
+interface ProductImage {
+  id: string;
+  filename: string;
+  original_name: string | null;
+  file_path: string;
+  file_size: number | null;
+  mime_type: string | null;
+  uploaded_at: string;
+  display_location: string | null;
+  description: string | null;
+  price: number | null;
+  is_active: boolean | null;
+  sort_order: number | null;
+}
+
+interface EditingProduct {
+  id: string;
+  description: string;
+  price: string;
+  display_location: string;
+  is_active: boolean;
+}
+
+const ProductManager = () => {
+  const [products, setProducts] = useState<ProductImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [bulkLocation, setBulkLocation] = useState('rings');
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      console.log('Fetching products...');
+      const { data, error } = await supabase
+        .from('images')
+        .select('*')
+        .order('uploaded_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching products:', error);
+        toast({
+          title: "Error",
+          description: `Failed to fetch products: ${error.message}`,
+          variant: "destructive"
+        });
+      } else {
+        console.log('Products fetched successfully:', data);
+        setProducts(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setSelectedFiles(files);
+    console.log('Files selected:', files.length);
+  };
+
+  const handleBulkUpload = async () => {
+    if (selectedFiles.length === 0) {
+      toast({
+        title: "No Files Selected",
+        description: "Please select files to upload",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUploading(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const file of selectedFiles) {
+      try {
+        // Validate file
+        if (!file.type.startsWith('image/')) {
+          errorCount++;
+          continue;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          errorCount++;
+          continue;
+        }
+
+        // Generate filename
+        const fileExt = file.name.split('.').pop()?.toLowerCase();
+        const timestamp = Date.now();
+        const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+        // Upload to storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('images')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          errorCount++;
+          continue;
+        }
+
+        // Save to database
+        const { error: dbError } = await supabase
+          .from('images')
+          .insert({
+            filename: fileName,
+            original_name: file.name,
+            file_path: fileName,
+            file_size: file.size,
+            mime_type: file.type,
+            display_location: bulkLocation,
+            description: file.name.split('.')[0], // Use filename as default description
+            price: 0,
+            is_active: true,
+            sort_order: 0
+          });
+
+        if (dbError) {
+          // Clean up uploaded file
+          await supabase.storage.from('images').remove([fileName]);
+          errorCount++;
+          continue;
+        }
+
+        successCount++;
+      } catch (error) {
+        errorCount++;
+      }
+    }
+
+    setUploading(false);
+    setSelectedFiles([]);
+
+    if (successCount > 0) {
+      toast({
+        title: "Upload Complete",
+        description: `${successCount} images uploaded successfully${errorCount > 0 ? `, ${errorCount} failed` : ''}`
+      });
+      fetchProducts();
+    } else {
+      toast({
+        title: "Upload Failed",
+        description: "No images were uploaded successfully",
+        variant: "destructive"
+      });
+    }
+
+    // Reset file input
+    const fileInput = document.getElementById('bulkFiles') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const startEditing = (product: ProductImage) => {
+    setEditingProduct({
+      id: product.id,
+      description: product.description || '',
+      price: product.price?.toString() || '0',
+      display_location: product.display_location || 'rings',
+      is_active: product.is_active || true
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editingProduct) return;
+
+    try {
+      const { error } = await supabase
+        .from('images')
+        .update({
+          description: editingProduct.description.trim(),
+          price: Number(editingProduct.price),
+          display_location: editingProduct.display_location,
+          is_active: editingProduct.is_active
+        })
+        .eq('id', editingProduct.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Product updated successfully"
+      });
+
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (error: any) {
+      console.error('Update error:', error);
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update product",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteProduct = async (product: ProductImage) => {
+    if (!confirm(`Are you sure you want to delete "${product.original_name}"?`)) {
+      return;
+    }
+
+    try {
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('images')
+        .delete()
+        .eq('id', product.id);
+
+      if (dbError) throw dbError;
+
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from('images')
+        .remove([product.file_path]);
+
+      if (storageError) {
+        console.error('Storage delete error (non-critical):', storageError);
+      }
+
+      toast({
+        title: "Success",
+        description: "Product deleted successfully"
+      });
+
+      fetchProducts();
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete product",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selectedProducts.length === 0) {
+      toast({
+        title: "No Products Selected",
+        description: "Please select products to delete",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedProducts.length} selected products?`)) {
+      return;
+    }
+
+    try {
+      // Get file paths for storage cleanup
+      const productsToDelete = products.filter(p => selectedProducts.includes(p.id));
+      const filePaths = productsToDelete.map(p => p.file_path);
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('images')
+        .delete()
+        .in('id', selectedProducts);
+
+      if (dbError) throw dbError;
+
+      // Delete from storage
+      if (filePaths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('images')
+          .remove(filePaths);
+
+        if (storageError) {
+          console.error('Storage delete error (non-critical):', storageError);
+        }
+      }
+
+      toast({
+        title: "Success",
+        description: `${selectedProducts.length} products deleted successfully`
+      });
+
+      setSelectedProducts([]);
+      fetchProducts();
+    } catch (error: any) {
+      console.error('Bulk delete error:', error);
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete products",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getImageUrl = (filePath: string) => {
+    const { data } = supabase.storage
+      .from('images')
+      .getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return 'Unknown';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const formatPrice = (price: number | null) => {
+    if (!price) return '₹0';
+    return `₹${price.toLocaleString()}`;
+  };
+
+  const getLocationLabel = (location: string | null) => {
+    switch (location) {
+      case 'rings': return 'Rings';
+      case 'necklaces': return 'Necklaces';
+      case 'earrings': return 'Earrings';
+      case 'bracelets': return 'Bracelets';
+      case 'lab-grown-diamonds': return 'Lab Grown Diamonds';
+      default: return location || 'Unknown';
+    }
+  };
+
+  const toggleProductSelection = (productId: string) => {
+    setSelectedProducts(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
+  const selectAllProducts = () => {
+    if (selectedProducts.length === products.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(products.map(p => p.id));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg">Loading products...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Bulk Upload Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            Bulk Upload Products
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="bulkFiles">Select Multiple Images</Label>
+              <Input
+                id="bulkFiles"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileSelect}
+                disabled={uploading}
+                className="mt-2"
+              />
+              {selectedFiles.length > 0 && (
+                <div className="mt-2 text-sm text-gray-600">
+                  {selectedFiles.length} files selected
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="bulkLocation">Default Category</Label>
+              <Select value={bulkLocation} onValueChange={setBulkLocation}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="rings">Rings</SelectItem>
+                  <SelectItem value="necklaces">Necklaces</SelectItem>
+                  <SelectItem value="earrings">Earrings</SelectItem>
+                  <SelectItem value="bracelets">Bracelets</SelectItem>
+                  <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button 
+              onClick={handleBulkUpload}
+              disabled={uploading || selectedFiles.length === 0}
+              className="w-full"
+            >
+              {uploading ? 'Uploading...' : `Upload ${selectedFiles.length} Images`}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Product Management Table */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Product Management ({products.length} items)</CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={selectAllProducts}
+                size="sm"
+              >
+                {selectedProducts.length === products.length ? 'Deselect All' : 'Select All'}
+              </Button>
+              {selectedProducts.length > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={bulkDelete}
+                  size="sm"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete Selected ({selectedProducts.length})
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {products.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No products found
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.length === products.length}
+                        onChange={selectAllProducts}
+                      />
+                    </TableHead>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Size</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(product.id)}
+                          onChange={() => toggleProductSelection(product.id)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <img
+                          src={getImageUrl(product.file_path)}
+                          alt={product.description || 'Product'}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {editingProduct?.id === product.id ? (
+                          <Textarea
+                            value={editingProduct.description}
+                            onChange={(e) => setEditingProduct({
+                              ...editingProduct,
+                              description: e.target.value
+                            })}
+                            className="min-h-[60px]"
+                          />
+                        ) : (
+                          <div className="max-w-xs">
+                            <div className="font-medium truncate">
+                              {product.original_name}
+                            </div>
+                            <div className="text-sm text-gray-500 line-clamp-2">
+                              {product.description || 'No description'}
+                            </div>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingProduct?.id === product.id ? (
+                          <Input
+                            type="number"
+                            value={editingProduct.price}
+                            onChange={(e) => setEditingProduct({
+                              ...editingProduct,
+                              price: e.target.value
+                            })}
+                            className="w-24"
+                          />
+                        ) : (
+                          formatPrice(product.price)
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingProduct?.id === product.id ? (
+                          <Select
+                            value={editingProduct.display_location}
+                            onValueChange={(value) => setEditingProduct({
+                              ...editingProduct,
+                              display_location: value
+                            })}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="rings">Rings</SelectItem>
+                              <SelectItem value="necklaces">Necklaces</SelectItem>
+                              <SelectItem value="earrings">Earrings</SelectItem>
+                              <SelectItem value="bracelets">Bracelets</SelectItem>
+                              <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          getLocationLabel(product.display_location)
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editingProduct?.id === product.id ? (
+                          <Select
+                            value={editingProduct.is_active ? 'active' : 'inactive'}
+                            onValueChange={(value) => setEditingProduct({
+                              ...editingProduct,
+                              is_active: value === 'active'
+                            })}
+                          >
+                            <SelectTrigger className="w-24">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            product.is_active 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {product.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-gray-500">
+                        {formatFileSize(product.file_size)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          {editingProduct?.id === product.id ? (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={saveEdit}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Save className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingProduct(null)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(getImageUrl(product.file_path), '_blank')}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => startEditing(product)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => deleteProduct(product)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default ProductManager;

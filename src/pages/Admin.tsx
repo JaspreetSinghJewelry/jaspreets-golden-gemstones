@@ -1,14 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings } from 'lucide-react';
+import { LogOut, Images, Settings, Package } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
 import ImageManager from '@/components/ImageManager';
+import ProductManager from '@/components/ProductManager';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
+  const [activeTab, setActiveTab] = useState<'images' | 'products'>('products');
 
   if (loading) {
     return (
@@ -46,19 +48,65 @@ const Admin = () => {
       </header>
 
       <main className="admin-content">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Images className="h-6 w-6" />
-              Image Management
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="p-6">
-              <ImageManager />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Tab Navigation */}
+          <div className="mb-6">
+            <div className="border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('products')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'products'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Package className="h-4 w-4 inline mr-2" />
+                  Product Manager
+                </button>
+                <button
+                  onClick={() => setActiveTab('images')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'images'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Images className="h-4 w-4 inline mr-2" />
+                  Image Manager (Legacy)
+                </button>
+              </nav>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Tab Content */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                {activeTab === 'products' ? (
+                  <>
+                    <Package className="h-6 w-6" />
+                    Product Management
+                  </>
+                ) : (
+                  <>
+                    <Images className="h-6 w-6" />
+                    Image Management (Legacy)
+                  </>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="p-6">
+                {activeTab === 'products' ? (
+                  <ProductManager />
+                ) : (
+                  <ImageManager />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );
