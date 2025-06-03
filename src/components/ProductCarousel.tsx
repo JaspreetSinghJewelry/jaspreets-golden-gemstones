@@ -15,7 +15,7 @@ const ProductCarousel = () => {
     {
       id: 1,
       name: 'Diamond Solitaire Ring',
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=600&fit=crop',
+      image: '/lovable-uploads/6906fdcc-2913-4e7a-9f80-ea8a32a9d009.png',
       price: '₹45,999'
     },
     {
