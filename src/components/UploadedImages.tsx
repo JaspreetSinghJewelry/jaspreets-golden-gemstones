@@ -74,14 +74,9 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
     );
   }
 
+  // Don't render anything if there are no images
   if (images.length === 0) {
-    return (
-      <div className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-gray-500">No images uploaded for this category yet.</div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

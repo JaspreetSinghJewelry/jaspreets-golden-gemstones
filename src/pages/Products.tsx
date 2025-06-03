@@ -1,266 +1,137 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Star, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FancyText } from '@/components/ui/fancy-text';
 import { useWishlist } from '@/contexts/WishlistContext';
-import FilterSort from '@/components/FilterSort';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { supabase } from '@/integrations/supabase/client';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Products = () => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const searchParam = searchParams.get('search');
-    if (searchParam) {
-      setSearchTerm(searchParam);
-    }
-  }, [searchParams]);
+    const fetchAllProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('images')
+          .select('*')
+          .eq('is_active', true)
+          .not('price', 'is', null)
+          .order('uploaded_at', { ascending: false });
 
-  const allProducts = [
-    {
-      id: 1,
-      name: 'Diamond Solitaire Ring',
-      price: '₹45,999',
-      originalPrice: '₹52,999',
-      rating: 4.8,
-      reviews: 124,
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
-      category: 'rings'
-    },
-    {
-      id: 2,
-      name: 'Gold Chain Necklace',
-      price: '₹28,999',
-      originalPrice: '₹35,999',
-      rating: 4.9,
-      reviews: 89,
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
-      category: 'necklaces'
-    },
-    {
-      id: 3,
-      name: 'Pearl Drop Earrings',
-      price: '₹15,999',
-      originalPrice: '₹19,999',
-      rating: 4.7,
-      reviews: 156,
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=300&fit=crop',
-      category: 'earrings'
-    },
-    {
-      id: 4,
-      name: 'Tennis Bracelet',
-      price: '₹38,999',
-      originalPrice: '₹45,999',
-      rating: 4.6,
-      reviews: 78,
-      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=300&fit=crop',
-      category: 'bracelets'
-    },
-    {
-      id: 5,
-      name: 'Emerald Engagement Ring',
-      price: '₹65,999',
-      originalPrice: '₹75,999',
-      rating: 4.9,
-      reviews: 92,
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
-      category: 'rings'
-    },
-    {
-      id: 6,
-      name: 'Silver Pendant Necklace',
-      price: '₹12,999',
-      originalPrice: '₹16,999',
-      rating: 4.5,
-      reviews: 203,
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
-      category: 'necklaces'
-    },
-    {
-      id: 7,
-      name: 'Diamond Stud Earrings',
-      price: '₹22,999',
-      originalPrice: '₹28,999',
-      rating: 4.8,
-      reviews: 167,
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=300&fit=crop',
-      category: 'earrings'
-    },
-    {
-      id: 8,
-      name: 'Gold Charm Bracelet',
-      price: '₹31,999',
-      originalPrice: '₹38,999',
-      rating: 4.7,
-      reviews: 134,
-      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=300&fit=crop',
-      category: 'bracelets'
-    },
-    {
-      id: 9,
-      name: 'Ruby Wedding Ring',
-      price: '₹55,999',
-      originalPrice: '₹65,999',
-      rating: 4.9,
-      reviews: 87,
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
-      category: 'rings'
-    },
-    {
-      id: 10,
-      name: 'Platinum Chain Necklace',
-      price: '₹42,999',
-      originalPrice: '₹49,999',
-      rating: 4.8,
-      reviews: 95,
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
-      category: 'necklaces'
-    }
-  ];
+        if (error) {
+          console.error('Error fetching products:', error);
+        } else {
+          setProducts(
+            data.map((item) => ({
+              id: parseInt(item.id.replace(/-/g, '').substring(0, 8), 16),
+              name: item.description || item.original_name || 'Jewelry Piece',
+              description: item.description || 'Elegant handcrafted design',
+              price: item.price ? `₹${item.price.toLocaleString()}` : 'Price on request',
+              originalPrice: item.price ? `₹${(item.price * 1.2).toLocaleString()}` : '',
+              category: item.display_location,
+              image: supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl
+            }))
+          );
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredProducts = allProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    fetchAllProducts();
+  }, []);
 
-  const handleAddToCart = (product: typeof allProducts[0]) => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image
-    });
-  };
-
-  const handleToggleWishlist = (product: typeof allProducts[0]) => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        originalPrice: product.originalPrice,
-        image: product.image
-      });
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'rings': return 'Rings';
+      case 'necklaces': return 'Necklaces';
+      case 'earrings': return 'Earrings';
+      case 'bracelets': return 'Bracelets';
+      case 'lab-grown-diamonds': return 'Lab Grown Diamonds';
+      default: return category || 'Other';
     }
   };
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="mb-4 text-black hover:text-gray-600"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Button>
-          <FancyText variant="elegant" size="xl" className="text-4xl font-bold text-black">
+      <main className="pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900">
             All Products
-          </FancyText>
+          </h1>
+          <p className="text-lg text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Discover our complete collection of exquisite jewelry pieces, crafted with precision and elegance.
+          </p>
         </div>
-
-        <div className="mb-8">
-          <input
-            type="text"
-            placeholder="Search for rings, necklaces, earrings, bracelets..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-black"
-          />
-          {searchTerm && (
-            <p className="text-black mt-2">
-              Showing {filteredProducts.length} results for "{searchTerm}"
-            </p>
+        
+        <section className="px-6 py-16 bg-white">
+          {loading ? (
+            <div className="text-center py-8">Loading products...</div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No products available at the moment.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {products.map((product) => (
+                <Card key={product.id} className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
+                  <CardContent className="p-4">
+                    <div className="relative mb-4">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-64 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                        onClick={() => {
+                          isInWishlist(product.id)
+                            ? removeFromWishlist(product.id)
+                            : addToWishlist(product);
+                        }}
+                      >
+                        <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-black text-black' : 'text-gray-600'}`} />
+                      </Button>
+                    </div>
+                    <div className="mb-2">
+                      <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                        {getCategoryLabel(product.category)}
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-medium mb-1 text-black">{product.name}</h4>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                    <div className="flex items-center gap-2 mb-4">
+                      <p className="text-black font-semibold text-lg">{product.price}</p>
+                      {product.originalPrice && (
+                        <p className="text-gray-500 line-through text-sm">{product.originalPrice}</p>
+                      )}
+                    </div>
+                    <Button onClick={() => addToCart(product)} className="w-full bg-black hover:bg-gray-800 text-white">
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
-        </div>
-
-        <FilterSort />
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <Card 
-              key={product.id}
-              className="group hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-4 bg-white"
-            >
-              <CardContent className="p-0">
-                <div className="relative overflow-hidden">
-                  <div className="bg-white h-64 flex items-center justify-center overflow-hidden">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
-                    />
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => handleToggleWishlist(product)}
-                    className={`absolute top-4 right-4 bg-white/80 hover:bg-white transition-all duration-300 ${
-                      isInWishlist(product.id) ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
-                    }`}
-                  >
-                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-                  </Button>
-                </div>
-                
-                <div className="p-6 bg-white">
-                  <h3 className="font-bold text-black mb-2 group-hover:text-gray-600 transition-colors duration-300">
-                    {product.name}
-                  </h3>
-                  
-                  <div className="flex items-center mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-black fill-current' : 'text-gray-300'}`} 
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600 ml-2">({product.reviews})</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <span className="text-2xl font-bold text-black">{product.price}</span>
-                      <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-black text-white hover:bg-gray-800 font-semibold shadow-lg"
-                  >
-                    Add to Cart
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && searchTerm && (
-          <div className="text-center text-black mt-8">
-            <p className="text-xl">No products found for "{searchTerm}"</p>
-            <p className="text-gray-600 mt-2">Try searching for rings, necklaces, earrings, or bracelets</p>
-          </div>
-        )}
-      </div>
+        </section>
+      </main>
       <Footer />
     </div>
   );
