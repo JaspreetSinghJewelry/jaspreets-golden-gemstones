@@ -20,21 +20,21 @@ const ProductCarousel = () => {
     },
     {
       id: 2,
-      name: 'Gold Chain Necklace',
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=600&fit=crop',
-      price: '₹28,999'
+      name: 'Blue Sapphire Necklace Set',
+      image: '/lovable-uploads/821c3725-fc1c-4677-9e42-d062bd3ebf3e.png',
+      price: '₹85,999'
     },
     {
       id: 3,
-      name: 'Pearl Drop Earrings',
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&h=600&fit=crop',
-      price: '₹15,999'
+      name: 'Diamond Leaf Earrings',
+      image: '/lovable-uploads/091af198-6cb0-485e-858b-ff9a8b3e90d4.png',
+      price: '₹32,999'
     },
     {
       id: 4,
-      name: 'Tennis Bracelet',
-      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&h=600&fit=crop',
-      price: '₹38,999'
+      name: 'Gemstone Statement Earrings',
+      image: '/lovable-uploads/93d8089d-ea97-407c-bcef-9175a04024b9.png',
+      price: '₹68,999'
     }
   ];
 
