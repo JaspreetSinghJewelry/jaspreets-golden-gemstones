@@ -38,6 +38,10 @@ import GemstoneGuide from "./pages/GemstoneGuide";
 import BuyingPriceGuide from "./pages/BuyingPriceGuide";
 import CertificationGuide from "./pages/CertificationGuide";
 import GiftingGuide from "./pages/GiftingGuide";
+import DisplayCategoryProducts from '@/components/DisplayCategoryProducts';
+
+<Route path="/:category" element={<DisplayCategoryProducts />} />
+
 
 const queryClient = new QueryClient();
 
@@ -83,6 +87,7 @@ function App() {
                     <Route path="/certification-guide" element={<CertificationGuide />} />
                     <Route path="/gifting-guide" element={<GiftingGuide />} />
                     <Route path="*" element={<NotFound />} />
+                    <Route path="/:category" element={<DisplayCategoryProducts />} />
                   </Routes>
                 </BrowserRouter>
               </WishlistProvider>
