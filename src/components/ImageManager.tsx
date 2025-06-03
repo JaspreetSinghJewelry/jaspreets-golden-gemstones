@@ -259,7 +259,10 @@ const ImageManager = () => {
   const getLocationLabel = (location: string | null) => {
     switch (location) {
       case 'home': return 'Home Page';
+      case 'latest-collection': return 'Latest From Our Collection';
       case 'featured': return 'Featured Products';
+      case 'featured-collection': return 'Featured Collection';
+      case 'best-sellers': return 'Best Sellers';
       case 'categories': return 'Categories';
       case 'lab-grown': return 'Lab Grown Diamonds';
       case 'rings': return 'Rings';
@@ -324,7 +327,10 @@ const ImageManager = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="home">Home Page</SelectItem>
+                  <SelectItem value="latest-collection">Latest From Our Collection</SelectItem>
                   <SelectItem value="featured">Featured Products</SelectItem>
+                  <SelectItem value="featured-collection">Featured Collection</SelectItem>
+                  <SelectItem value="best-sellers">Best Sellers</SelectItem>
                   <SelectItem value="categories">Categories</SelectItem>
                   <SelectItem value="lab-grown">Lab Grown Diamonds</SelectItem>
                   <SelectItem value="rings">Rings</SelectItem>

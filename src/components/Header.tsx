@@ -25,7 +25,6 @@ const Header = () => {
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
 
- 
   const collectionItems = [
     { name: 'Rings', path: '/rings' },
     { name: 'Necklaces', path: '/necklaces' },
@@ -37,6 +36,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about-us' },
     { name: 'Contact Us', path: '/contact' },
+    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
   ];
   
   const handleUserAction = () => {
