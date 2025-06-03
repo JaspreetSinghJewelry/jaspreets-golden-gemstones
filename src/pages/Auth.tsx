@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +19,6 @@ const Auth = () => {
   const navigate = useNavigate();
   const { signIn, signUp, isAuthenticated } = useAuth();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
@@ -152,30 +150,30 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="mb-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/')}
-            className="mb-4"
+            className="mb-4 text-white hover:text-gray-300 hover:bg-gray-800"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Button>
         </div>
 
-        <Card className="shadow-xl">
+        <Card className="shadow-xl bg-white">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
               {mode === 'signin' ? (
-                <Mail className="h-8 w-8 text-[#1F1E39]" />
+                <Mail className="h-8 w-8 text-white" />
               ) : (
-                <User className="h-8 w-8 text-[#1F1E39]" />
+                <User className="h-8 w-8 text-white" />
               )}
             </div>
             <CardTitle>
-              <FancyText variant="gradient" size="lg" className="text-2xl font-bold">
+              <FancyText variant="gradient" size="lg" className="text-2xl font-bold text-black">
                 {mode === 'signin' ? 'Welcome Back' : 'Create Account'}
               </FancyText>
             </CardTitle>
@@ -263,7 +261,7 @@ const Auth = () => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-[#1F1E39] hover:from-yellow-500 hover:to-yellow-700"
+                className="w-full bg-black hover:bg-gray-800 text-white"
                 size="lg"
               >
                 {isLoading ? (

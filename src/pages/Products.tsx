@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,11 +7,13 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FilterSort from "@/components/FilterSort";
 
 const Products = () => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,17 +29,19 @@ const Products = () => {
         if (error) {
           console.error('Error fetching products:', error);
         } else {
-          setProducts(
-            data.map((item) => ({
-              id: parseInt(item.id.replace(/-/g, '').substring(0, 8), 16),
-              name: item.description || item.original_name || 'Jewelry Piece',
-              description: item.description || 'Elegant handcrafted design',
-              price: item.price ? `₹${item.price.toLocaleString()}` : 'Price on request',
-              originalPrice: item.price ? `₹${(item.price * 1.2).toLocaleString()}` : '',
-              category: item.display_location,
-              image: supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl
-            }))
-          );
+          const transformedProducts = data.map((item) => ({
+            id: parseInt(item.id.replace(/-/g, '').substring(0, 8), 16),
+            name: item.description || item.original_name || 'Jewelry Piece',
+            description: item.description || 'Elegant handcrafted design',
+            price: item.price ? `₹${item.price.toLocaleString()}` : 'Price on request',
+            originalPrice: item.price ? `₹${(item.price * 1.2).toLocaleString()}` : '',
+            category: item.display_location,
+            image: supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl,
+            rawPrice: item.price || 0
+          }));
+          
+          setProducts(transformedProducts);
+          setFilteredProducts(transformedProducts);
         }
       } catch (error) {
         console.error('Error:', error);
@@ -49,6 +52,51 @@ const Products = () => {
 
     fetchAllProducts();
   }, []);
+
+  const handleFiltersChange = (filters) => {
+    let filtered = [...products];
+
+    // Filter by jewelry type (category)
+    if (filters.jewelryType && filters.jewelryType.length > 0) {
+      filtered = filtered.filter(product => {
+        const categoryMap = {
+          'Rings': 'rings',
+          'Necklaces': 'necklaces',
+          'Earrings': 'earrings',
+          'Bracelets': 'bracelets'
+        };
+        return filters.jewelryType.some(type => categoryMap[type] === product.category);
+      });
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleSortChange = (sortOption) => {
+    let sorted = [...filteredProducts];
+
+    switch (sortOption) {
+      case 'price-low':
+        sorted.sort((a, b) => a.rawPrice - b.rawPrice);
+        break;
+      case 'price-high':
+        sorted.sort((a, b) => b.rawPrice - a.rawPrice);
+        break;
+      case 'newest':
+        // Already sorted by uploaded_at desc from the query
+        break;
+      case 'popular':
+        // For now, keep original order
+        break;
+      case 'rating':
+        // For now, keep original order
+        break;
+      default:
+        break;
+    }
+
+    setFilteredProducts(sorted);
+  };
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
@@ -74,16 +122,23 @@ const Products = () => {
           </p>
         </div>
         
+        <div className="container mx-auto px-4">
+          <FilterSort 
+            onFiltersChange={handleFiltersChange}
+            onSortChange={handleSortChange}
+          />
+        </div>
+        
         <section className="px-6 py-16 bg-white">
           {loading ? (
             <div className="text-center py-8">Loading products...</div>
-          ) : products.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No products available at the moment.
+              No products match your filters.
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <Card key={product.id} className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
                   <CardContent className="p-4">
                     <div className="relative mb-4">
