@@ -4,27 +4,37 @@ import { Instagram, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const InstagramGallery = () => {
-  // Updated jewelry images with your uploaded photos
+  // Sample jewelry images (in a real implementation, you'd fetch these from Instagram API)
   const jewelryImages = [
     {
       id: 1,
-      src: '/lovable-uploads/cae9a9c5-19f1-4f96-bdcc-f3053b3cff46.png',
-      alt: 'Diamond Jewelry'
+      src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//Screenshot%202025-06-02%20at%2011.42.03%20AM.png',
+      alt: 'Diamond Ring'
     },
     {
       id: 2,
-      src: '/lovable-uploads/0fd33372-c966-40bd-8e42-509dd3ca80a4.png',
-      alt: 'Gold Earrings'
+      src: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
+      alt: 'Gold Necklace'
     },
     {
       id: 3,
-      src: '/lovable-uploads/4c0dc0a9-0400-424e-858e-2c1137e80c4f.png',
-      alt: 'Gold Chain Necklace'
+      src: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop',
+      alt: 'Pearl Earrings'
     },
     {
       id: 4,
-      src: '/lovable-uploads/affebecb-9cbb-471f-bed5-13025cff9703.png',
-      alt: 'Diamond Ring'
+      src: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=400&fit=crop',
+      alt: 'Diamond Bracelet'
+    },
+    {
+      id: 5,
+      src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
+      alt: 'Wedding Ring Set'
+    },
+    {
+      id: 6,
+      src: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&h=400&fit=crop',
+      alt: 'Emerald Necklace'
     }
   ];
 
@@ -33,7 +43,7 @@ const InstagramGallery = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-slide-in-up">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <Instagram className="h-8 w-8 text-[#1F1E39]" />
+            <Instagram className="h-4 w-2 text-[#1F1E39]" />
             <h2 className="text-4xl font-bold text-[#1F1E39]">
               Follow Us on Instagram
             </h2>
@@ -51,7 +61,7 @@ const InstagramGallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {jewelryImages.map((image, index) => (
             <div
               key={image.id}
