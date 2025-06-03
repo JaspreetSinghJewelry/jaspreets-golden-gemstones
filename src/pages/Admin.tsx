@@ -45,13 +45,6 @@ const Admin = () => {
         </div>
       </header>
 
-const Display location = [
-    { name: 'Rings', path: '/rings' },
-    { name: 'Necklaces', path: '/necklaces' },
-    { name: 'Earrings', path: '/earrings' },
-    { name: 'Bracelets', path: '/bracelets' },
-    { name:  'Lab Grown diamonds', path: '/lab-grown-diamond'},
-  ];
       <main className="admin-content">
         <Card>
           <CardHeader>
@@ -70,6 +63,5 @@ const Display location = [
     </div>
   );
 };
-
 
 export default Admin;

@@ -23,9 +23,9 @@ interface UploadedImagesProps {
 
 interface ImageData {
   id: string;
-  url: string;
-  name: string;
-  location: string;
+  file_path: string;
+  original_name: string;
+  display_location: string;
 }
 
 const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
@@ -40,8 +40,8 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
         const { data, error } = await supabase
           .from('images')
           .select('*')
-          .eq('location', location)
-          .order('created_at', { ascending: false });
+          .eq('display_location', location)
+          .order('uploaded_at', { ascending: false });
 
         if (error) {
           console.error('Error fetching images:', error);
@@ -88,14 +88,14 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
             <div key={image.id} className="group cursor-pointer">
               <div className="aspect-square overflow-hidden rounded-lg bg-gray-200">
                 <img
-                  src={image.url}
-                  alt={image.name}
+                  src={image.file_path}
+                  alt={image.original_name}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />
               </div>
               <div className="mt-2">
-                <p className="text-sm text-gray-600 truncate">{image.name}</p>
+                <p className="text-sm text-gray-600 truncate">{image.original_name}</p>
               </div>
             </div>
           ))}
