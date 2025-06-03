@@ -258,13 +258,11 @@ const ImageManager = () => {
 
   const getLocationLabel = (location: string | null) => {
     switch (location) {
-      case 'rings': return 'Rings (/rings)';
-      case 'necklaces': return 'Necklaces (/necklaces)';
-      case 'earrings': return 'Earrings (/earrings)';
-      case 'bracelets': return 'Bracelets (/bracelets)';
-      case 'lab-grown-diamonds': return 'Lab Grown Diamonds (/lab-grown-diamonds)';
-      case 'best-sellers': return 'Best Sellers (Home Page Section)';
-      case 'featured-collection': return 'Featured Collection (Home Page Section)';
+      case 'rings': return 'Rings';
+      case 'necklaces': return 'Necklaces';
+      case 'earrings': return 'Earrings';
+      case 'bracelets': return 'Bracelets';
+      case 'lab-grown-diamonds': return 'Lab Grown Diamonds';
       default: return location || 'Unknown';
     }
   };
@@ -321,13 +319,11 @@ const ImageManager = () => {
                   <SelectValue placeholder="Select where to display this image" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="rings">Rings (/rings)</SelectItem>
-                  <SelectItem value="necklaces">Necklaces (/necklaces)</SelectItem>
-                  <SelectItem value="earrings">Earrings (/earrings)</SelectItem>
-                  <SelectItem value="bracelets">Bracelets (/bracelets)</SelectItem>
-                  <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds (/lab-grown-diamonds)</SelectItem>
-                  <SelectItem value="best-sellers">Best Sellers (Home Page Section)</SelectItem>
-                  <SelectItem value="featured-collection">Featured Collection (Home Page Section)</SelectItem>
+                  <SelectItem value="rings">Rings</SelectItem>
+                  <SelectItem value="necklaces">Necklaces</SelectItem>
+                  <SelectItem value="earrings">Earrings</SelectItem>
+                  <SelectItem value="bracelets">Bracelets</SelectItem>
+                  <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
                 </SelectContent>
               </Select>
             </div>
