@@ -14,16 +14,11 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
-      <UploadedImages location="rings" title="Rings" />
       <FeaturedProducts />
       <UploadedImages location="featured-collection" title="Featured Collection" />
       <Categories />
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
-      <UploadedImages location="rings" title="Rings" />
-      <UploadedImages location="necklaces" title="Necklaces" />
-      <UploadedImages location="earrings" title="Earrings" />
-      <UploadedImages location="bracelets" title="Bracelets" />
       <div className="grid lg:grid-cols-2 gap-0">
         <InstagramGallery />
         <LabGrownInstagramGallery />
