@@ -8,7 +8,7 @@ const InstagramGallery = () => {
   const jewelryImages = [
     {
       id: 1,
-      src: 'Whatsapp Image 2025-06-03 at 20.47.21.png ',
+      src: '',
       alt: 'Diamond Ring'
     },
     {
