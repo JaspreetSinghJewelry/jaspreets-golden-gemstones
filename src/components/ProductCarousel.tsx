@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Carousel,
@@ -26,9 +25,9 @@ const ProductCarousel = () => {
     },
     {
       id: 3,
-      name: 'Diamond Leaf Earrings',
-      image: '/lovable-uploads/091af198-6cb0-485e-858b-ff9a8b3e90d4.png',
-      price: '₹32,999'
+      name: 'Designer Gold Bracelet',
+      image: '/lovable-uploads/63f590ef-6210-44a1-9538-a1cd4df03d0f.png',
+      price: '₹52,999'
     },
     {
       id: 4,
