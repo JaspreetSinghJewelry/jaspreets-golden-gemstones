@@ -10,12 +10,6 @@ type ImageLocation =
   | 'lab-grown-diamonds'
   | 'best-sellers'
   | 'featured-collection';
- const displaylocation= [
-    { name: 'Rings', path: '/rings' },
-    { name: 'Necklaces', path: '/necklaces' },
-    { name: 'Earrings', path: '/earrings' },
-    { name: 'Bracelets', path: '/bracelets' },
-  ];
 
 interface UploadedImagesProps {
   location: ImageLocation;
@@ -42,7 +36,7 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
           .from('images')
           .select('*')
           .eq('display_location', location)
-          .order('created_at', { ascending: false });
+          .order('uploaded_at', { ascending: false });
 
         if (error) {
           console.error('Error fetching images:', error);
@@ -81,7 +75,13 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
   }
 
   if (images.length === 0) {
-    return null;
+    return (
+      <div className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-gray-500">No images uploaded for this category yet.</div>
+        </div>
+      </div>
+    );
   }
 
   return (
