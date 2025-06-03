@@ -17,7 +17,7 @@ const Earrings = () => {
             Adorn yourself with our elegant earrings, crafted to enhance your natural beauty.
           </p>
         </div>
-        <UploadedImages location="earrings" />
+        <UploadedImages location="/earrings" />
       </main>
       <Footer />
     </div>
