@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -125,10 +124,12 @@ const ImageManager = () => {
       return;
     }
 
-    if (!price.trim() || isNaN(Number(price))) {
+    // Fixed price validation to handle empty strings and invalid numbers
+    const priceValue = price.trim();
+    if (!priceValue || isNaN(Number(priceValue)) || Number(priceValue) <= 0) {
       toast({
         title: "Valid Price Required",
-        description: "Please enter a valid price for the image",
+        description: "Please enter a valid price greater than 0",
         variant: "destructive"
       });
       return;
@@ -189,7 +190,7 @@ const ImageManager = () => {
           mime_type: selectedFile.type,
           display_location: displayLocation,
           description: description.trim(),
-          price: Number(price),
+          price: Number(priceValue), // Use the validated price value
           is_active: true,
           sort_order: 0
         })
@@ -320,43 +321,44 @@ const ImageManager = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-0">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Upload className="h-4 w-4 md:h-5 md:w-5" />
             Upload New Image
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="imageFile">Choose Image File</Label>
+              <Label htmlFor="imageFile" className="text-sm md:text-base">Choose Image File</Label>
               <Input
                 id="imageFile"
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
                 disabled={uploading}
-                className="mt-1"
+                className="mt-1 text-sm"
               />
               {selectedFile && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                <div className="mt-2 flex items-center gap-2 text-xs md:text-sm text-gray-600 flex-wrap">
                   <span>Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})</span>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedFile(null)}
+                    className="h-6 w-6 p-0"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3 w-3" />
                   </Button>
                 </div>
               )}
             </div>
 
             <div>
-              <Label htmlFor="displayLocation">Display Location</Label>
+              <Label htmlFor="displayLocation" className="text-sm md:text-base">Display Location</Label>
               <Select value={displayLocation} onValueChange={setDisplayLocation}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select where to display this image" />
@@ -376,20 +378,20 @@ const ImageManager = () => {
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-sm md:text-base">Description</Label>
               <Textarea
                 id="description"
                 placeholder="Enter a description for this jewelry piece..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={uploading}
-                className="mt-1"
+                className="mt-1 text-sm"
                 rows={3}
               />
             </div>
 
             <div>
-              <Label htmlFor="price">Price (₹)</Label>
+              <Label htmlFor="price" className="text-sm md:text-base">Price (₹)</Label>
               <Input
                 id="price"
                 type="number"
@@ -397,40 +399,41 @@ const ImageManager = () => {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 disabled={uploading}
-                className="mt-1"
-                min="0"
-                step="0.01"
+                className="mt-1 text-sm"
+                min="1"
+                step="1"
               />
+              <p className="text-xs text-gray-500 mt-1">Enter a valid price greater than 0</p>
             </div>
             
             <Button 
               onClick={handleFileUpload}
               disabled={uploading || !selectedFile}
-              className="w-full"
+              className="w-full text-sm md:text-base"
             >
               {uploading ? 'Uploading...' : 'Upload Image'}
             </Button>
             
             {uploading && (
-              <div className="text-sm text-blue-600">Processing upload...</div>
+              <div className="text-xs md:text-sm text-blue-600">Processing upload...</div>
             )}
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Uploaded Images ({images.length})</CardTitle>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">Uploaded Images ({images.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           {images.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 text-sm md:text-base">
               No images uploaded yet
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
               {images.map((image) => (
-                <div key={image.id} className="border rounded-lg p-4 space-y-3">
+                <div key={image.id} className="border rounded-lg p-3 md:p-4 space-y-2 md:space-y-3">
                   <div className="aspect-square overflow-hidden rounded-md bg-gray-100">
                     <img
                       src={getImageUrl(image.file_path)}
@@ -444,13 +447,13 @@ const ImageManager = () => {
                   </div>
                   
                   <div className="space-y-1">
-                    <p className="font-medium text-sm truncate" title={image.original_name || ''}>
+                    <p className="font-medium text-xs md:text-sm truncate" title={image.original_name || ''}>
                       {image.original_name || image.filename}
                     </p>
                     <p className="text-xs text-gray-600 line-clamp-2">
                       {image.description || 'No description'}
                     </p>
-                    <p className="text-sm font-semibold text-green-600">
+                    <p className="text-xs md:text-sm font-semibold text-green-600">
                       {formatPrice(image.price)}
                     </p>
                     <p className="text-xs text-blue-600">
@@ -466,18 +469,18 @@ const ImageManager = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => window.open(getImageUrl(image.file_path), '_blank')}
-                      className="flex-1"
+                      className="flex-1 text-xs"
                     >
-                      <Eye className="h-4 w-4 mr-1" />
+                      <Eye className="h-3 w-3 mr-1" />
                       View
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
                       onClick={() => handleDelete(image)}
-                      className="flex-1"
+                      className="flex-1 text-xs"
                     >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                      <Trash2 className="h-3 w-3 mr-1" />
                       Delete
                     </Button>
                   </div>

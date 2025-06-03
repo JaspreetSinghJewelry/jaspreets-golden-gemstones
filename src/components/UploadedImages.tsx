@@ -102,7 +102,7 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-lg text-gray-500">Loading...</div>
+        <div className="text-sm md:text-lg text-gray-500">Loading...</div>
       </div>
     );
   }
@@ -112,20 +112,20 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({
   }
 
   return (
-    <section className={`px-6 py-16 bg-white ${className}`}>
-      <h3 className="text-3xl font-semibold text-center mb-10 text-black">{title}</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    <section className={`px-4 sm:px-6 py-8 md:py-16 bg-white ${className}`}>
+      <h3 className="text-2xl md:text-3xl font-semibold text-center mb-6 md:mb-10 text-black">{title}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
         {images.map((image) => {
           const productId = parseInt(image.id.replace(/-/g, '').substring(0, 8), 16);
           
           return (
             <Card key={image.id} className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
-              <CardContent className="p-4">
-                <div className="relative mb-4">
+              <CardContent className="p-3 md:p-4">
+                <div className="relative mb-3 md:mb-4">
                   <img 
                     src={getImageUrl(image.file_path)} 
                     alt={image.description || image.original_name || 'Jewelry item'} 
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-48 md:h-64 object-cover rounded-lg"
                     onError={(e) => {
                       e.currentTarget.src = '/placeholder.svg';
                     }}
@@ -133,21 +133,21 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                    className="absolute top-2 right-2 bg-white/80 hover:bg-white h-8 w-8 md:h-10 md:w-10"
                     onClick={() => handleWishlistToggle(image)}
                   >
-                    <Heart className={`h-4 w-4 ${isInWishlist(productId) ? 'fill-black text-black' : 'text-gray-600'}`} />
+                    <Heart className={`h-3 w-3 md:h-4 md:w-4 ${isInWishlist(productId) ? 'fill-black text-black' : 'text-gray-600'}`} />
                   </Button>
                 </div>
-                <h4 className="text-lg font-medium mb-1 text-black">
+                <h4 className="text-base md:text-lg font-medium mb-1 text-black line-clamp-2">
                   {image.description || image.original_name || 'Beautiful Jewelry'}
                 </h4>
-                <div className="flex items-center gap-2 mb-4">
-                  <p className="text-black font-semibold text-lg">
+                <div className="flex items-center gap-2 mb-3 md:mb-4">
+                  <p className="text-black font-semibold text-base md:text-lg">
                     {image.price ? `₹${image.price.toLocaleString()}` : 'Price on request'}
                   </p>
                   {image.price && (
-                    <p className="text-gray-500 line-through text-sm">
+                    <p className="text-gray-500 line-through text-xs md:text-sm">
                       ₹{(image.price * 1.2).toLocaleString()}
                     </p>
                   )}
@@ -155,9 +155,9 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({
                 <div className="flex gap-2">
                   <Button
                     onClick={() => handleAddToCart(image)}
-                    className="flex-1 bg-black hover:bg-gray-800 text-white"
+                    className="flex-1 bg-black hover:bg-gray-800 text-white text-sm md:text-base py-2 md:py-3"
                   >
-                    <ShoppingBag className="h-4 w-4 mr-2" />
+                    <ShoppingBag className="h-3 w-3 md:h-4 md:w-4 mr-2" />
                     Add to Cart
                   </Button>
                 </div>

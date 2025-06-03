@@ -8,17 +8,17 @@ const Footer = () => {
   return (
     <footer className="bg-white text-black border-t border-gray-200">
       {/* Main Footer */}
-      <div className="py-12">
+      <div className="py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
            
             {/* Categories */}
             <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Categories</h4>
-              <ul className="space-y-3">
+              <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Categories</h4>
+              <ul className="space-y-2 md:space-y-3">
                 {['Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Lab Grown Diamonds'].map((category) => (
                   <li key={category}>
-                    <a href="#" className="text-gray-600 hover:text-black transition-colors">
+                    <a href="#" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                       {category}
                     </a>
                   </li>
@@ -28,40 +28,40 @@ const Footer = () => {
 
             {/* Jewellery Guide */}
             <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Jewellery Guide</h4>
-              <ul className="space-y-3">
+              <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Jewellery Guide</h4>
+              <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <Link to="/buying-price-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/buying-price-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Buying and Price Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/certification-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/certification-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Certification Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/diamond-solitaire-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/diamond-solitaire-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Diamond and Solitaire Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/gemstone-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/gemstone-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Gemstone Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/gifting-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/gifting-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Gifting Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/jewelry-care-guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/jewelry-care-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Jewelry Care Guide
                   </Link>
                 </li>
                 <li>
-                  <Link to="/guides/size-Guide" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/guides/size-Guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Size Guide
                   </Link>
                 </li>
@@ -70,30 +70,30 @@ const Footer = () => {
 
             {/* Policies */}
             <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Policies</h4>
-              <ul className="space-y-3">
+              <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Policies</h4>
+              <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Refund & Replacement Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/exchange-buyback-policy" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/exchange-buyback-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Buyback Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Terms & Conditions
                   </Link>
                 </li>
                 <li>
-                  <Link to="/fraud-warning" className="text-gray-600 hover:text-black transition-colors">
+                  <Link to="/fraud-warning" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Fraud Warning Disclaimer
                   </Link>
                 </li>
@@ -101,13 +101,13 @@ const Footer = () => {
             </div>
 
             {/* Visit Our Store */}
-            <div>
-              <h4 className="text-lg font-bold mb-6 text-black">Visit Our Store</h4>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Visit Our Store</h4>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-gray-600 mt-1" />
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5 text-gray-600 mt-1 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-600 block mb-2">
+                    <span className="text-gray-600 block mb-2 text-sm md:text-base">
                       103, Poonam chambers 2645 Bank Street,
                       <br />
                       Karol Bagh, New Delhi
@@ -132,20 +132,20 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-200 py-6">
+      <div className="border-t border-gray-200 py-4 md:py-6">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-600">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+            <p className="text-gray-600 text-sm md:text-base text-center md:text-left">
               © 2025 Jaspreet Singh Jewelry. All rights reserved.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors">
+            <div className="flex flex-wrap justify-center md:justify-end space-x-4 md:space-x-6">
+              <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                 Privacy Policy
               </Link>
-              <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors">
+              <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                 Terms of Service
               </Link>
-              <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors">
+              <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                 Return Policy
               </Link>
             </div>
