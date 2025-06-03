@@ -14,7 +14,7 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
-      <UploadedImages location="best-sellers" title="Best Sellers" />
+      <UploadedImages location="/rings" title="Rings" />
       <FeaturedProducts />
       <UploadedImages location="featured-collection" title="Featured Collection" />
       <Categories />
