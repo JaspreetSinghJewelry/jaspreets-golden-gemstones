@@ -10,6 +10,12 @@ type ImageLocation =
   | 'lab-grown-diamonds'
   | 'best-sellers'
   | 'featured-collection';
+ const displaylocation= [
+    { name: 'Rings', path: '/rings' },
+    { name: 'Necklaces', path: '/necklaces' },
+    { name: 'Earrings', path: '/earrings' },
+    { name: 'Bracelets', path: '/bracelets' },
+  ];
 
 interface UploadedImagesProps {
   location: ImageLocation;
