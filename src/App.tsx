@@ -40,9 +40,6 @@ import CertificationGuide from "./pages/CertificationGuide";
 import GiftingGuide from "./pages/GiftingGuide";
 import DisplayCategoryProducts from '@/components/DisplayCategoryProducts';
 
-<Route path="/:category" element={<DisplayCategoryProducts />} />
-
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -86,8 +83,8 @@ function App() {
                     <Route path="/buying-price-guide" element={<BuyingPriceGuide />} />
                     <Route path="/certification-guide" element={<CertificationGuide />} />
                     <Route path="/gifting-guide" element={<GiftingGuide />} />
-                    <Route path="*" element={<NotFound />} />
                     <Route path="/:category" element={<DisplayCategoryProducts />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>
               </WishlistProvider>

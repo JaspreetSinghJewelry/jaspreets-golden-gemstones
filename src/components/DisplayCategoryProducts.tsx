@@ -3,27 +3,28 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { supabase } from '@/integrations/supabase/client';
 
-const FeaturedProducts = () => {
+const DisplayCategoryProducts = () => {
+  const { category } = useParams();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
+    const fetchCategoryProducts = async () => {
       const { data, error } = await supabase
         .from('images')
         .select('*')
         .eq('is_active', true)
-        .eq('display_location', 'best-sellers')
-        .order('sort_order', { ascending: true })
-        .limit(6);
+        .eq('display_location', category?.replace(/-/g, ' '))
+        .order('sort_order', { ascending: true });
 
       if (error) {
-        console.error('Error fetching featured products:', error);
+        console.error('Error fetching products:', error);
       } else {
         setProducts(
           data.map((item) => ({
@@ -38,16 +39,16 @@ const FeaturedProducts = () => {
       }
     };
 
-    fetchFeaturedProducts();
-  }, []);
-
-  if (products.length === 0) {
-    return null;
-  }
+    if (category) {
+      fetchCategoryProducts();
+    }
+  }, [category]);
 
   return (
     <section className="px-6 py-16 bg-white">
-      <h3 className="text-3xl font-semibold text-center mb-10 text-black">Best Sellers</h3>
+      <h3 className="text-3xl font-semibold text-center mb-10 text-black capitalize">
+        {category?.replace(/-/g, ' ')}
+      </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {products.map((product) => (
           <Card key={product.id} className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
@@ -94,4 +95,4 @@ const FeaturedProducts = () => {
   );
 };
 
-export default FeaturedProducts;
+export default DisplayCategoryProducts;
