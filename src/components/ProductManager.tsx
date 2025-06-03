@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -338,6 +337,7 @@ const ProductManager = () => {
       case 'earrings': return 'Earrings';
       case 'bracelets': return 'Bracelets';
       case 'lab-grown-diamonds': return 'Lab Grown Diamonds';
+      case 'best-sellers': return 'Best Sellers';
       default: return location || 'Unknown';
     }
   };
@@ -408,6 +408,7 @@ const ProductManager = () => {
                   <SelectItem value="earrings">Earrings</SelectItem>
                   <SelectItem value="bracelets">Bracelets</SelectItem>
                   <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+                  <SelectItem value="best-sellers">Best Sellers</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -546,6 +547,7 @@ const ProductManager = () => {
                               <SelectItem value="earrings">Earrings</SelectItem>
                               <SelectItem value="bracelets">Bracelets</SelectItem>
                               <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+                              <SelectItem value="best-sellers">Best Sellers</SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (

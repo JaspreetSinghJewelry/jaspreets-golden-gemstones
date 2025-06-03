@@ -41,10 +41,12 @@ const FeaturedProducts = () => {
 
   const fetchUploadedImages = async () => {
     try {
+      // Only fetch images specifically designated for the "best-sellers" section
       const { data, error } = await supabase
         .from('images')
         .select('*')
         .eq('is_active', true)
+        .eq('display_location', 'best-sellers')
         .order('sort_order', { ascending: true })
         .order('uploaded_at', { ascending: false })
         .limit(3);
@@ -104,8 +106,8 @@ const FeaturedProducts = () => {
     isUploaded: true
   }));
 
-  // Combine uploaded and default products, prioritizing uploaded ones
-  const allProducts = [...uploadedProducts, ...products].slice(0, 3);
+  // Only show uploaded products if they exist, otherwise fallback to default products
+  const allProducts = uploadedProducts.length > 0 ? uploadedProducts.slice(0, 3) : products.slice(0, 3);
 
   const handleAddToCart = (product: Product) => {
     addToCart({
