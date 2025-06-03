@@ -20,10 +20,10 @@ const Index = () => {
       <Categories />
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
-      <UploadedImages location="rings" title="Rings Collection" />
-      <UploadedImages location="necklaces" title="Necklaces Collection" />
-      <UploadedImages location="earrings" title="Earrings Collection" />
-      <UploadedImages location="bracelets" title="Bracelets Collection" />
+      <UploadedImages location="rings" title="Rings" />
+      <UploadedImages location="necklaces" title="Necklaces" />
+      <UploadedImages location="earrings" title="Earrings" />
+      <UploadedImages location="bracelets" title="Bracelets" />
       <div className="grid lg:grid-cols-2 gap-0">
         <InstagramGallery />
         <LabGrownInstagramGallery />
