@@ -1,14 +1,15 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Star } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+import { useNavigate } from 'react-router-dom';
 
 const LabGrownDiamonds = () => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const navigate = useNavigate();
 
   const labGrownProducts = [
     {
@@ -75,6 +76,10 @@ const LabGrownDiamonds = () => {
         image: product.image
       });
     }
+  };
+
+  const handleViewAllCollection = () => {
+    navigate('/lab-grown-diamonds');
   };
 
   return (
@@ -160,6 +165,7 @@ const LabGrownDiamonds = () => {
 
         <div className="text-center mt-12">
           <Button 
+            onClick={handleViewAllCollection}
             className="bg-black text-white hover:bg-gray-800 font-bold px-8 py-3 text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             View All Lab Grown Collection
