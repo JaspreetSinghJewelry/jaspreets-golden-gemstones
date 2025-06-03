@@ -4,37 +4,27 @@ import { Instagram, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const InstagramGallery = () => {
-  // Sample jewelry images (in a real implementation, you'd fetch these from Instagram API)
+  // Updated jewelry images with your uploaded photos
   const jewelryImages = [
     {
       id: 1,
-      src: '',
-      alt: 'Diamond Ring'
+      src: '/lovable-uploads/cae9a9c5-19f1-4f96-bdcc-f3053b3cff46.png',
+      alt: 'Diamond Jewelry'
     },
     {
       id: 2,
-      src: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
-      alt: 'Gold Necklace'
+      src: '/lovable-uploads/0fd33372-c966-40bd-8e42-509dd3ca80a4.png',
+      alt: 'Gold Earrings'
     },
     {
       id: 3,
-      src: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop',
-      alt: 'Pearl Earrings'
+      src: '/lovable-uploads/4c0dc0a9-0400-424e-858e-2c1137e80c4f.png',
+      alt: 'Gold Chain Necklace'
     },
     {
       id: 4,
-      src: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=400&fit=crop',
-      alt: 'Diamond Bracelet'
-    },
-    {
-      id: 5,
-      src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
-      alt: 'Wedding Ring Set'
-    },
-    {
-      id: 6,
-      src: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&h=400&fit=crop',
-      alt: 'Emerald Necklace'
+      src: '/lovable-uploads/affebecb-9cbb-471f-bed5-13025cff9703.png',
+      alt: 'Diamond Ring'
     }
   ];
 
@@ -61,7 +51,7 @@ const InstagramGallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           {jewelryImages.map((image, index) => (
             <div
               key={image.id}

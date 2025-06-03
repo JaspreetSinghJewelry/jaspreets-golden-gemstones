@@ -1,38 +1,30 @@
+
 import React from 'react';
 import { Instagram, ExternalLink, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const LabGrownInstagramGallery = () => {
+  // Updated lab grown images with your uploaded photos (same photos for consistency)
   const labGrownImages = [
     {
       id: 1,
-      src: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=400&fit=crop',
-      alt: 'Lab Grown Diamond Ring'
+      src: '/lovable-uploads/cae9a9c5-19f1-4f96-bdcc-f3053b3cff46.png',
+      alt: 'Lab Grown Diamond Jewelry'
     },
     {
       id: 2,
-      src: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
-      alt: 'Sustainable Diamond Necklace'
+      src: '/lovable-uploads/0fd33372-c966-40bd-8e42-509dd3ca80a4.png',
+      alt: 'Sustainable Gold Earrings'
     },
     {
       id: 3,
-      src: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop',
-      alt: 'Eco-Friendly Earrings'
+      src: '/lovable-uploads/4c0dc0a9-0400-424e-858e-2c1137e80c4f.png',
+      alt: 'Eco-Friendly Necklace'
     },
     {
       id: 4,
-      src: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=400&fit=crop',
-      alt: 'Lab Created Bracelet'
-    },
-    {
-      id: 5,
-      src: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
-      alt: 'Sustainable Wedding Set'
-    },
-    {
-      id: 6,
-      src: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&h=400&fit=crop',
-      alt: 'Lab Grown Pendant'
+      src: '/lovable-uploads/affebecb-9cbb-471f-bed5-13025cff9703.png',
+      alt: 'Lab Created Diamond Ring'
     }
   ];
 
@@ -60,7 +52,7 @@ const LabGrownInstagramGallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           {labGrownImages.map((image, index) => (
             <div
               key={image.id}
