@@ -30,7 +30,7 @@ const ImageManager = () => {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [displayLocation, setDisplayLocation] = useState('home');
+  const [displayLocation, setDisplayLocation] = useState('rings');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
 
@@ -176,7 +176,7 @@ const ImageManager = () => {
       setSelectedFile(null);
       setDescription('');
       setPrice('');
-      setDisplayLocation('home');
+      setDisplayLocation('rings');
       
       // Reset file input
       const fileInput = document.getElementById('imageFile') as HTMLInputElement;
@@ -258,18 +258,13 @@ const ImageManager = () => {
 
   const getLocationLabel = (location: string | null) => {
     switch (location) {
-      case 'home': return 'Home Page';
-      case 'latest-collection': return 'Latest From Our Collection';
-      case 'featured': return 'Featured Products';
-      case 'featured-collection': return 'Featured Collection';
-      case 'best-sellers': return 'Best Sellers';
-      case 'categories': return 'Categories';
-      case 'lab-grown': return 'Lab Grown Diamonds';
-      case 'rings': return 'Rings';
-      case 'necklaces': return 'Necklaces';
-      case 'earrings': return 'Earrings';
-      case 'bracelets': return 'Bracelets';
-      case 'shop-now': return 'Shop Now';
+      case 'rings': return 'Rings (/rings)';
+      case 'necklaces': return 'Necklaces (/necklaces)';
+      case 'earrings': return 'Earrings (/earrings)';
+      case 'bracelets': return 'Bracelets (/bracelets)';
+      case 'lab-grown-diamonds': return 'Lab Grown Diamonds (/lab-grown-diamonds)';
+      case 'best-sellers': return 'Best Sellers (Home Page Section)';
+      case 'featured-collection': return 'Featured Collection (Home Page Section)';
       default: return location || 'Unknown';
     }
   };
@@ -326,18 +321,13 @@ const ImageManager = () => {
                   <SelectValue placeholder="Select where to display this image" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="home">Home Page</SelectItem>
-                  <SelectItem value="latest-collection">Latest From Our Collection</SelectItem>
-                  <SelectItem value="featured">Featured Products</SelectItem>
-                  <SelectItem value="featured-collection">Featured Collection</SelectItem>
-                  <SelectItem value="best-sellers">Best Sellers</SelectItem>
-                  <SelectItem value="categories">Categories</SelectItem>
-                  <SelectItem value="lab-grown">Lab Grown Diamonds</SelectItem>
-                  <SelectItem value="rings">Rings</SelectItem>
-                  <SelectItem value="necklaces">Necklaces</SelectItem>
-                  <SelectItem value="earrings">Earrings</SelectItem>
-                  <SelectItem value="bracelets">Bracelets</SelectItem>
-                  <SelectItem value="shop-now">Shop Now</SelectItem>
+                  <SelectItem value="rings">Rings (/rings)</SelectItem>
+                  <SelectItem value="necklaces">Necklaces (/necklaces)</SelectItem>
+                  <SelectItem value="earrings">Earrings (/earrings)</SelectItem>
+                  <SelectItem value="bracelets">Bracelets (/bracelets)</SelectItem>
+                  <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds (/lab-grown-diamonds)</SelectItem>
+                  <SelectItem value="best-sellers">Best Sellers (Home Page Section)</SelectItem>
+                  <SelectItem value="featured-collection">Featured Collection (Home Page Section)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

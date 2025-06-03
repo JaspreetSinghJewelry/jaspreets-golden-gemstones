@@ -3,16 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 type ImageLocation = 
-  | 'home' 
-  | 'featured' 
-  | 'categories' 
-  | 'lab-grown' 
   | 'rings' 
   | 'necklaces' 
   | 'earrings' 
   | 'bracelets' 
-  | 'shop-now'
-  | 'latest-collection'
+  | 'lab-grown-diamonds'
   | 'best-sellers'
   | 'featured-collection';
 
@@ -40,7 +35,7 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
         const { data, error } = await supabase
           .from('images')
           .select('*')
-          .eq('location', location)
+          .eq('display_location', location)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -49,7 +44,16 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
         }
 
         console.log('Fetched images:', data);
-        setImages(data || []);
+        
+        // Transform the data to match the ImageData interface
+        const transformedImages = data?.map(item => ({
+          id: item.id,
+          url: supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl,
+          name: item.description || item.original_name || 'Jewelry Item',
+          location: item.display_location || ''
+        })) || [];
+        
+        setImages(transformedImages);
       } catch (error) {
         console.error('Error in fetchImages:', error);
       } finally {
