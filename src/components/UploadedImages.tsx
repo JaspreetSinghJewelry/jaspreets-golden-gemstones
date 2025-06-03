@@ -10,6 +10,12 @@ type ImageLocation =
   | 'lab-grown-diamonds'
   | 'best-sellers'
   | 'featured-collection';
+ const displaylocation= [
+    { name: 'Rings', path: '/rings' },
+    { name: 'Necklaces', path: '/necklaces' },
+    { name: 'Earrings', path: '/earrings' },
+    { name: 'Bracelets', path: '/bracelets' },
+  ];
 
 interface UploadedImagesProps {
   location: ImageLocation;
@@ -36,7 +42,6 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
           .from('images')
           .select('*')
           .eq('display_location', location)
-          .eq('is_active', true)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -76,20 +81,7 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
   }
 
   if (images.length === 0) {
-    return (
-      <div className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-gray-500">
-            {title && (
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900">
-                {title}
-              </h2>
-            )}
-            <p>No images available for this category yet.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
