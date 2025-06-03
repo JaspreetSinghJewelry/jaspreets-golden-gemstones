@@ -11,20 +11,6 @@ const Footer = () => {
       <div className="py-8 md:py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
-           
-            {/* Categories */}
-            <div>
-              <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Categories</h4>
-              <ul className="space-y-2 md:space-y-3">
-                {['Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Lab Grown Diamonds'].map((category) => (
-                  <li key={category}>
-                    <a href="#" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
-                      {category}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
 
             {/* Jewellery Guide */}
             <div>
