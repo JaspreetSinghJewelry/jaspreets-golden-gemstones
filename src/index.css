@@ -72,10 +72,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Mobile optimization */
+  /* Mobile optimization - Prevent zooming and ensure consistent viewport */
   html {
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   /* Better tap targets for mobile */
@@ -99,22 +101,41 @@
   }
 }
 
-/* Mobile-specific improvements */
+/* Mobile-specific improvements - Force consistent sizing */
 @media (max-width: 768px) {
-  /* Prevent zoom on input focus in iOS */
+  /* Prevent zoom on input focus in iOS and ensure 16px minimum font size */
   input[type="text"],
   input[type="email"],
   input[type="password"],
   input[type="number"],
   textarea,
   select {
-    font-size: 16px;
+    font-size: 16px !important;
+    -webkit-appearance: none;
+    border-radius: 4px;
   }
   
   /* Better touch targets */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Force desktop-like layout on mobile */
+  .mobile-desktop-layout {
+    min-width: 320px;
+    transform-origin: 0 0;
+  }
+  
+  /* Ensure proper grid layouts on mobile */
+  .grid {
+    display: grid !important;
+  }
+  
+  /* Fix card layouts to maintain desktop appearance */
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 1rem !important;
   }
 }
 
@@ -130,5 +151,93 @@
   .full-viewport {
     height: 100vh;
     height: 100dvh;
+  }
+  
+  /* Force desktop-like appearance on mobile */
+  .desktop-layout {
+    min-width: 100vw;
+    overflow-x: auto;
+  }
+  
+  /* Responsive grid that maintains desktop look */
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Admin panel specific styles */
+.admin-panel {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.admin-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.admin-content {
+  padding: 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .admin-content {
+    padding: 2rem;
+  }
+}
+
+/* Image upload form styles */
+.upload-form {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-form input,
+.upload-form textarea,
+.upload-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 16px;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.upload-form input:focus,
+.upload-form textarea:focus,
+.upload-form select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Image grid for admin panel */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
   }
 }
