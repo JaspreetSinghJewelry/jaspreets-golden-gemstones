@@ -36,7 +36,7 @@ const UploadedImages: React.FC<UploadedImagesProps> = ({ location, title }) => {
           .from('images')
           .select('*')
           .eq('display_location', location)
-          .order('uploaded_at', { ascending: false });
+          .order('created_at', { ascending: false });
 
         if (error) {
           console.error('Error fetching images:', error);
