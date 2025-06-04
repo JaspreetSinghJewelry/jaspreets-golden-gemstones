@@ -2,20 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Upload, Plus } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ImageUploadSlot from './ImageUploadSlot';
-
-interface ProductImageUpload {
-  file: File | null;
-  description: string;
-  price: string;
-}
+import AutoUploadToggle from './AutoUploadToggle';
+import ProductFormFields from './ProductFormFields';
+import UploadStatusDisplay from './UploadStatusDisplay';
+import { 
+  ProductImageUpload, 
+  validateUploadData, 
+  uploadProductGroup 
+} from '@/utils/uploadUtils';
 
 const BulkProductUpload = () => {
   const [productImages, setProductImages] = useState<ProductImageUpload[]>([
@@ -54,120 +52,35 @@ const BulkProductUpload = () => {
     
     if (hasValidFirstImage && !uploading) {
       const timer = setTimeout(() => {
-        uploadProductGroup();
+        handleUploadProductGroup();
       }, 500);
       
       return () => clearTimeout(timer);
     }
   }, [productImages, productName, autoUpload]);
 
-  const uploadProductGroup = async () => {
-    // Validation
-    const validImages = productImages.filter(img => img.file);
-    if (validImages.length === 0) {
+  const handleUploadProductGroup = async () => {
+    const validation = validateUploadData(productImages, productName);
+    
+    if (!validation.isValid) {
       toast({
-        title: "No Files Selected",
-        description: "Please select at least one image file",
+        title: "Validation Error",
+        description: validation.errorMessage,
         variant: "destructive"
       });
       return;
     }
-
-    if (!productName.trim()) {
-      toast({
-        title: "Product Name Required",
-        description: "Please enter a product name",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    console.log('Starting upload with:', {
-      productName,
-      validImages: validImages.length,
-      displayLocation
-    });
 
     setUploading(true);
-    let successCount = 0;
-    let errorCount = 0;
-
-    const productGroupId = crypto.randomUUID();
-
-    for (const imageData of validImages) {
-      try {
-        const file = imageData.file!;
-
-        if (!file.type.startsWith('image/')) {
-          console.error('Invalid file type:', file.type);
-          errorCount++;
-          continue;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-          console.error('File too large:', file.size);
-          errorCount++;
-          continue;
-        }
-
-        const fileExt = file.name.split('.').pop()?.toLowerCase();
-        const timestamp = Date.now();
-        const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-
-        console.log('Uploading file:', fileName);
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          errorCount++;
-          continue;
-        }
-
-        console.log('File uploaded successfully, saving to database...');
-
-        const { error: dbError } = await supabase
-          .from('images')
-          .insert({
-            filename: fileName,
-            original_name: file.name,
-            file_path: fileName,
-            file_size: file.size,
-            mime_type: file.type,
-            display_location: displayLocation,
-            description: imageData.description.trim() || productName,
-            price: Number(imageData.price) || 0,
-            is_active: true,
-            sort_order: successCount,
-            product_group: productGroupId
-          });
-
-        if (dbError) {
-          console.error('Database error:', dbError);
-          await supabase.storage.from('images').remove([fileName]);
-          errorCount++;
-          continue;
-        }
-
-        console.log('Image saved to database successfully');
-        successCount++;
-      } catch (error) {
-        console.error('Unexpected error:', error);
-        errorCount++;
-      }
-    }
+    
+    const result = await uploadProductGroup(productImages, productName, displayLocation);
 
     setUploading(false);
 
-    if (successCount > 0) {
+    if (result.successCount > 0) {
       toast({
         title: "Product Created Successfully!",
-        description: `Product "${productName}" created with ${successCount} images${errorCount > 0 ? `, ${errorCount} failed` : ''}`
+        description: `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`
       });
       
       setProductImages([{ file: null, description: '', price: '0' }]);
@@ -184,7 +97,6 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Fix the validation - count only images that actually have files
   const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
   const hasProductName = productName.trim().length > 0;
   const canUpload = hasProductName && selectedImageCount > 0 && !uploading;
@@ -214,56 +126,20 @@ const BulkProductUpload = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Auto Upload Toggle */}
-          <div className="flex items-center justify-between p-4 border rounded-lg">
-            <div>
-              <Label htmlFor="auto-upload" className="text-base font-medium">
-                Auto Upload
-              </Label>
-              <p className="text-sm text-gray-600 mt-1">
-                Automatically upload when product name, first image, and price are set
-              </p>
-            </div>
-            <Switch
-              id="auto-upload"
-              checked={autoUpload}
-              onCheckedChange={setAutoUpload}
-              disabled={uploading}
-            />
-          </div>
+          <AutoUploadToggle
+            autoUpload={autoUpload}
+            onToggle={setAutoUpload}
+            disabled={uploading}
+          />
 
-          {/* Product Name */}
-          <div>
-            <Label htmlFor="productName">Product Name *</Label>
-            <Input
-              id="productName"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              placeholder="Enter product name"
-              className="mt-2"
-              disabled={uploading}
-            />
-          </div>
+          <ProductFormFields
+            productName={productName}
+            displayLocation={displayLocation}
+            onProductNameChange={setProductName}
+            onDisplayLocationChange={setDisplayLocation}
+            disabled={uploading}
+          />
 
-          {/* Display Location */}
-          <div>
-            <Label htmlFor="displayLocation">Collection Category</Label>
-            <Select value={displayLocation} onValueChange={setDisplayLocation} disabled={uploading}>
-              <SelectTrigger className="mt-2">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rings">Rings</SelectItem>
-                <SelectItem value="necklaces">Necklaces</SelectItem>
-                <SelectItem value="earrings">Earrings</SelectItem>
-                <SelectItem value="bracelets">Bracelets</SelectItem>
-                <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
-                <SelectItem value="best-sellers">Best Sellers</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Image Upload Slots */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Product Images</Label>
@@ -293,10 +169,9 @@ const BulkProductUpload = () => {
             ))}
           </div>
 
-          {/* Manual Upload Button */}
           {!autoUpload && (
             <Button
-              onClick={uploadProductGroup}
+              onClick={handleUploadProductGroup}
               disabled={!canUpload}
               className="w-full"
               size="lg"
@@ -305,32 +180,11 @@ const BulkProductUpload = () => {
             </Button>
           )}
 
-          {uploading && (
-            <div className="text-center py-4">
-              <div className="text-lg font-medium text-blue-600">
-                Creating Product Group with {selectedImageCount} Images...
-              </div>
-              <div className="text-sm text-gray-600 mt-1">
-                Please wait while we upload your images
-              </div>
-            </div>
-          )}
-
-          {!uploading && autoUpload && (
-            <div className="text-center py-2">
-              <div className="text-sm text-gray-600">
-                Auto-upload enabled: Fill in product name, upload first image, and set price to automatically create product group
-              </div>
-            </div>
-          )}
-
-          {!uploading && !autoUpload && (
-            <div className="text-center py-2">
-              <div className="text-sm text-gray-600">
-                Manual upload mode: Add images and click "Create Product Group" when ready
-              </div>
-            </div>
-          )}
+          <UploadStatusDisplay
+            uploading={uploading}
+            autoUpload={autoUpload}
+            selectedImageCount={selectedImageCount}
+          />
         </div>
       </CardContent>
     </Card>
