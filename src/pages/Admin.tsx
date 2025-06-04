@@ -109,12 +109,7 @@ const Admin = () => {
                     Bulk Product Upload
                   </>
                 )}
-                {activeTab === 'simple-upload' && (
-                  <>
-                    <Images className="h-6 w-6" />
-                    Simple Image Upload
-                  </>
-                )}
+                
                 {activeTab === 'images' && (
                   <>
                     <Images className="h-6 w-6" />
@@ -127,7 +122,6 @@ const Admin = () => {
               <div className="p-6">
                 {activeTab === 'products' && <ProductManager />}
                 {activeTab === 'bulk-upload' && <BulkProductUpload />}
-                {activeTab === 'simple-upload' && <SimpleImageUpload />}
                 {activeTab === 'images' && <ImageManager />}
               </div>
             </CardContent>
