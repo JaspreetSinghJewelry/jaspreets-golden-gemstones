@@ -14,6 +14,7 @@ import {
   validateUploadData, 
   uploadProductGroup 
 } from '@/utils/uploadUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 const BulkProductUpload = () => {
   const [productImages, setProductImages] = useState<ProductImageUpload[]>([
@@ -23,6 +24,41 @@ const BulkProductUpload = () => {
   const [displayLocation, setDisplayLocation] = useState('rings');
   const [uploading, setUploading] = useState(false);
   const [autoUpload, setAutoUpload] = useState(false);
+
+  // Check and create storage bucket if needed
+  useEffect(() => {
+    const ensureStorageBucket = async () => {
+      try {
+        const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+        
+        if (listError) {
+          console.error('Error listing buckets:', listError);
+          return;
+        }
+
+        const imagesBucket = buckets?.find(bucket => bucket.name === 'images');
+        
+        if (!imagesBucket) {
+          console.log('Images bucket not found, creating...');
+          const { error: createError } = await supabase.storage.createBucket('images', {
+            public: true,
+            allowedMimeTypes: ['image/*'],
+            fileSizeLimit: 10485760 // 10MB
+          });
+          
+          if (createError) {
+            console.error('Error creating images bucket:', createError);
+          } else {
+            console.log('Images bucket created successfully');
+          }
+        }
+      } catch (error) {
+        console.error('Error ensuring storage bucket:', error);
+      }
+    };
+
+    ensureStorageBucket();
+  }, []);
 
   const addImageSlot = () => {
     setProductImages([...productImages, { file: null, description: '', price: '0' }]);
