@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,15 +14,55 @@ import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
 import { useAuth } from '@/hooks/useAuth';
 import SearchModal from './SearchModal';
+import ProductDetailModal from './ProductDetailModal';
+import { supabase } from '@/integrations/supabase/client';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Fetch featured products for the dropdown
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      const { data, error } = await supabase
+        .from('images')
+        .select('*')
+        .eq('is_active', true)
+        .in('display_location', ['rings', 'necklaces', 'earrings', 'bracelets', 'lab-grown-diamonds'])
+        .eq('sort_order', 0)
+        .order('uploaded_at', { ascending: false })
+        .limit(6);
+
+      if (error) {
+        console.error('Error fetching featured products:', error);
+      } else {
+        const productsWithImages = data.map((item) => ({
+          id: parseInt(item.id.replace(/-/g, '').substring(0, 8), 16).toString(),
+          name: item.description || item.original_name || 'Jewelry Piece',
+          description: item.description || 'Elegant handcrafted design',
+          price: item.price ? `₹${item.price.toLocaleString()}` : 'Price on request',
+          originalPrice: item.price ? `₹${(item.price * 1.2).toLocaleString()}` : '',
+          category: item.display_location,
+          images: [{
+            id: item.id,
+            url: supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl,
+            description: item.description
+          }]
+        }));
+        setFeaturedProducts(productsWithImages);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
  
   const navItems = [
     { name: 'Home', path: '/' },
@@ -48,6 +86,16 @@ const Header = () => {
 
   const handleWishlistClick = () => {
     navigate('/wishlist');
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
   };
 
   return (
@@ -167,12 +215,51 @@ const Header = () => {
           </Button>
         </CartDrawer>
 
-        <Button
-          className="bg-black text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:bg-gray-800 text-xs md:text-sm hidden sm:block"
-          onClick={() => navigate('/products')}
-        >
-          Shop Now
-        </Button>
+        {/* Shop Now Dropdown with Product Details */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="bg-black text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:bg-gray-800 text-xs md:text-sm hidden sm:block">
+              Shop Now
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-white border shadow-lg z-50 w-80">
+            <div className="p-4">
+              <h3 className="font-semibold text-lg mb-3">Featured Products</h3>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {featuredProducts.map((product) => (
+                  <div 
+                    key={product.id}
+                    className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <img
+                      src={product.images[0]?.url}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm truncate">{product.name}</h4>
+                      <p className="text-xs text-gray-600 truncate">{product.description}</p>
+                      <p className="text-sm font-semibold text-black">{product.price}</p>
+                      <p className="text-xs text-blue-600 font-medium">Click to view details</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t pt-3 mt-3">
+                <Button 
+                  onClick={() => navigate('/products')}
+                  className="w-full bg-black text-white hover:bg-gray-800"
+                >
+                  View All Products
+                </Button>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         
         {/* Mobile Menu Button */}
         <Button
@@ -271,9 +358,14 @@ const Header = () => {
         onClose={() => setIsSearchOpen(false)}
         triggerRef={searchButtonRef}
       />
+
+      <ProductDetailModal 
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+      />
     </header>
   );
 };
 
 export default Header;
-
