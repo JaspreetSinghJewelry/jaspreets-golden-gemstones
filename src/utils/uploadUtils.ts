@@ -72,6 +72,32 @@ export const uploadSingleImage = async (
       return false;
     }
 
+    // Ensure storage bucket exists
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    
+    if (listError) {
+      console.error('Error listing buckets:', listError);
+      return false;
+    }
+
+    const imagesBucket = buckets?.find(bucket => bucket.name === 'images');
+    
+    if (!imagesBucket) {
+      console.log('Images bucket not found, creating...');
+      const { error: createError } = await supabase.storage.createBucket('images', {
+        public: true,
+        allowedMimeTypes: ['image/*'],
+        fileSizeLimit: 10485760 // 10MB
+      });
+      
+      if (createError) {
+        console.error('Error creating images bucket:', createError);
+        return false;
+      } else {
+        console.log('Images bucket created successfully');
+      }
+    }
+
     const fileExt = file.name.split('.').pop()?.toLowerCase();
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2);
@@ -160,7 +186,7 @@ export const uploadProductGroup = async (
     
     // Add a small delay between uploads to prevent overwhelming the server
     if (i > 0) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
     const success = await uploadSingleImage(
