@@ -79,9 +79,16 @@ const BulkProductUpload = () => {
         const fileInputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
         fileInputs.forEach(input => input.value = '');
       } else {
+        // Show detailed error information
+        const errorDetails = result.errors && result.errors.length > 0 
+          ? result.errors.join('; ') 
+          : "Unknown error occurred";
+        
+        console.error('Upload failed with errors:', result.errors);
+        
         toast({
           title: "Upload Failed",
-          description: "No images were uploaded successfully. Please check your files and try again.",
+          description: `No images were uploaded successfully. Errors: ${errorDetails}`,
           variant: "destructive"
         });
       }
@@ -89,7 +96,7 @@ const BulkProductUpload = () => {
       console.error('Upload error:', error);
       toast({
         title: "Upload Error",
-        description: "An error occurred while uploading. Please try again.",
+        description: `An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive"
       });
     } finally {

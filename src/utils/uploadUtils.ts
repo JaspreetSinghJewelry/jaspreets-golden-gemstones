@@ -10,6 +10,7 @@ export interface ProductImageUpload {
 export interface UploadResult {
   successCount: number;
   errorCount: number;
+  errors?: string[];
 }
 
 export const validateUploadData = (
@@ -47,32 +48,10 @@ export const validateUploadData = (
   return { isValid: true };
 };
 
-export const uploadSingleImage = async (
-  imageData: ProductImageUpload,
-  productName: string,
-  displayLocation: string,
-  productGroupId: string,
-  sortOrder: number,
-  productPrice: number
-): Promise<boolean> => {
+export const ensureStorageBucket = async (): Promise<boolean> => {
   try {
-    const file = imageData.file!;
+    console.log('Checking if images bucket exists...');
     
-    console.log(`Starting upload for file ${sortOrder + 1}:`, file.name);
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      console.error('Invalid file type:', file.type);
-      return false;
-    }
-
-    // Validate file size (10MB limit)
-    if (file.size > 10 * 1024 * 1024) {
-      console.error('File too large:', file.size);
-      return false;
-    }
-
-    // Ensure storage bucket exists
     const { data: buckets, error: listError } = await supabase.storage.listBuckets();
     
     if (listError) {
@@ -96,6 +75,48 @@ export const uploadSingleImage = async (
       } else {
         console.log('Images bucket created successfully');
       }
+    } else {
+      console.log('Images bucket already exists');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error ensuring storage bucket:', error);
+    return false;
+  }
+};
+
+export const uploadSingleImage = async (
+  imageData: ProductImageUpload,
+  productName: string,
+  displayLocation: string,
+  productGroupId: string,
+  sortOrder: number,
+  productPrice: number
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const file = imageData.file!;
+    
+    console.log(`Starting upload for file ${sortOrder + 1}:`, file.name);
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      const error = `Invalid file type: ${file.type}`;
+      console.error(error);
+      return { success: false, error };
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      const error = `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+      console.error(error);
+      return { success: false, error };
+    }
+
+    // Ensure storage bucket exists
+    const bucketReady = await ensureStorageBucket();
+    if (!bucketReady) {
+      return { success: false, error: 'Failed to ensure storage bucket exists' };
     }
 
     const fileExt = file.name.split('.').pop()?.toLowerCase();
@@ -114,7 +135,7 @@ export const uploadSingleImage = async (
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
-      return false;
+      return { success: false, error: `Storage upload failed: ${uploadError.message}` };
     }
 
     console.log('File uploaded to storage successfully, saving to database...');
@@ -144,14 +165,15 @@ export const uploadSingleImage = async (
       console.error('Database error:', dbError);
       // Clean up uploaded file if database insert fails
       await supabase.storage.from('images').remove([fileName]);
-      return false;
+      return { success: false, error: `Database error: ${dbError.message}` };
     }
 
     console.log(`Image ${sortOrder + 1} saved to database successfully`);
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error(`Unexpected error during upload of image ${sortOrder + 1}:`, error);
-    return false;
+    const errorMessage = `Unexpected error during upload of image ${sortOrder + 1}: ${error}`;
+    console.error(errorMessage);
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -163,9 +185,10 @@ export const uploadProductGroup = async (
   const validImages = productImages.filter(img => img.file);
   let successCount = 0;
   let errorCount = 0;
+  const errors: string[] = [];
 
   if (validImages.length === 0) {
-    return { successCount: 0, errorCount: 1 };
+    return { successCount: 0, errorCount: 1, errors: ['No valid images to upload'] };
   }
 
   const productGroupId = crypto.randomUUID();
@@ -179,6 +202,16 @@ export const uploadProductGroup = async (
     productPrice
   });
 
+  // Ensure bucket exists before starting uploads
+  const bucketReady = await ensureStorageBucket();
+  if (!bucketReady) {
+    return { 
+      successCount: 0, 
+      errorCount: validImages.length, 
+      errors: ['Failed to create or access storage bucket'] 
+    };
+  }
+
   // Upload images sequentially to avoid race conditions
   for (let i = 0; i < validImages.length; i++) {
     const imageData = validImages[i];
@@ -189,7 +222,7 @@ export const uploadProductGroup = async (
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
-    const success = await uploadSingleImage(
+    const result = await uploadSingleImage(
       imageData,
       productName,
       displayLocation,
@@ -198,15 +231,17 @@ export const uploadProductGroup = async (
       productPrice
     );
 
-    if (success) {
+    if (result.success) {
       successCount++;
       console.log(`Image ${i + 1} uploaded successfully`);
     } else {
       errorCount++;
-      console.log(`Image ${i + 1} failed to upload`);
+      const errorMsg = `Image ${i + 1} failed: ${result.error}`;
+      console.log(errorMsg);
+      errors.push(errorMsg);
     }
   }
 
-  console.log('Upload completed:', { successCount, errorCount });
-  return { successCount, errorCount };
+  console.log('Upload completed:', { successCount, errorCount, errors });
+  return { successCount, errorCount, errors };
 };
