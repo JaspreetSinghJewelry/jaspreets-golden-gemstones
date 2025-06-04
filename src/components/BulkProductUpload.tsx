@@ -43,13 +43,15 @@ const BulkProductUpload = () => {
   }, []);
 
   const handleUploadProductGroup = async () => {
-    console.log('Starting upload process...');
+    console.log('=== Upload Button Clicked ===');
     console.log('Product name:', productName);
     console.log('Product images:', productImages);
+    console.log('Display location:', displayLocation);
     
     const validation = validateUploadData(productImages, productName);
     
     if (!validation.isValid) {
+      console.error('Validation failed:', validation.errorMessage);
       toast({
         title: "Validation Error",
         description: validation.errorMessage,
@@ -58,17 +60,20 @@ const BulkProductUpload = () => {
       return;
     }
 
+    console.log('Validation passed, starting upload...');
     setUploading(true);
     
     try {
-      console.log('Calling uploadProductGroup...');
       const result = await uploadProductGroup(productImages, productName, displayLocation);
-      console.log('Upload result:', result);
+      console.log('Upload completed with result:', result);
 
       if (result.successCount > 0) {
+        const successMessage = `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`;
+        console.log('Success:', successMessage);
+        
         toast({
           title: "Product Created Successfully!",
-          description: `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`
+          description: successMessage
         });
         
         // Reset form
@@ -84,7 +89,7 @@ const BulkProductUpload = () => {
           ? result.errors.join('; ') 
           : "Unknown error occurred";
         
-        console.error('Upload failed with errors:', result.errors);
+        console.error('Upload failed completely:', errorDetails);
         
         toast({
           title: "Upload Failed",
@@ -93,7 +98,7 @@ const BulkProductUpload = () => {
         });
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Unexpected upload error:', error);
       toast({
         title: "Upload Error",
         description: `An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -130,7 +135,7 @@ const BulkProductUpload = () => {
   const hasValidPrice = productImages[0]?.price && Number(productImages[0].price) > 0;
   const canUpload = hasProductName && selectedImageCount > 0 && hasValidPrice && !uploading;
 
-  console.log('Upload validation:', {
+  console.log('Render state:', {
     productName: productName.trim(),
     hasProductName,
     selectedImageCount,

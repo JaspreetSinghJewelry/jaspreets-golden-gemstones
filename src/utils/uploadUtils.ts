@@ -24,21 +24,18 @@ const uploadSingleImage = async (
     // Validate file
     const validation = validateImageFile(file);
     if (!validation.isValid) {
-      console.error(validation.error);
+      console.error('File validation failed:', validation.error);
       return { success: false, error: validation.error };
-    }
-
-    // Ensure storage bucket exists
-    const bucketReady = await ensureStorageBucket();
-    if (!bucketReady) {
-      return { success: false, error: 'Failed to ensure storage bucket exists' };
     }
 
     // Generate filename and upload to storage
     const fileName = generateFileName(file, sortOrder);
+    console.log('Generated filename:', fileName);
+    
     const uploadResult = await uploadFileToStorage(file, fileName);
     
     if (!uploadResult.success) {
+      console.error('Storage upload failed:', uploadResult.error);
       return uploadResult;
     }
 
@@ -46,6 +43,8 @@ const uploadSingleImage = async (
     const imageDescription = sortOrder === 0 
       ? (imageData.description.trim() || `${productName} - Main Image`)
       : (imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`);
+
+    console.log('Saving to database with description:', imageDescription);
 
     // Save to database
     const dbResult = await saveImageToDatabase(
@@ -59,6 +58,7 @@ const uploadSingleImage = async (
     );
 
     if (!dbResult.success) {
+      console.error('Database save failed:', dbResult.error);
       // Clean up uploaded file if database insert fails
       await cleanupFailedUpload(fileName);
       return dbResult;
@@ -78,19 +78,22 @@ export const uploadProductGroup = async (
   productName: string,
   displayLocation: string
 ): Promise<UploadResult> => {
+  console.log('=== Starting Product Group Upload ===');
+  
   const validImages = productImages.filter(img => img.file);
   let successCount = 0;
   let errorCount = 0;
   const errors: string[] = [];
 
   if (validImages.length === 0) {
+    console.error('No valid images to upload');
     return { successCount: 0, errorCount: 1, errors: ['No valid images to upload'] };
   }
 
   const productGroupId = crypto.randomUUID();
   const productPrice = Number(validImages[0].price) || 0;
 
-  console.log('Starting product group upload:', {
+  console.log('Upload configuration:', {
     productName,
     validImages: validImages.length,
     displayLocation,
@@ -99,22 +102,31 @@ export const uploadProductGroup = async (
   });
 
   // Ensure bucket exists before starting uploads
+  console.log('Ensuring storage bucket exists...');
   const bucketReady = await ensureStorageBucket();
   if (!bucketReady) {
+    const error = 'Failed to create or access storage bucket';
+    console.error(error);
     return { 
       successCount: 0, 
       errorCount: validImages.length, 
-      errors: ['Failed to create or access storage bucket'] 
+      errors: [error] 
     };
   }
+  
+  console.log('Storage bucket is ready, starting uploads...');
 
   // Upload images sequentially to avoid race conditions
   for (let i = 0; i < validImages.length; i++) {
     const imageData = validImages[i];
-    console.log(`Processing image ${i + 1} of ${validImages.length}:`, imageData.file?.name);
+    console.log(`\n--- Processing image ${i + 1} of ${validImages.length} ---`);
+    console.log('File:', imageData.file?.name);
+    console.log('Description:', imageData.description);
+    console.log('Price:', imageData.price);
     
     // Add a small delay between uploads to prevent overwhelming the server
     if (i > 0) {
+      console.log('Adding delay between uploads...');
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
@@ -129,15 +141,19 @@ export const uploadProductGroup = async (
 
     if (result.success) {
       successCount++;
-      console.log(`Image ${i + 1} uploaded successfully`);
+      console.log(`✅ Image ${i + 1} uploaded successfully`);
     } else {
       errorCount++;
-      const errorMsg = `Image ${i + 1} failed: ${result.error}`;
-      console.log(errorMsg);
+      const errorMsg = `Image ${i + 1} (${imageData.file?.name}) failed: ${result.error}`;
+      console.error(`❌ ${errorMsg}`);
       errors.push(errorMsg);
     }
   }
 
-  console.log('Upload completed:', { successCount, errorCount, errors });
+  console.log('\n=== Upload Summary ===');
+  console.log('Success count:', successCount);
+  console.log('Error count:', errorCount);
+  console.log('Errors:', errors);
+  
   return { successCount, errorCount, errors };
 };

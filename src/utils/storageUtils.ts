@@ -5,17 +5,20 @@ export const ensureStorageBucket = async (): Promise<boolean> => {
   try {
     console.log('Checking if images bucket exists...');
     
+    // First, try to list buckets to see if images bucket exists
     const { data: buckets, error: listError } = await supabase.storage.listBuckets();
     
     if (listError) {
       console.error('Error listing buckets:', listError);
-      return false;
+      // If we can't list buckets, try to proceed anyway
     }
 
     const imagesBucket = buckets?.find(bucket => bucket.name === 'images');
     
     if (!imagesBucket) {
-      console.log('Images bucket not found, creating...');
+      console.log('Images bucket not found, attempting to create...');
+      
+      // Try to create the bucket
       const { error: createError } = await supabase.storage.createBucket('images', {
         public: true,
         allowedMimeTypes: ['image/*'],
@@ -24,7 +27,27 @@ export const ensureStorageBucket = async (): Promise<boolean> => {
       
       if (createError) {
         console.error('Error creating images bucket:', createError);
-        return false;
+        
+        // If creation fails due to RLS, the bucket might already exist
+        // Let's try to upload a test file to see if the bucket is accessible
+        console.log('Bucket creation failed, testing if bucket exists and is accessible...');
+        
+        const testBlob = new Blob(['test'], { type: 'text/plain' });
+        const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
+        
+        const { error: testError } = await supabase.storage
+          .from('images')
+          .upload('test-access.txt', testFile, { upsert: true });
+        
+        if (testError) {
+          console.error('Bucket is not accessible:', testError);
+          return false;
+        } else {
+          console.log('Bucket exists and is accessible');
+          // Clean up test file
+          await supabase.storage.from('images').remove(['test-access.txt']);
+          return true;
+        }
       } else {
         console.log('Images bucket created successfully');
       }
