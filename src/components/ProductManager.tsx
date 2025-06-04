@@ -65,6 +65,14 @@ const ProductManager = () => {
   const [selectedImage, setSelectedImage] = useState<ProductImage | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [bulkImages, setBulkImages] = useState<Array<{
+    filename: string;
+    file_path: string;
+    original_name: string;
+    description: string;
+    price: number | null;
+    sort_order: number;
+  }>>([]);
 
   useEffect(() => {
     fetchImages();
@@ -132,10 +140,65 @@ const ProductManager = () => {
     }));
   };
 
-  const createImage = async () => {
+  const addBulkImage = () => {
+    setBulkImages([...bulkImages, {
+      filename: '',
+      file_path: '',
+      original_name: '',
+      description: '',
+      price: null,
+      sort_order: bulkImages.length + 1
+    }]);
+  };
+
+  const updateBulkImage = (index: number, field: string, value: any) => {
+    const updated = [...bulkImages];
+    updated[index] = { ...updated[index], [field]: value };
+    setBulkImages(updated);
+  };
+
+  const removeBulkImage = (index: number) => {
+    setBulkImages(bulkImages.filter((_, i) => i !== index));
+  };
+
+  const createBulkImages = async () => {
+    if (bulkImages.length === 0) return;
+
+    const productGroup = `group_${Date.now()}`;
+    const imagesToInsert = bulkImages.map(img => ({
+      filename: img.filename || `image_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      file_path: img.file_path,
+      original_name: img.original_name,
+      description: img.description,
+      price: img.price,
+      sort_order: img.sort_order,
+      display_location: newImage.display_location,
+      is_active: newImage.is_active,
+      product_group: productGroup
+    }));
+
     const { data, error } = await supabase
       .from('images')
-      .insert([newImage]);
+      .insert(imagesToInsert);
+
+    if (error) {
+      console.error('Error creating bulk images:', error);
+    } else {
+      console.log('Bulk images created successfully:', data);
+      fetchImages();
+      setBulkImages([]);
+    }
+  };
+
+  const createImage = async () => {
+    const imageToInsert = {
+      ...newImage,
+      filename: newImage.original_name || `image_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+
+    const { data, error } = await supabase
+      .from('images')
+      .insert([imageToInsert]);
 
     if (error) {
       console.error('Error creating image:', error);
@@ -330,29 +393,90 @@ const ProductManager = () => {
           </div>
         </div>
 
-        {/* Image List */}
+        {/* Bulk Upload Section */}
         <div className="bg-white shadow-md rounded-md p-4">
-          <h2 className="text-lg font-semibold mb-4">Image List</h2>
-          <Table>
-            <TableCaption>A list of your recent images.</TableCaption>
-            <TableHead>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {images.map((image) => (
-                <TableRow key={image.id} onClick={() => handleImageSelect(image)} className="cursor-pointer hover:bg-gray-100">
-                  <TableCell className="font-medium">{image.original_name}</TableCell>
-                  <TableCell>{image.display_location}</TableCell>
-                  <TableCell className="text-right">{image.price}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <h2 className="text-lg font-semibold mb-2">Bulk Upload for Product Group</h2>
+          
+          <div className="mb-4">
+            <Button onClick={addBulkImage} className="mb-2">Add Image to Group</Button>
+            {bulkImages.map((img, index) => (
+              <div key={index} className="border p-2 mb-2 rounded">
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <Input
+                    placeholder="Filename"
+                    value={img.filename}
+                    onChange={(e) => updateBulkImage(index, 'filename', e.target.value)}
+                  />
+                  <Input
+                    placeholder="File Path"
+                    value={img.file_path}
+                    onChange={(e) => updateBulkImage(index, 'file_path', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  <Input
+                    placeholder="Original Name"
+                    value={img.original_name}
+                    onChange={(e) => updateBulkImage(index, 'original_name', e.target.value)}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price"
+                    value={img.price || ''}
+                    onChange={(e) => updateBulkImage(index, 'price', e.target.value ? parseFloat(e.target.value) : null)}
+                  />
+                </div>
+                <Textarea
+                  placeholder="Description"
+                  value={img.description}
+                  onChange={(e) => updateBulkImage(index, 'description', e.target.value)}
+                  className="mb-2"
+                />
+                <div className="flex justify-between items-center">
+                  <Input
+                    type="number"
+                    placeholder="Sort Order"
+                    value={img.sort_order}
+                    onChange={(e) => updateBulkImage(index, 'sort_order', parseInt(e.target.value))}
+                    className="w-24"
+                  />
+                  <Button variant="destructive" size="sm" onClick={() => removeBulkImage(index)}>
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            ))}
+            {bulkImages.length > 0 && (
+              <Button onClick={createBulkImages} className="w-full">Create Product Group</Button>
+            )}
+          </div>
         </div>
+      </div>
+
+      {/* Image List */}
+      <div className="bg-white shadow-md rounded-md p-4 mt-4">
+        <h2 className="text-lg font-semibold mb-4">Image List</h2>
+        <Table>
+          <TableCaption>A list of your recent images.</TableCaption>
+          <TableHead>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Group</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {images.map((image) => (
+              <TableRow key={image.id} onClick={() => handleImageSelect(image)} className="cursor-pointer hover:bg-gray-100">
+                <TableCell className="font-medium">{image.original_name}</TableCell>
+                <TableCell>{image.display_location}</TableCell>
+                <TableCell>{image.product_group}</TableCell>
+                <TableCell className="text-right">{image.price}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
