@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,14 +28,15 @@ const Header = () => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
-    const collectionItems = [
+    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
+    { name: 'Contact Us', path: '/contact' },
+  ];
+
+  const collectionItems = [
     { name: 'Rings', path: '/rings' },
     { name: 'Necklaces', path: '/necklaces' },
     { name: 'Earrings', path: '/earrings' },
     { name: 'Bracelets', path: '/bracelets' },
-  ];
-    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
-    { name: 'Contact Us', path: '/contact' },
   ];
 
   const handleUserAction = () => {
