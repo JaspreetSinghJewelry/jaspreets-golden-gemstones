@@ -184,16 +184,24 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Calculate selected images count properly
-  const selectedImageCount = productImages.filter(img => img.file !== null).length;
-  const canUpload = productName.trim() !== '' && selectedImageCount > 0 && !uploading;
+  // Fix the validation - count only images that actually have files
+  const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
+  const hasProductName = productName.trim().length > 0;
+  const canUpload = hasProductName && selectedImageCount > 0 && !uploading;
 
-  console.log('Upload validation:', {
+  console.log('Upload validation debug:', {
     productName: productName.trim(),
+    hasProductName,
     selectedImageCount,
     canUpload,
     uploading,
-    productImages: productImages.map(img => ({ hasFile: !!img.file, description: img.description, price: img.price }))
+    productImagesDebug: productImages.map((img, index) => ({ 
+      index, 
+      hasFile: !!img.file, 
+      fileName: img.file?.name || 'no file',
+      description: img.description, 
+      price: img.price 
+    }))
   });
 
   return (
