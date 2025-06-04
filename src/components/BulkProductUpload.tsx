@@ -82,6 +82,12 @@ const BulkProductUpload = () => {
       return;
     }
 
+    console.log('Starting upload with:', {
+      productName,
+      validImages: validImages.length,
+      displayLocation
+    });
+
     setUploading(true);
     let successCount = 0;
     let errorCount = 0;
@@ -93,11 +99,13 @@ const BulkProductUpload = () => {
         const file = imageData.file!;
 
         if (!file.type.startsWith('image/')) {
+          console.error('Invalid file type:', file.type);
           errorCount++;
           continue;
         }
 
         if (file.size > 10 * 1024 * 1024) {
+          console.error('File too large:', file.size);
           errorCount++;
           continue;
         }
@@ -105,6 +113,8 @@ const BulkProductUpload = () => {
         const fileExt = file.name.split('.').pop()?.toLowerCase();
         const timestamp = Date.now();
         const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+        console.log('Uploading file:', fileName);
 
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('images')
@@ -114,9 +124,12 @@ const BulkProductUpload = () => {
           });
 
         if (uploadError) {
+          console.error('Upload error:', uploadError);
           errorCount++;
           continue;
         }
+
+        console.log('File uploaded successfully, saving to database...');
 
         const { error: dbError } = await supabase
           .from('images')
@@ -128,20 +141,23 @@ const BulkProductUpload = () => {
             mime_type: file.type,
             display_location: displayLocation,
             description: imageData.description.trim() || productName,
-            price: Number(imageData.price),
+            price: Number(imageData.price) || 0,
             is_active: true,
             sort_order: successCount,
             product_group: productGroupId
           });
 
         if (dbError) {
+          console.error('Database error:', dbError);
           await supabase.storage.from('images').remove([fileName]);
           errorCount++;
           continue;
         }
 
+        console.log('Image saved to database successfully');
         successCount++;
       } catch (error) {
+        console.error('Unexpected error:', error);
         errorCount++;
       }
     }
@@ -168,8 +184,16 @@ const BulkProductUpload = () => {
     }
   };
 
+  // Fix the validation logic for manual upload
   const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
-  const canUpload = productName.trim() && selectedImageCount > 0 && productImages[0].price && Number(productImages[0].price) > 0;
+  const canUpload = productName.trim() !== '' && selectedImageCount > 0;
+
+  console.log('Upload validation:', {
+    productName: productName.trim(),
+    selectedImageCount,
+    canUpload,
+    uploading
+  });
 
   return (
     <Card>
