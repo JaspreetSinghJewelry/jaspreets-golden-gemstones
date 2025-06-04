@@ -40,6 +40,31 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
 
   const currentImage = product.images[currentImageIndex];
 
+  const handleAddToCart = () => {
+    const cartItem = {
+      id: parseInt(product.id),
+      name: product.name,
+      price: parseFloat(product.price.replace('₹', '').replace(',', '')),
+      image: currentImage.url
+    };
+    addToCart(cartItem);
+  };
+
+  const handleWishlistToggle = () => {
+    const wishlistItem = {
+      id: parseInt(product.id),
+      name: product.name,
+      price: parseFloat(product.price.replace('₹', '').replace(',', '')),
+      image: currentImage.url
+    };
+
+    if (isInWishlist(parseInt(product.id))) {
+      removeFromWishlist(parseInt(product.id));
+    } else {
+      addToWishlist(wishlistItem);
+    }
+  };
+
   return (
     <Card className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
       <CardContent className="p-4">
@@ -103,13 +128,9 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
             variant="ghost"
             size="icon"
             className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-            onClick={() => {
-              isInWishlist(product.id)
-                ? removeFromWishlist(product.id)
-                : addToWishlist(product);
-            }}
+            onClick={handleWishlistToggle}
           >
-            <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-black text-black' : 'text-gray-600'}`} />
+            <Heart className={`h-4 w-4 ${isInWishlist(parseInt(product.id)) ? 'fill-black text-black' : 'text-gray-600'}`} />
           </Button>
         </div>
 
@@ -145,7 +166,7 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
             <p className="text-gray-500 line-through text-sm">{product.originalPrice}</p>
           )}
         </div>
-        <Button onClick={() => addToCart(product)} className="w-full bg-black hover:bg-gray-800 text-white">
+        <Button onClick={handleAddToCart} className="w-full bg-black hover:bg-gray-800 text-white">
           <ShoppingBag className="h-4 w-4 mr-2" />
           Add to Cart
         </Button>
