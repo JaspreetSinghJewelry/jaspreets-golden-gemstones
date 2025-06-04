@@ -55,12 +55,28 @@ const DisplayCategoryProducts = () => {
         // Group products by product_group
         const grouped: { [key: string]: ProductImage[] } = {};
         
-        data.forEach((item: ProductImage) => {
-          const groupKey = item.product_group || item.id;
+        data.forEach((item: any) => {
+          const productImage: ProductImage = {
+            id: item.id,
+            filename: item.filename,
+            original_name: item.original_name,
+            file_path: item.file_path,
+            file_size: item.file_size,
+            mime_type: item.mime_type,
+            uploaded_at: item.uploaded_at,
+            display_location: item.display_location,
+            description: item.description,
+            price: item.price,
+            is_active: item.is_active,
+            sort_order: item.sort_order,
+            product_group: item.product_group || item.id
+          };
+          
+          const groupKey = productImage.product_group || productImage.id;
           if (!grouped[groupKey]) {
             grouped[groupKey] = [];
           }
-          grouped[groupKey].push(item);
+          grouped[groupKey].push(productImage);
         });
 
         // Sort images within each group by sort_order

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProductImage {
   id: string;
@@ -35,9 +36,9 @@ const MultiAngleProduct = ({
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const getImageUrl = (filePath: string) => {
-    const { data } = window.supabase?.storage
-      ?.from('images')
-      ?.getPublicUrl(filePath) || { data: { publicUrl: '' } };
+    const { data } = supabase.storage
+      .from('images')
+      .getPublicUrl(filePath);
     return data.publicUrl;
   };
 
@@ -47,6 +48,12 @@ const MultiAngleProduct = ({
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + productGroup.length) % productGroup.length);
+  };
+
+  const handleImageClick = () => {
+    if (productGroup.length > 1) {
+      nextImage();
+    }
   };
 
   const currentImage = productGroup[currentImageIndex];
@@ -69,7 +76,10 @@ const MultiAngleProduct = ({
             <img
               src={mainImageUrl}
               alt={productName}
-              className="w-full h-full object-cover transition-opacity duration-300"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                productGroup.length > 1 ? 'cursor-pointer' : ''
+              }`}
+              onClick={handleImageClick}
               onError={(e) => {
                 e.currentTarget.src = '/placeholder.svg';
               }}
@@ -79,13 +89,19 @@ const MultiAngleProduct = ({
             {productGroup.length > 1 && (
               <>
                 <button
-                  onClick={prevImage}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    prevImage();
+                  }}
                   className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow-md transition-opacity opacity-0 group-hover:opacity-100"
                 >
                   <ChevronLeft className="h-4 w-4 text-gray-600" />
                 </button>
                 <button
-                  onClick={nextImage}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    nextImage();
+                  }}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 shadow-md transition-opacity opacity-0 group-hover:opacity-100"
                 >
                   <ChevronRight className="h-4 w-4 text-gray-600" />
@@ -97,6 +113,13 @@ const MultiAngleProduct = ({
             {productGroup.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-2 py-1 rounded text-xs">
                 {currentImageIndex + 1} / {productGroup.length}
+              </div>
+            )}
+
+            {/* Click hint for mobile */}
+            {productGroup.length > 1 && (
+              <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                Click to browse
               </div>
             )}
           </div>
