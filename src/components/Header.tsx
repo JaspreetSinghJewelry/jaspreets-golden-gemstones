@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,10 +34,10 @@ const Header = () => {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
-    { name: 'Contact Us', path: '/contact' },
     { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
+    { name: 'Contact Us', path: '/contact' },
   ];
-  
+
   const handleUserAction = () => {
     if (!isAuthenticated) {
       navigate('/auth');
