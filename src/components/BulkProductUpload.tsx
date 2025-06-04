@@ -61,7 +61,9 @@ const BulkProductUpload = () => {
     setUploading(true);
     
     try {
+      console.log('Calling uploadProductGroup...');
       const result = await uploadProductGroup(productImages, productName, displayLocation);
+      console.log('Upload result:', result);
 
       if (result.successCount > 0) {
         toast({
@@ -79,7 +81,7 @@ const BulkProductUpload = () => {
       } else {
         toast({
           title: "Upload Failed",
-          description: "No images were uploaded successfully",
+          description: "No images were uploaded successfully. Please check your files and try again.",
           variant: "destructive"
         });
       }
@@ -87,7 +89,7 @@ const BulkProductUpload = () => {
       console.error('Upload error:', error);
       toast({
         title: "Upload Error",
-        description: "An error occurred while uploading",
+        description: "An error occurred while uploading. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -177,7 +179,7 @@ const BulkProductUpload = () => {
                 <li><strong>Image 1:</strong> Main thumbnail image (required with price)</li>
                 <li><strong>Image 2+:</strong> Additional angles of the same product</li>
                 <li>All images will be grouped together as one product</li>
-                <li>Products appear in Shop Now section and selected collection</li>
+                <li>Products appear in selected collection category</li>
               </ul>
             </div>
 

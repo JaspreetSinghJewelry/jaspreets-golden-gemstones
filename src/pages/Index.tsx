@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from "@/components/Header";
 import ProductCarousel from "@/components/ProductCarousel";
-import FeaturedProducts from "@/components/FeaturedProducts";
 import UploadedImages from "@/components/UploadedImages";
 import Categories from "@/components/Categories";
 import LabGrownDiamonds from "@/components/LabGrownDiamonds";
@@ -31,7 +30,6 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
-      <FeaturedProducts />
       <Categories />
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />

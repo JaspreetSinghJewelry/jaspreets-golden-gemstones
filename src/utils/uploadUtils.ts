@@ -52,18 +52,21 @@ export const uploadSingleImage = async (
   productName: string,
   displayLocation: string,
   productGroupId: string,
-  sortOrder: number
+  sortOrder: number,
+  productPrice: number
 ): Promise<boolean> => {
   try {
     const file = imageData.file!;
     
-    console.log('Starting upload for file:', file.name);
+    console.log(`Starting upload for file ${sortOrder + 1}:`, file.name);
 
+    // Validate file type
     if (!file.type.startsWith('image/')) {
       console.error('Invalid file type:', file.type);
       return false;
     }
 
+    // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
       console.error('File too large:', file.size);
       return false;
@@ -71,7 +74,8 @@ export const uploadSingleImage = async (
 
     const fileExt = file.name.split('.').pop()?.toLowerCase();
     const timestamp = Date.now();
-    const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const randomId = Math.random().toString(36).substring(2);
+    const fileName = `${timestamp}-${randomId}-${sortOrder}.${fileExt}`;
 
     console.log('Uploading file to storage:', fileName);
 
@@ -89,12 +93,10 @@ export const uploadSingleImage = async (
 
     console.log('File uploaded to storage successfully, saving to database...');
 
-    // Use the price from the first image for all images in the group
-    const basePrice = sortOrder === 0 ? Number(imageData.price) || 0 : 0;
-    // First image is thumbnail, others are different angles
+    // Create appropriate description based on sort order
     const imageDescription = sortOrder === 0 
-      ? `${productName} - Main Image` 
-      : `${productName} - Angle ${sortOrder}`;
+      ? (imageData.description.trim() || `${productName} - Main Image`)
+      : (imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`);
 
     const { error: dbError } = await supabase
       .from('images')
@@ -105,8 +107,8 @@ export const uploadSingleImage = async (
         file_size: file.size,
         mime_type: file.type,
         display_location: displayLocation,
-        description: imageData.description.trim() || imageDescription,
-        price: basePrice,
+        description: imageDescription,
+        price: productPrice,
         is_active: true,
         sort_order: sortOrder,
         product_group: productGroupId
@@ -119,10 +121,10 @@ export const uploadSingleImage = async (
       return false;
     }
 
-    console.log('Image saved to database successfully');
+    console.log(`Image ${sortOrder + 1} saved to database successfully`);
     return true;
   } catch (error) {
-    console.error('Unexpected error during upload:', error);
+    console.error(`Unexpected error during upload of image ${sortOrder + 1}:`, error);
     return false;
   }
 };
@@ -136,25 +138,38 @@ export const uploadProductGroup = async (
   let successCount = 0;
   let errorCount = 0;
 
+  if (validImages.length === 0) {
+    return { successCount: 0, errorCount: 1 };
+  }
+
   const productGroupId = crypto.randomUUID();
+  const productPrice = Number(validImages[0].price) || 0;
 
   console.log('Starting product group upload:', {
     productName,
     validImages: validImages.length,
     displayLocation,
-    productGroupId
+    productGroupId,
+    productPrice
   });
 
+  // Upload images sequentially to avoid race conditions
   for (let i = 0; i < validImages.length; i++) {
     const imageData = validImages[i];
-    console.log(`Uploading image ${i + 1} of ${validImages.length}:`, imageData.file?.name);
+    console.log(`Processing image ${i + 1} of ${validImages.length}:`, imageData.file?.name);
+    
+    // Add a small delay between uploads to prevent overwhelming the server
+    if (i > 0) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
     
     const success = await uploadSingleImage(
       imageData,
       productName,
       displayLocation,
       productGroupId,
-      i
+      i,
+      productPrice
     );
 
     if (success) {
