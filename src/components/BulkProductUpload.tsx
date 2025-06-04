@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +50,24 @@ const BulkProductUpload = () => {
       }
     }
   };
+
+  // Auto-upload when conditions are met
+  useEffect(() => {
+    const firstImage = productImages[0];
+    const hasValidFirstImage = firstImage.file && 
+                               productName.trim() && 
+                               firstImage.price && 
+                               Number(firstImage.price) > 0;
+    
+    if (hasValidFirstImage && !uploading) {
+      // Small delay to allow user to see the form is complete
+      const timer = setTimeout(() => {
+        uploadProductGroup();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [productImages, productName]);
 
   const uploadProductGroup = async () => {
     // Validation
@@ -146,7 +164,7 @@ const BulkProductUpload = () => {
 
     if (successCount > 0) {
       toast({
-        title: "Product Created",
+        title: "Product Created Successfully!",
         description: `Product "${productName}" created with ${successCount} images${errorCount > 0 ? `, ${errorCount} failed` : ''}`
       });
       
@@ -166,7 +184,7 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Count images that have files selected - fix the counting logic
+  // Count images that have files selected
   const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
 
   return (
@@ -174,27 +192,28 @@ const BulkProductUpload = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Bulk Upload for Product Group
+          Quick Product Upload
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           {/* Product Name */}
           <div>
-            <Label htmlFor="productName">Product Name</Label>
+            <Label htmlFor="productName">Product Name *</Label>
             <Input
               id="productName"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               placeholder="Enter product name"
               className="mt-2"
+              disabled={uploading}
             />
           </div>
 
           {/* Display Location */}
           <div>
             <Label htmlFor="displayLocation">Collection Category</Label>
-            <Select value={displayLocation} onValueChange={setDisplayLocation}>
+            <Select value={displayLocation} onValueChange={setDisplayLocation} disabled={uploading}>
               <SelectTrigger className="mt-2">
                 <SelectValue />
               </SelectTrigger>
@@ -219,9 +238,10 @@ const BulkProductUpload = () => {
                 size="sm"
                 onClick={addImageSlot}
                 className="flex items-center gap-2"
+                disabled={uploading}
               >
                 <Plus className="h-4 w-4" />
-                Add Image
+                Add More Images
               </Button>
             </div>
 
@@ -229,7 +249,7 @@ const BulkProductUpload = () => {
               <Card key={index} className="p-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                   <div>
-                    <Label>Image File</Label>
+                    <Label>Image File {index === 0 ? '*' : ''}</Label>
                     <Input
                       type="file"
                       accept="image/*"
@@ -251,17 +271,19 @@ const BulkProductUpload = () => {
                       onChange={(e) => updateImageSlot(index, 'description', e.target.value)}
                       placeholder="Image description"
                       className="mt-1"
+                      disabled={uploading}
                     />
                   </div>
                   
                   <div>
-                    <Label>Price (₹)</Label>
+                    <Label>Price (₹) {index === 0 ? '*' : ''}</Label>
                     <Input
                       type="number"
                       value={imageData.price}
                       onChange={(e) => updateImageSlot(index, 'price', e.target.value)}
                       placeholder="0"
                       className="mt-1"
+                      disabled={uploading}
                     />
                   </div>
                   
@@ -283,13 +305,24 @@ const BulkProductUpload = () => {
             ))}
           </div>
 
-          <Button 
-            onClick={uploadProductGroup}
-            disabled={uploading || !productName.trim() || selectedImageCount === 0}
-            className="w-full"
-          >
-            {uploading ? 'Creating Product...' : `Create Product Group with ${selectedImageCount} Images`}
-          </Button>
+          {uploading && (
+            <div className="text-center py-4">
+              <div className="text-lg font-medium text-blue-600">
+                Creating Product Group with {selectedImageCount} Images...
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                Please wait while we upload your images
+              </div>
+            </div>
+          )}
+
+          {!uploading && (
+            <div className="text-center py-2">
+              <div className="text-sm text-gray-600">
+                Fill in product name, upload first image, and set price to auto-create product group
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
