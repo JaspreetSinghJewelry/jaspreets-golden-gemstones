@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
 
 interface ProductImageUpload {
   file: File | null;
@@ -64,11 +64,22 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
     onUpdate(index, 'price', event.target.value);
   };
 
+  const isMainImage = index === 0;
+
   return (
-    <Card className="p-4">
+    <Card className={`p-4 ${isMainImage ? 'border-2 border-blue-500 bg-blue-50' : ''}`}>
+      {isMainImage && (
+        <div className="flex items-center gap-2 mb-3 text-blue-600">
+          <Star className="h-4 w-4 fill-current" />
+          <span className="text-sm font-medium">Main Thumbnail Image</span>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
-          <Label htmlFor={`file-${index}`}>Image File {index === 0 ? '*' : ''}</Label>
+          <Label htmlFor={`file-${index}`}>
+            {isMainImage ? 'Thumbnail Image *' : `Angle ${index} Image`}
+          </Label>
           <Input
             id={`file-${index}`}
             type="file"
@@ -90,14 +101,16 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
             id={`description-${index}`}
             value={imageData.description}
             onChange={handleDescriptionChange}
-            placeholder="Image description"
+            placeholder={isMainImage ? "Main product description" : `Angle ${index} description`}
             className="mt-1"
             disabled={disabled}
           />
         </div>
         
         <div>
-          <Label htmlFor={`price-${index}`}>Price (₹) {index === 0 ? '*' : ''}</Label>
+          <Label htmlFor={`price-${index}`}>
+            {isMainImage ? 'Product Price (₹) *' : 'Price (₹)'}
+          </Label>
           <Input
             id={`price-${index}`}
             type="number"
@@ -107,12 +120,18 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
             onChange={handlePriceChange}
             placeholder="0"
             className="mt-1"
-            disabled={disabled}
+            disabled={disabled || !isMainImage}
+            readOnly={!isMainImage}
           />
+          {!isMainImage && (
+            <div className="text-xs text-gray-500 mt-1">
+              Uses price from main image
+            </div>
+          )}
         </div>
         
         <div className="flex gap-2">
-          {canRemove && (
+          {canRemove && !isMainImage && (
             <Button
               type="button"
               variant="destructive"

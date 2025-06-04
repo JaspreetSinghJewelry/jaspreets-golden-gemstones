@@ -14,12 +14,14 @@ const FeaturedProducts = () => {
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
+      // Fetch products from all collections (excluding best-sellers)
       const { data, error } = await supabase
         .from('images')
         .select('*')
         .eq('is_active', true)
-        .eq('display_location', 'best-sellers')
-        .order('sort_order', { ascending: true })
+        .in('display_location', ['rings', 'necklaces', 'earrings', 'bracelets', 'lab-grown-diamonds'])
+        .eq('sort_order', 0) // Only get thumbnail images
+        .order('uploaded_at', { ascending: false })
         .limit(6);
 
       if (error) {
@@ -47,7 +49,7 @@ const FeaturedProducts = () => {
 
   return (
     <section className="px-6 py-16 bg-white">
-      <h3 className="text-3xl font-semibold text-center mb-10 text-black">Best Sellers</h3>
+      <h3 className="text-3xl font-semibold text-center mb-10 text-black">Shop Now</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {products.map((product) => (
           <Card key={product.id} className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">

@@ -91,6 +91,10 @@ export const uploadSingleImage = async (
 
     // Use the price from the first image for all images in the group
     const basePrice = sortOrder === 0 ? Number(imageData.price) || 0 : 0;
+    // First image is thumbnail, others are different angles
+    const imageDescription = sortOrder === 0 
+      ? `${productName} - Main Image` 
+      : `${productName} - Angle ${sortOrder}`;
 
     const { error: dbError } = await supabase
       .from('images')
@@ -101,7 +105,7 @@ export const uploadSingleImage = async (
         file_size: file.size,
         mime_type: file.type,
         display_location: displayLocation,
-        description: imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`,
+        description: imageData.description.trim() || imageDescription,
         price: basePrice,
         is_active: true,
         sort_order: sortOrder,

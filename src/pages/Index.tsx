@@ -32,7 +32,6 @@ const Index = () => {
       <Header />
       <ProductCarousel />
       <FeaturedProducts />
-      <UploadedImages location="featured-collection" title="Featured Collection" />
       <Categories />
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />

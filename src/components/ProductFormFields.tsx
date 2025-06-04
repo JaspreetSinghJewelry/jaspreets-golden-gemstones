@@ -35,6 +35,9 @@ const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
 
       <div>
         <Label htmlFor="displayLocation">Collection Category</Label>
+        <p className="text-sm text-gray-600 mb-2">
+          Products will appear in Shop Now section and the selected collection category
+        </p>
         <Select value={displayLocation} onValueChange={onDisplayLocationChange} disabled={disabled}>
           <SelectTrigger className="mt-2">
             <SelectValue />
@@ -45,7 +48,6 @@ const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
             <SelectItem value="earrings">Earrings</SelectItem>
             <SelectItem value="bracelets">Bracelets</SelectItem>
             <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
-            <SelectItem value="best-sellers">Best Sellers</SelectItem>
           </SelectContent>
         </Select>
       </div>

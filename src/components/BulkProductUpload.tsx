@@ -171,13 +171,13 @@ const BulkProductUpload = () => {
               </Button>
             </div>
 
-            <div className="text-sm text-gray-600 mb-4">
-              <p>💡 <strong>Tip:</strong> Upload multiple images to show different angles of the same product:</p>
+            <div className="text-sm text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg">
+              <p>📸 <strong>Image Upload Guide:</strong></p>
               <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>Image 1: Front view</li>
-                <li>Image 2: Side view</li>
-                <li>Image 3: Back view</li>
-                <li>Image 4: Detail shots</li>
+                <li><strong>Image 1:</strong> Main thumbnail image (required with price)</li>
+                <li><strong>Image 2+:</strong> Additional angles of the same product</li>
+                <li>All images will be grouped together as one product</li>
+                <li>Products appear in Shop Now section and selected collection</li>
               </ul>
             </div>
 
