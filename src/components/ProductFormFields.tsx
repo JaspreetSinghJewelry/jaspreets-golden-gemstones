@@ -45,11 +45,9 @@ const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
             <SelectItem value="earrings">Earrings</SelectItem>
             <SelectItem value="bracelets">Bracelets</SelectItem>
             <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
+            <SelectItem value="best-sellers">Best Sellers</SelectItem>
           </SelectContent>
         </Select>
-        <p className="text-sm text-gray-500 mt-1">
-          Products will appear in the selected category and in the "Shop Now" section on the home page.
-        </p>
       </div>
     </>
   );
