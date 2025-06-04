@@ -23,17 +23,16 @@ const Header = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
-
-  const collectionItems = [
+ 
+  const navItems = [
+    { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about' },
+    const collectionItems = [
     { name: 'Rings', path: '/rings' },
     { name: 'Necklaces', path: '/necklaces' },
     { name: 'Earrings', path: '/earrings' },
     { name: 'Bracelets', path: '/bracelets' },
   ];
- 
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
     { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
     { name: 'Contact Us', path: '/contact' },
   ];
