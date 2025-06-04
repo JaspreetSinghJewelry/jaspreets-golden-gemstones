@@ -141,9 +141,10 @@ export const uploadProductGroup = async (
     productGroupId
   });
 
+  // Upload to selected category
   for (let i = 0; i < validImages.length; i++) {
     const imageData = validImages[i];
-    console.log(`Uploading image ${i + 1} of ${validImages.length}:`, imageData.file?.name);
+    console.log(`Uploading image ${i + 1} of ${validImages.length} to ${displayLocation}:`, imageData.file?.name);
     
     const success = await uploadSingleImage(
       imageData,
@@ -155,10 +156,31 @@ export const uploadProductGroup = async (
 
     if (success) {
       successCount++;
-      console.log(`Image ${i + 1} uploaded successfully`);
+      console.log(`Image ${i + 1} uploaded successfully to ${displayLocation}`);
     } else {
       errorCount++;
-      console.log(`Image ${i + 1} failed to upload`);
+      console.log(`Image ${i + 1} failed to upload to ${displayLocation}`);
+    }
+  }
+
+  // Also upload to "best-sellers" section for Shop Now display
+  if (successCount > 0) {
+    console.log('Adding product to best-sellers section for Shop Now display...');
+    
+    // Only upload the first image to best-sellers to avoid duplicates
+    const firstImage = validImages[0];
+    const bestSellersSuccess = await uploadSingleImage(
+      firstImage,
+      productName,
+      'best-sellers',
+      productGroupId, // Use same product group ID to link them
+      0
+    );
+
+    if (bestSellersSuccess) {
+      console.log('Product added to best-sellers section successfully');
+    } else {
+      console.log('Failed to add product to best-sellers section');
     }
   }
 
