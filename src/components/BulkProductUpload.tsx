@@ -166,6 +166,9 @@ const BulkProductUpload = () => {
     }
   };
 
+  // Count images that have files selected
+  const selectedImageCount = productImages.filter(img => img.file !== null).length;
+
   return (
     <Card>
       <CardHeader>
@@ -234,6 +237,11 @@ const BulkProductUpload = () => {
                       disabled={uploading}
                       className="mt-1"
                     />
+                    {imageData.file && (
+                      <div className="mt-1 text-sm text-green-600">
+                        ✓ {imageData.file.name}
+                      </div>
+                    )}
                   </div>
                   
                   <div>
@@ -277,10 +285,10 @@ const BulkProductUpload = () => {
 
           <Button 
             onClick={uploadProductGroup}
-            disabled={uploading || !productName.trim()}
+            disabled={uploading || !productName.trim() || selectedImageCount === 0}
             className="w-full"
           >
-            {uploading ? 'Creating Product...' : `Create Product Group with ${productImages.filter(img => img.file).length} Images`}
+            {uploading ? 'Creating Product...' : `Create Product Group with ${selectedImageCount} Images`}
           </Button>
         </div>
       </CardContent>
