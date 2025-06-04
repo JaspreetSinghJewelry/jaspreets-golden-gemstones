@@ -24,24 +24,28 @@ const LabGrownDiamonds = () => {
       id: 101,
       name: 'Lab Grown Diamond Solitaire',
       price: '₹35,999',
+      originalPrice: '₹45,999',
       image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
     },
     {
       id: 102,
       name: 'Eco-Friendly Diamond Earrings',
       price: '₹18,999',
+      originalPrice: '₹25,999',
       image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=300&fit=crop',
     },
     {
       id: 103,
       name: 'Sustainable Diamond Necklace',
       price: '₹25,999',
+      originalPrice: '₹32,999',
       image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
     },
     {
       id: 104,
       name: 'Lab Created Diamond Ring',
       price: '₹42,999',
+      originalPrice: '₹55,999',
       image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop',
     }
   ];
@@ -61,6 +65,7 @@ const LabGrownDiamonds = () => {
       id: product.id,
       name: product.name,
       price: product.price,
+      originalPrice: product.originalPrice,
       image: product.image
     });
   };
@@ -73,6 +78,7 @@ const LabGrownDiamonds = () => {
         id: product.id,
         name: product.name,
         price: product.price,
+        originalPrice: product.originalPrice,
         image: product.image
       });
     }
