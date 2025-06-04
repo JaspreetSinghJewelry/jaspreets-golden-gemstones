@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Upload, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -23,6 +24,7 @@ const BulkProductUpload = () => {
   const [productName, setProductName] = useState('');
   const [displayLocation, setDisplayLocation] = useState('rings');
   const [uploading, setUploading] = useState(false);
+  const [autoUpload, setAutoUpload] = useState(false);
 
   const addImageSlot = () => {
     setProductImages([...productImages, { file: null, description: '', price: '0' }]);
@@ -40,8 +42,10 @@ const BulkProductUpload = () => {
     setProductImages(updated);
   };
 
-  // Auto-upload when conditions are met
+  // Auto-upload when conditions are met (only if autoUpload is enabled)
   useEffect(() => {
+    if (!autoUpload) return;
+
     const firstImage = productImages[0];
     const hasValidFirstImage = firstImage.file && 
                                productName.trim() && 
@@ -55,7 +59,7 @@ const BulkProductUpload = () => {
       
       return () => clearTimeout(timer);
     }
-  }, [productImages, productName]);
+  }, [productImages, productName, autoUpload]);
 
   const uploadProductGroup = async () => {
     // Validation
@@ -165,17 +169,36 @@ const BulkProductUpload = () => {
   };
 
   const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
+  const canUpload = productName.trim() && selectedImageCount > 0 && productImages[0].price && Number(productImages[0].price) > 0;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Quick Product Upload
+          Bulk Product Upload
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          {/* Auto Upload Toggle */}
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div>
+              <Label htmlFor="auto-upload" className="text-base font-medium">
+                Auto Upload
+              </Label>
+              <p className="text-sm text-gray-600 mt-1">
+                Automatically upload when product name, first image, and price are set
+              </p>
+            </div>
+            <Switch
+              id="auto-upload"
+              checked={autoUpload}
+              onCheckedChange={setAutoUpload}
+              disabled={uploading}
+            />
+          </div>
+
           {/* Product Name */}
           <div>
             <Label htmlFor="productName">Product Name *</Label>
@@ -237,6 +260,18 @@ const BulkProductUpload = () => {
             ))}
           </div>
 
+          {/* Manual Upload Button */}
+          {!autoUpload && (
+            <Button
+              onClick={uploadProductGroup}
+              disabled={uploading || !canUpload}
+              className="w-full"
+              size="lg"
+            >
+              {uploading ? 'Uploading...' : `Create Product Group with ${selectedImageCount} Images`}
+            </Button>
+          )}
+
           {uploading && (
             <div className="text-center py-4">
               <div className="text-lg font-medium text-blue-600">
@@ -248,10 +283,18 @@ const BulkProductUpload = () => {
             </div>
           )}
 
-          {!uploading && (
+          {!uploading && autoUpload && (
             <div className="text-center py-2">
               <div className="text-sm text-gray-600">
-                Fill in product name, upload first image, and set price to auto-create product group
+                Auto-upload enabled: Fill in product name, upload first image, and set price to automatically create product group
+              </div>
+            </div>
+          )}
+
+          {!uploading && !autoUpload && (
+            <div className="text-center py-2">
+              <div className="text-sm text-gray-600">
+                Manual upload mode: Add images and click "Create Product Group" when ready
               </div>
             </div>
           )}
