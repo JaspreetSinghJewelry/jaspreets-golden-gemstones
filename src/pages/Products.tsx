@@ -193,3 +193,25 @@ const Products = () => {
 };
 
 export default Products;
+import React from 'react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import UploadedImages from "@/components/UploadedImages";
+
+const Shop Now = () => {
+  return (
+    <div className="min-h-screen bg-black">
+      <Header />
+      <main className="pt-20">
+        <div className="container mx-auto px-4 py-8">
+         
+          </p>
+        </div>
+        <UploadedImages location="Products" />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Products;
