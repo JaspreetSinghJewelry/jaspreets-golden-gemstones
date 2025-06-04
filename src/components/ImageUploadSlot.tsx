@@ -5,12 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Trash2, Star } from 'lucide-react';
-
-interface ProductImageUpload {
-  file: File | null;
-  description: string;
-  price: string;
-}
+import type { ProductImageUpload } from '@/types/upload';
 
 interface ImageUploadSlotProps {
   imageData: ProductImageUpload;

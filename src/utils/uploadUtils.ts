@@ -1,92 +1,14 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import type { ProductImageUpload, UploadResult } from '@/types/upload';
+import { validateImageFile } from './uploadValidation';
+import { ensureStorageBucket, uploadFileToStorage, generateFileName } from './storageUtils';
+import { saveImageToDatabase, cleanupFailedUpload } from './databaseUtils';
 
-export interface ProductImageUpload {
-  file: File | null;
-  description: string;
-  price: string;
-}
+export { validateUploadData } from './uploadValidation';
+export type { ProductImageUpload, UploadResult } from '@/types/upload';
 
-export interface UploadResult {
-  successCount: number;
-  errorCount: number;
-  errors?: string[];
-}
-
-export const validateUploadData = (
-  productImages: ProductImageUpload[],
-  productName: string
-): { isValid: boolean; errorMessage?: string } => {
-  console.log('Validating upload data:', { productImages, productName });
-  
-  const validImages = productImages.filter(img => img.file);
-  
-  if (validImages.length === 0) {
-    return {
-      isValid: false,
-      errorMessage: "Please select at least one image file"
-    };
-  }
-
-  if (!productName.trim()) {
-    return {
-      isValid: false,
-      errorMessage: "Please enter a product name"
-    };
-  }
-
-  // Validate first image has price if it exists
-  const firstImage = productImages[0];
-  if (firstImage?.file && (!firstImage.price || Number(firstImage.price) <= 0)) {
-    return {
-      isValid: false,
-      errorMessage: "Please set a valid price for the first image (this will be the product price)"
-    };
-  }
-
-  console.log('Validation passed');
-  return { isValid: true };
-};
-
-export const ensureStorageBucket = async (): Promise<boolean> => {
-  try {
-    console.log('Checking if images bucket exists...');
-    
-    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-    
-    if (listError) {
-      console.error('Error listing buckets:', listError);
-      return false;
-    }
-
-    const imagesBucket = buckets?.find(bucket => bucket.name === 'images');
-    
-    if (!imagesBucket) {
-      console.log('Images bucket not found, creating...');
-      const { error: createError } = await supabase.storage.createBucket('images', {
-        public: true,
-        allowedMimeTypes: ['image/*'],
-        fileSizeLimit: 10485760 // 10MB
-      });
-      
-      if (createError) {
-        console.error('Error creating images bucket:', createError);
-        return false;
-      } else {
-        console.log('Images bucket created successfully');
-      }
-    } else {
-      console.log('Images bucket already exists');
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Error ensuring storage bucket:', error);
-    return false;
-  }
-};
-
-export const uploadSingleImage = async (
+const uploadSingleImage = async (
   imageData: ProductImageUpload,
   productName: string,
   displayLocation: string,
@@ -99,18 +21,11 @@ export const uploadSingleImage = async (
     
     console.log(`Starting upload for file ${sortOrder + 1}:`, file.name);
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      const error = `Invalid file type: ${file.type}`;
-      console.error(error);
-      return { success: false, error };
-    }
-
-    // Validate file size (10MB limit)
-    if (file.size > 10 * 1024 * 1024) {
-      const error = `File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB`;
-      console.error(error);
-      return { success: false, error };
+    // Validate file
+    const validation = validateImageFile(file);
+    if (!validation.isValid) {
+      console.error(validation.error);
+      return { success: false, error: validation.error };
     }
 
     // Ensure storage bucket exists
@@ -119,56 +34,37 @@ export const uploadSingleImage = async (
       return { success: false, error: 'Failed to ensure storage bucket exists' };
     }
 
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
-    const timestamp = Date.now();
-    const randomId = Math.random().toString(36).substring(2);
-    const fileName = `${timestamp}-${randomId}-${sortOrder}.${fileExt}`;
-
-    console.log('Uploading file to storage:', fileName);
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError);
-      return { success: false, error: `Storage upload failed: ${uploadError.message}` };
+    // Generate filename and upload to storage
+    const fileName = generateFileName(file, sortOrder);
+    const uploadResult = await uploadFileToStorage(file, fileName);
+    
+    if (!uploadResult.success) {
+      return uploadResult;
     }
-
-    console.log('File uploaded to storage successfully, saving to database...');
 
     // Create appropriate description based on sort order
     const imageDescription = sortOrder === 0 
       ? (imageData.description.trim() || `${productName} - Main Image`)
       : (imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`);
 
-    const { error: dbError } = await supabase
-      .from('images')
-      .insert({
-        filename: fileName,
-        original_name: file.name,
-        file_path: fileName,
-        file_size: file.size,
-        mime_type: file.type,
-        display_location: displayLocation,
-        description: imageDescription,
-        price: productPrice,
-        is_active: true,
-        sort_order: sortOrder,
-        product_group: productGroupId
-      });
+    // Save to database
+    const dbResult = await saveImageToDatabase(
+      fileName,
+      file,
+      displayLocation,
+      imageDescription,
+      productPrice,
+      sortOrder,
+      productGroupId
+    );
 
-    if (dbError) {
-      console.error('Database error:', dbError);
+    if (!dbResult.success) {
       // Clean up uploaded file if database insert fails
-      await supabase.storage.from('images').remove([fileName]);
-      return { success: false, error: `Database error: ${dbError.message}` };
+      await cleanupFailedUpload(fileName);
+      return dbResult;
     }
 
-    console.log(`Image ${sortOrder + 1} saved to database successfully`);
+    console.log(`Image ${sortOrder + 1} saved successfully`);
     return { success: true };
   } catch (error) {
     const errorMessage = `Unexpected error during upload of image ${sortOrder + 1}: ${error}`;

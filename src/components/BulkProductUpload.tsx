@@ -10,9 +10,9 @@ import AutoUploadToggle from './AutoUploadToggle';
 import ProductFormFields from './ProductFormFields';
 import UploadStatusDisplay from './UploadStatusDisplay';
 import { 
-  ProductImageUpload, 
   validateUploadData, 
-  uploadProductGroup 
+  uploadProductGroup,
+  type ProductImageUpload
 } from '@/utils/uploadUtils';
 
 const BulkProductUpload = () => {
