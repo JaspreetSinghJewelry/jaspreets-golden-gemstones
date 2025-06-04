@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+import ProductDetailModal from './ProductDetailModal';
 
 interface ProductImage {
   id: string;
@@ -27,6 +28,7 @@ interface MultiAngleProductProps {
 
 const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
@@ -67,113 +69,142 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
     }
   };
 
+  const handleViewDetails = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // Convert product to the format expected by ProductDetailModal
+  const productDetailFormat = {
+    ...product,
+    category: 'jewelry' // Default category, you might want to pass this as a prop
+  };
+
   return (
-    <Card className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
-      <CardContent className="p-4">
-        <div className="relative mb-4">
-          <div className="relative overflow-hidden rounded-lg">
-            <img
-              src={currentImage.url}
-              alt={product.name}
-              className="w-full h-64 object-cover cursor-pointer"
-              onClick={nextImage}
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.svg';
-              }}
-            />
-            
-            {/* Navigation arrows - only show if multiple images */}
-            {product.images.length > 1 && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevImage();
-                  }}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextImage();
-                  }}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </>
-            )}
+    <>
+      <Card className="border rounded-2xl shadow-sm hover:shadow-md transition group bg-white">
+        <CardContent className="p-4">
+          <div className="relative mb-4">
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src={currentImage.url}
+                alt={product.name}
+                className="w-full h-64 object-cover cursor-pointer"
+                onClick={nextImage}
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
+              />
+              
+              {/* Navigation arrows - only show if multiple images */}
+              {product.images.length > 1 && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevImage();
+                    }}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
 
-            {/* Image counter */}
-            {product.images.length > 1 && (
-              <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
-                {currentImageIndex + 1}/{product.images.length}
-              </div>
-            )}
+              {/* Image counter */}
+              {product.images.length > 1 && (
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+                  {currentImageIndex + 1}/{product.images.length}
+                </div>
+              )}
 
-            {/* Click hint */}
-            {product.images.length > 1 && (
-              <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                Click to browse
-              </div>
-            )}
+              {/* Click hint */}
+              {product.images.length > 1 && (
+                <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  Click to browse
+                </div>
+              )}
+            </div>
+
+            {/* Wishlist button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+              onClick={handleWishlistToggle}
+            >
+              <Heart className={`h-4 w-4 ${isInWishlist(parseInt(product.id)) ? 'fill-black text-black' : 'text-gray-600'}`} />
+            </Button>
           </div>
 
-          {/* Wishlist button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-            onClick={handleWishlistToggle}
-          >
-            <Heart className={`h-4 w-4 ${isInWishlist(parseInt(product.id)) ? 'fill-black text-black' : 'text-gray-600'}`} />
-          </Button>
-        </div>
-
-        {/* Thumbnail images */}
-        {product.images.length > 1 && (
-          <div className="flex gap-2 mb-4 overflow-x-auto">
-            {product.images.map((image, index) => (
-              <button
-                key={image.id}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                  index === currentImageIndex ? 'border-black' : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <img
-                  src={image.url}
-                  alt={`${product.name} angle ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-        )}
-
-        <h4 className="text-lg font-medium mb-1 text-black">{product.name}</h4>
-        <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-        <div className="flex items-center gap-2 mb-4">
-          <p className="text-black font-semibold text-lg">{product.price}</p>
-          {product.originalPrice && (
-            <p className="text-gray-500 line-through text-sm">{product.originalPrice}</p>
+          {/* Thumbnail images */}
+          {product.images.length > 1 && (
+            <div className="flex gap-2 mb-4 overflow-x-auto">
+              {product.images.map((image, index) => (
+                <button
+                  key={image.id}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                    index === currentImageIndex ? 'border-black' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <img
+                    src={image.url}
+                    alt={`${product.name} angle ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
           )}
-        </div>
-        <Button onClick={handleAddToCart} className="w-full bg-black hover:bg-gray-800 text-white">
-          <ShoppingBag className="h-4 w-4 mr-2" />
-          Add to Cart
-        </Button>
-      </CardContent>
-    </Card>
+
+          <h4 className="text-lg font-medium mb-1 text-black">{product.name}</h4>
+          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+          <div className="flex items-center gap-2 mb-4">
+            <p className="text-black font-semibold text-lg">{product.price}</p>
+            {product.originalPrice && (
+              <p className="text-gray-500 line-through text-sm">{product.originalPrice}</p>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            <Button onClick={handleViewDetails} variant="outline" className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
+            <Button onClick={handleAddToCart} className="w-full bg-black hover:bg-gray-800 text-white">
+              <ShoppingBag className="h-4 w-4 mr-2" />
+              Add to Cart
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <ProductDetailModal 
+        product={productDetailFormat}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </>
   );
 };
 
