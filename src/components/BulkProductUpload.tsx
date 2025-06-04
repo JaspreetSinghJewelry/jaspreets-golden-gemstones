@@ -53,7 +53,7 @@ const BulkProductUpload = () => {
 
   const uploadProductGroup = async () => {
     // Validation
-    const validImages = productImages.filter(img => img.file !== null);
+    const validImages = productImages.filter(img => img.file);
     if (validImages.length === 0) {
       toast({
         title: "No Files Selected",
@@ -166,8 +166,8 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Count images that have files selected
-  const selectedImageCount = productImages.filter(img => img.file !== null).length;
+  // Count images that have files selected - fix the counting logic
+  const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
 
   return (
     <Card>
