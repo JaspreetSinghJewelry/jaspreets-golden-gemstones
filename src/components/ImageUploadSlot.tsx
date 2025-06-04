@@ -31,21 +31,46 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
 }) => {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    console.log(`File selected for slot ${index}:`, file ? file.name : 'No file');
+    
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        console.error('Invalid file type:', file.type);
+        return;
+      }
+      
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        console.error('File too large:', file.size);
+        return;
+      }
+      
       onUpdate(index, 'file', file);
+      
       // Auto-generate description from filename if empty
       if (!imageData.description) {
-        onUpdate(index, 'description', file.name.split('.')[0]);
+        const nameWithoutExtension = file.name.split('.')[0];
+        onUpdate(index, 'description', nameWithoutExtension);
       }
     }
+  };
+
+  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdate(index, 'description', event.target.value);
+  };
+
+  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdate(index, 'price', event.target.value);
   };
 
   return (
     <Card className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
-          <Label>Image File {index === 0 ? '*' : ''}</Label>
+          <Label htmlFor={`file-${index}`}>Image File {index === 0 ? '*' : ''}</Label>
           <Input
+            id={`file-${index}`}
             type="file"
             accept="image/*"
             onChange={handleFileSelect}
@@ -54,16 +79,17 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
           />
           {imageData.file && (
             <div className="mt-1 text-sm text-green-600">
-              ✓ {imageData.file.name}
+              ✓ {imageData.file.name} ({(imageData.file.size / 1024 / 1024).toFixed(2)} MB)
             </div>
           )}
         </div>
         
         <div>
-          <Label>Description</Label>
+          <Label htmlFor={`description-${index}`}>Description</Label>
           <Input
+            id={`description-${index}`}
             value={imageData.description}
-            onChange={(e) => onUpdate(index, 'description', e.target.value)}
+            onChange={handleDescriptionChange}
             placeholder="Image description"
             className="mt-1"
             disabled={disabled}
@@ -71,11 +97,14 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
         </div>
         
         <div>
-          <Label>Price (₹) {index === 0 ? '*' : ''}</Label>
+          <Label htmlFor={`price-${index}`}>Price (₹) {index === 0 ? '*' : ''}</Label>
           <Input
+            id={`price-${index}`}
             type="number"
+            min="0"
+            step="0.01"
             value={imageData.price}
-            onChange={(e) => onUpdate(index, 'price', e.target.value)}
+            onChange={handlePriceChange}
             placeholder="0"
             className="mt-1"
             disabled={disabled}
@@ -90,6 +119,7 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
               size="icon"
               onClick={() => onRemove(index)}
               disabled={disabled}
+              title="Remove this image slot"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

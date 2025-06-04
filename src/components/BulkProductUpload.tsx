@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -34,30 +34,13 @@ const BulkProductUpload = () => {
     }
   };
 
-  const updateImageSlot = (index: number, field: keyof ProductImageUpload, value: string | File) => {
-    const updated = [...productImages];
-    updated[index] = { ...updated[index], [field]: value };
-    setProductImages(updated);
-  };
-
-  // Auto-upload when conditions are met (only if autoUpload is enabled)
-  useEffect(() => {
-    if (!autoUpload) return;
-
-    const firstImage = productImages[0];
-    const hasValidFirstImage = firstImage.file && 
-                               productName.trim() && 
-                               firstImage.price && 
-                               Number(firstImage.price) > 0;
-    
-    if (hasValidFirstImage && !uploading) {
-      const timer = setTimeout(() => {
-        handleUploadProductGroup();
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [productImages, productName, autoUpload]);
+  const updateImageSlot = useCallback((index: number, field: keyof ProductImageUpload, value: string | File) => {
+    setProductImages(prevImages => {
+      const updated = [...prevImages];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  }, []);
 
   const handleUploadProductGroup = async () => {
     const validation = validateUploadData(productImages, productName);
@@ -73,40 +56,71 @@ const BulkProductUpload = () => {
 
     setUploading(true);
     
-    const result = await uploadProductGroup(productImages, productName, displayLocation);
+    try {
+      const result = await uploadProductGroup(productImages, productName, displayLocation);
 
-    setUploading(false);
-
-    if (result.successCount > 0) {
+      if (result.successCount > 0) {
+        toast({
+          title: "Product Created Successfully!",
+          description: `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`
+        });
+        
+        setProductImages([{ file: null, description: '', price: '0' }]);
+        setProductName('');
+        
+        const fileInputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
+        fileInputs.forEach(input => input.value = '');
+      } else {
+        toast({
+          title: "Upload Failed",
+          description: "No images were uploaded successfully",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
       toast({
-        title: "Product Created Successfully!",
-        description: `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`
-      });
-      
-      setProductImages([{ file: null, description: '', price: '0' }]);
-      setProductName('');
-      
-      const fileInputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
-      fileInputs.forEach(input => input.value = '');
-    } else {
-      toast({
-        title: "Upload Failed",
-        description: "No images were uploaded successfully",
+        title: "Upload Error",
+        description: "An error occurred while uploading",
         variant: "destructive"
       });
+    } finally {
+      setUploading(false);
     }
   };
 
+  // Auto-upload when conditions are met (only if autoUpload is enabled)
+  useEffect(() => {
+    if (!autoUpload || uploading) return;
+
+    const firstImage = productImages[0];
+    const hasValidFirstImage = firstImage?.file && 
+                               productName.trim() && 
+                               firstImage.price && 
+                               Number(firstImage.price) > 0;
+    
+    if (hasValidFirstImage) {
+      console.log('Auto-upload conditions met, triggering upload...');
+      const timer = setTimeout(() => {
+        handleUploadProductGroup();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [productImages, productName, autoUpload, uploading]);
+
+  // Calculate validation state
   const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
   const hasProductName = productName.trim().length > 0;
   const canUpload = hasProductName && selectedImageCount > 0 && !uploading;
 
-  console.log('Upload validation debug:', {
+  console.log('BulkProductUpload validation state:', {
     productName: productName.trim(),
     hasProductName,
     selectedImageCount,
     canUpload,
     uploading,
+    autoUpload,
     productImagesDebug: productImages.map((img, index) => ({ 
       index, 
       hasFile: !!img.file, 
@@ -173,7 +187,7 @@ const BulkProductUpload = () => {
             <Button
               onClick={handleUploadProductGroup}
               disabled={!canUpload}
-              className="w-full"
+              className={`w-full ${canUpload ? 'bg-primary hover:bg-primary/90' : 'bg-gray-400 cursor-not-allowed'}`}
               size="lg"
             >
               {uploading ? 'Uploading...' : `Create Product Group with ${selectedImageCount} Images`}

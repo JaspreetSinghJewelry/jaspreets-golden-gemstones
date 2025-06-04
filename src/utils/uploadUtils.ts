@@ -16,6 +16,8 @@ export const validateUploadData = (
   productImages: ProductImageUpload[],
   productName: string
 ): { isValid: boolean; errorMessage?: string } => {
+  console.log('Validating upload data:', { productImages, productName });
+  
   const validImages = productImages.filter(img => img.file);
   
   if (validImages.length === 0) {
@@ -32,6 +34,16 @@ export const validateUploadData = (
     };
   }
 
+  // Validate first image has price if it exists
+  const firstImage = productImages[0];
+  if (firstImage?.file && (!firstImage.price || Number(firstImage.price) <= 0)) {
+    return {
+      isValid: false,
+      errorMessage: "Please set a valid price for the first image"
+    };
+  }
+
+  console.log('Validation passed');
   return { isValid: true };
 };
 
@@ -44,6 +56,8 @@ export const uploadSingleImage = async (
 ): Promise<boolean> => {
   try {
     const file = imageData.file!;
+    
+    console.log('Starting upload for file:', file.name);
 
     if (!file.type.startsWith('image/')) {
       console.error('Invalid file type:', file.type);
@@ -59,7 +73,7 @@ export const uploadSingleImage = async (
     const timestamp = Date.now();
     const fileName = `${timestamp}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-    console.log('Uploading file:', fileName);
+    console.log('Uploading file to storage:', fileName);
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('images')
@@ -69,11 +83,11 @@ export const uploadSingleImage = async (
       });
 
     if (uploadError) {
-      console.error('Upload error:', uploadError);
+      console.error('Storage upload error:', uploadError);
       return false;
     }
 
-    console.log('File uploaded successfully, saving to database...');
+    console.log('File uploaded to storage successfully, saving to database...');
 
     const { error: dbError } = await supabase
       .from('images')
@@ -93,6 +107,7 @@ export const uploadSingleImage = async (
 
     if (dbError) {
       console.error('Database error:', dbError);
+      // Clean up uploaded file if database insert fails
       await supabase.storage.from('images').remove([fileName]);
       return false;
     }
@@ -100,7 +115,7 @@ export const uploadSingleImage = async (
     console.log('Image saved to database successfully');
     return true;
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('Unexpected error during upload:', error);
     return false;
   }
 };
@@ -116,27 +131,34 @@ export const uploadProductGroup = async (
 
   const productGroupId = crypto.randomUUID();
 
-  console.log('Starting upload with:', {
+  console.log('Starting product group upload:', {
     productName,
     validImages: validImages.length,
-    displayLocation
+    displayLocation,
+    productGroupId
   });
 
-  for (const imageData of validImages) {
+  for (let i = 0; i < validImages.length; i++) {
+    const imageData = validImages[i];
+    console.log(`Uploading image ${i + 1} of ${validImages.length}:`, imageData.file?.name);
+    
     const success = await uploadSingleImage(
       imageData,
       productName,
       displayLocation,
       productGroupId,
-      successCount
+      i
     );
 
     if (success) {
       successCount++;
+      console.log(`Image ${i + 1} uploaded successfully`);
     } else {
       errorCount++;
+      console.log(`Image ${i + 1} failed to upload`);
     }
   }
 
+  console.log('Upload completed:', { successCount, errorCount });
   return { successCount, errorCount };
 };
