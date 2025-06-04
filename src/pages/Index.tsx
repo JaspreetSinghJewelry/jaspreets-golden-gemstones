@@ -1,4 +1,5 @@
 
+import React, { useState, useEffect } from 'react';
 import Header from "@/components/Header";
 import ProductCarousel from "@/components/ProductCarousel";
 import FeaturedProducts from "@/components/FeaturedProducts";
@@ -8,8 +9,24 @@ import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
+import LoginPopup from "@/components/LoginPopup";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
+
+  useEffect(() => {
+    // Show login popup after 3 seconds if user is not authenticated
+    if (!loading && !isAuthenticated) {
+      const timer = setTimeout(() => {
+        setShowLoginPopup(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, loading]);
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -24,6 +41,11 @@ const Index = () => {
         <LabGrownInstagramGallery />
       </div>
       <Footer />
+      
+      <LoginPopup 
+        isOpen={showLoginPopup} 
+        onClose={() => setShowLoginPopup(false)}
+      />
     </div>
   );
 };

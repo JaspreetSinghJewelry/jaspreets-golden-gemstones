@@ -2,15 +2,17 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings, Package } from 'lucide-react';
+import { LogOut, Images, Settings, Package, Upload } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
 import ImageManager from '@/components/ImageManager';
 import ProductManager from '@/components/ProductManager';
+import BulkProductUpload from '@/components/BulkProductUpload';
+import SimpleImageUpload from '@/components/SimpleImageUpload';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'images' | 'products'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'simple-upload' | 'images'>('products');
 
   if (loading) {
     return (
@@ -65,6 +67,28 @@ const Admin = () => {
                   Product Manager
                 </button>
                 <button
+                  onClick={() => setActiveTab('bulk-upload')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'bulk-upload'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Upload className="h-4 w-4 inline mr-2" />
+                  Bulk Product Upload
+                </button>
+                <button
+                  onClick={() => setActiveTab('simple-upload')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'simple-upload'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Images className="h-4 w-4 inline mr-2" />
+                  Simple Upload
+                </button>
+                <button
                   onClick={() => setActiveTab('images')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === 'images'
@@ -83,12 +107,25 @@ const Admin = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
-                {activeTab === 'products' ? (
+                {activeTab === 'products' && (
                   <>
                     <Package className="h-6 w-6" />
                     Product Management
                   </>
-                ) : (
+                )}
+                {activeTab === 'bulk-upload' && (
+                  <>
+                    <Upload className="h-6 w-6" />
+                    Bulk Product Upload
+                  </>
+                )}
+                {activeTab === 'simple-upload' && (
+                  <>
+                    <Images className="h-6 w-6" />
+                    Simple Image Upload
+                  </>
+                )}
+                {activeTab === 'images' && (
                   <>
                     <Images className="h-6 w-6" />
                     Image Management (Legacy)
@@ -98,11 +135,10 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="p-0">
               <div className="p-6">
-                {activeTab === 'products' ? (
-                  <ProductManager />
-                ) : (
-                  <ImageManager />
-                )}
+                {activeTab === 'products' && <ProductManager />}
+                {activeTab === 'bulk-upload' && <BulkProductUpload />}
+                {activeTab === 'simple-upload' && <SimpleImageUpload />}
+                {activeTab === 'images' && <ImageManager />}
               </div>
             </CardContent>
           </Card>
