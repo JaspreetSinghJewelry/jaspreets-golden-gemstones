@@ -44,7 +44,8 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
     const cartItem = {
       id: parseInt(product.id),
       name: product.name,
-      price: parseFloat(product.price.replace('₹', '').replace(',', '')),
+      price: product.price,
+      originalPrice: product.originalPrice || product.price,
       image: currentImage.url
     };
     addToCart(cartItem);
@@ -54,7 +55,8 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
     const wishlistItem = {
       id: parseInt(product.id),
       name: product.name,
-      price: parseFloat(product.price.replace('₹', '').replace(',', '')),
+      price: product.price,
+      originalPrice: product.originalPrice || product.price,
       image: currentImage.url
     };
 
