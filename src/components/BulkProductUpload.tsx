@@ -184,15 +184,16 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Fix the validation logic for manual upload
-  const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
-  const canUpload = productName.trim() !== '' && selectedImageCount > 0;
+  // Calculate selected images count properly
+  const selectedImageCount = productImages.filter(img => img.file !== null).length;
+  const canUpload = productName.trim() !== '' && selectedImageCount > 0 && !uploading;
 
   console.log('Upload validation:', {
     productName: productName.trim(),
     selectedImageCount,
     canUpload,
-    uploading
+    uploading,
+    productImages: productImages.map(img => ({ hasFile: !!img.file, description: img.description, price: img.price }))
   });
 
   return (
@@ -288,7 +289,7 @@ const BulkProductUpload = () => {
           {!autoUpload && (
             <Button
               onClick={uploadProductGroup}
-              disabled={uploading || !canUpload}
+              disabled={!canUpload}
               className="w-full"
               size="lg"
             >
