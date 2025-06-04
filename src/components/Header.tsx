@@ -1,7 +1,6 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,10 +15,31 @@ import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
 import { useAuth } from '@/hooks/useAuth';
 import SearchModal from './SearchModal';
+import UploadedImages from './UploadedImages';
+import ProductDetailModal from './ProductDetailModal';
+import { supabase } from '@/integrations/supabase/client';
+
+interface ProductGroup {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  originalPrice?: string;
+  category: string;
+  images: Array<{
+    id: string;
+    url: string;
+    description?: string;
+  }>;
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isShopNowOpen, setIsShopNowOpen] = useState(false);
+  const [shopNowProducts, setShopNowProducts] = useState<ProductGroup[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductGroup | null>(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated } = useAuth();
@@ -40,6 +60,58 @@ const Header = () => {
     { name: 'Bracelets', path: '/bracelets' },
   ];
 
+  // Fetch featured products for Shop Now dropdown
+  useEffect(() => {
+    const fetchShopNowProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('images')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(8);
+
+        if (error) {
+          console.error('Error fetching shop now products:', error);
+          return;
+        }
+
+        // Group images by product_group and take first 4 products
+        const groupedProducts = new Map<string, ProductGroup>();
+
+        data?.forEach((item) => {
+          const groupId = item.product_group;
+          const imageUrl = supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl;
+          
+          if (!groupedProducts.has(groupId)) {
+            groupedProducts.set(groupId, {
+              id: parseInt(groupId.replace(/-/g, '').substring(0, 8), 16).toString(),
+              name: item.description || item.original_name || 'Jewelry Piece',
+              description: item.description || 'Elegant handcrafted design with premium materials',
+              price: item.price ? `₹${item.price.toLocaleString()}` : 'Price on request',
+              originalPrice: item.price ? `₹${(item.price * 1.2).toLocaleString()}` : undefined,
+              category: item.display_location || 'jewelry',
+              images: []
+            });
+          }
+
+          const productGroup = groupedProducts.get(groupId)!;
+          productGroup.images.push({
+            id: item.id,
+            url: imageUrl,
+            description: item.description || undefined
+          });
+        });
+
+        setShopNowProducts(Array.from(groupedProducts.values()).slice(0, 4));
+      } catch (error) {
+        console.error('Error in fetchShopNowProducts:', error);
+      }
+    };
+
+    fetchShopNowProducts();
+  }, []);
+
   const handleUserAction = () => {
     if (!isAuthenticated) {
       navigate('/auth');
@@ -48,6 +120,17 @@ const Header = () => {
 
   const handleWishlistClick = () => {
     navigate('/wishlist');
+  };
+
+  const handleProductClick = (product: ProductGroup) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+    setIsShopNowOpen(false);
+  };
+
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
   };
 
   return (
@@ -167,12 +250,72 @@ const Header = () => {
           </Button>
         </CartDrawer>
 
-        <Button
-          className="bg-black text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:bg-gray-800 text-xs md:text-sm hidden sm:block"
-          onClick={() => navigate('/products')}
-        >
-          Shop Now
-        </Button>
+        {/* Shop Now Dropdown */}
+        <DropdownMenu open={isShopNowOpen} onOpenChange={setIsShopNowOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="bg-black text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:bg-gray-800 text-xs md:text-sm hidden sm:block"
+            >
+              Shop Now
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-96 p-4 bg-white border shadow-lg z-50" align="end">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-center">Featured Products</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {shopNowProducts.map((product) => (
+                  <div key={product.id} className="space-y-2">
+                    <div className="relative group">
+                      <img
+                        src={product.images[0]?.url}
+                        alt={product.name}
+                        className="w-full h-32 object-cover rounded-lg cursor-pointer"
+                        onClick={() => handleProductClick(product)}
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                      {/* Circular View Details Button */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute bottom-2 right-2 bg-black/70 hover:bg-black text-white rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProductClick(product);
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="text-center">
+                      <h4 className="font-medium text-sm truncate">{product.name}</h4>
+                      <p className="text-black font-semibold text-sm">{product.price}</p>
+                      <button
+                        onClick={() => handleProductClick(product)}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        Click to view details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center pt-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    navigate('/products');
+                    setIsShopNowOpen(false);
+                  }}
+                >
+                  View All Products
+                </Button>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
         
         {/* Mobile Menu Button */}
         <Button
@@ -271,9 +414,14 @@ const Header = () => {
         onClose={() => setIsSearchOpen(false)}
         triggerRef={searchButtonRef}
       />
+
+      <ProductDetailModal 
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+      />
     </header>
   );
 };
 
 export default Header;
-
