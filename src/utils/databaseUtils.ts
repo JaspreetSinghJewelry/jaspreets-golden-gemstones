@@ -11,7 +11,17 @@ export const saveImageToDatabase = async (
   productGroupId: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    console.log('Saving image to database...');
+    console.log('Saving image to database with details:', {
+      fileName,
+      originalName: file.name,
+      displayLocation,
+      description,
+      price,
+      sortOrder,
+      productGroupId,
+      fileSize: file.size,
+      mimeType: file.type
+    });
 
     const { error: dbError } = await supabase
       .from('images')
@@ -34,7 +44,12 @@ export const saveImageToDatabase = async (
       return { success: false, error: `Database error: ${dbError.message}` };
     }
 
-    console.log('Image saved to database successfully');
+    console.log('Image saved to database successfully:', {
+      description,
+      price,
+      sortOrder,
+      productGroup: productGroupId
+    });
     return { success: true };
   } catch (error) {
     console.error('Unexpected error during database save:', error);

@@ -60,21 +60,31 @@ const BulkProductUpload = () => {
       return;
     }
 
-    console.log('Validation passed, starting upload...');
+    console.log('Validation passed, starting bulk upload...');
     setUploading(true);
     
     try {
       const result = await uploadProductGroup(productImages, productName, displayLocation);
-      console.log('Upload completed with result:', result);
+      console.log('Bulk upload completed with result:', result);
 
       if (result.successCount > 0) {
-        const successMessage = `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`;
-        console.log('Success:', successMessage);
+        const successMessage = result.successCount === 1 
+          ? `Product "${productName}" created successfully with 1 image`
+          : `Product "${productName}" created successfully with ${result.successCount} images grouped together`;
         
-        toast({
-          title: "Product Created Successfully!",
-          description: successMessage
-        });
+        if (result.errorCount > 0) {
+          console.log('Partial success:', successMessage, 'with', result.errorCount, 'failed');
+          toast({
+            title: "Product Created with Some Errors",
+            description: `${successMessage}. ${result.errorCount} images failed to upload.`
+          });
+        } else {
+          console.log('Complete success:', successMessage);
+          toast({
+            title: "Product Created Successfully!",
+            description: successMessage
+          });
+        }
         
         // Reset form
         setProductImages([{ file: null, description: '', price: '0' }]);
@@ -186,12 +196,13 @@ const BulkProductUpload = () => {
             </div>
 
             <div className="text-sm text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg">
-              <p>📸 <strong>Image Upload Guide:</strong></p>
+              <p>📸 <strong>Bulk Upload Guide:</strong></p>
               <ul className="list-disc list-inside mt-2 space-y-1">
                 <li><strong>Image 1:</strong> Main thumbnail image (required with price)</li>
                 <li><strong>Image 2+:</strong> Additional angles of the same product</li>
-                <li>All images will be grouped together as one product</li>
-                <li>Products appear in selected collection category</li>
+                <li><strong>ALL images will be grouped together as ONE PRODUCT</strong></li>
+                <li>Product name applies to all images in the group</li>
+                <li>Only the first image needs a price (applies to whole product)</li>
               </ul>
             </div>
 
@@ -215,7 +226,7 @@ const BulkProductUpload = () => {
               className={`w-full ${canUpload ? 'bg-primary hover:bg-primary/90' : 'bg-gray-400 cursor-not-allowed'}`}
               size="lg"
             >
-              {uploading ? 'Uploading...' : `Create Product Group with ${selectedImageCount} Images`}
+              {uploading ? 'Creating Product Group...' : `Create Product Group with ${selectedImageCount} Images`}
             </Button>
           )}
 

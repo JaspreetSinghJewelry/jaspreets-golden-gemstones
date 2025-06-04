@@ -43,10 +43,10 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
       
       onUpdate(index, 'file', file);
       
-      // Auto-generate description from filename if empty
-      if (!imageData.description) {
-        const nameWithoutExtension = file.name.split('.')[0];
-        onUpdate(index, 'description', nameWithoutExtension);
+      // For bulk upload, don't auto-generate description from filename
+      // Let the product name handle the naming
+      if (!imageData.description && index > 0) {
+        onUpdate(index, 'description', '');
       }
     }
   };
@@ -73,7 +73,7 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
           <Label htmlFor={`file-${index}`}>
-            {isMainImage ? 'Thumbnail Image *' : `Angle ${index} Image`}
+            {isMainImage ? 'Thumbnail Image *' : `Additional Angle ${index}`}
           </Label>
           <Input
             id={`file-${index}`}
@@ -91,15 +91,22 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
         </div>
         
         <div>
-          <Label htmlFor={`description-${index}`}>Description</Label>
+          <Label htmlFor={`description-${index}`}>
+            {isMainImage ? 'Custom Description (optional)' : `Angle ${index} Description (optional)`}
+          </Label>
           <Input
             id={`description-${index}`}
             value={imageData.description}
             onChange={handleDescriptionChange}
-            placeholder={isMainImage ? "Main product description" : `Angle ${index} description`}
+            placeholder={isMainImage ? "Leave empty to use product name" : `Leave empty for auto naming`}
             className="mt-1"
             disabled={disabled}
           />
+          <div className="text-xs text-gray-500 mt-1">
+            {isMainImage 
+              ? "If empty, will use the product name above" 
+              : "If empty, will auto-generate from product name"}
+          </div>
         </div>
         
         <div>
@@ -120,7 +127,7 @@ const ImageUploadSlot: React.FC<ImageUploadSlotProps> = ({
           />
           {!isMainImage && (
             <div className="text-xs text-gray-500 mt-1">
-              Uses price from main image
+              Automatically uses main image price
             </div>
           )}
         </div>

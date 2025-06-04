@@ -39,20 +39,30 @@ const uploadSingleImage = async (
       return uploadResult;
     }
 
-    // Create appropriate description based on sort order
-    const imageDescription = sortOrder === 0 
-      ? (imageData.description.trim() || `${productName} - Main Image`)
-      : (imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`);
+    // Use the product name for ALL images, not individual descriptions
+    // Only use custom description if it's different from the default
+    let imageDescription: string;
+    
+    if (sortOrder === 0) {
+      // Main thumbnail uses product name or custom description
+      imageDescription = imageData.description.trim() || productName;
+    } else {
+      // Additional angles use product name with angle info, or custom description
+      const defaultAngleDesc = `${productName} - Angle ${sortOrder + 1}`;
+      imageDescription = (imageData.description.trim() && imageData.description.trim() !== file.name.split('.')[0]) 
+        ? imageData.description.trim() 
+        : defaultAngleDesc;
+    }
 
     console.log('Saving to database with description:', imageDescription);
 
-    // Save to database
+    // Save to database - ONLY the first image (sort_order 0) gets the price, others get 0
     const dbResult = await saveImageToDatabase(
       fileName,
       file,
       displayLocation,
       imageDescription,
-      productPrice,
+      sortOrder === 0 ? productPrice : 0, // Only main image has price
       sortOrder,
       productGroupId
     );
@@ -90,6 +100,7 @@ export const uploadProductGroup = async (
     return { successCount: 0, errorCount: 1, errors: ['No valid images to upload'] };
   }
 
+  // Generate a single product group ID for ALL images in this upload
   const productGroupId = crypto.randomUUID();
   const productPrice = Number(validImages[0].price) || 0;
 
@@ -98,7 +109,8 @@ export const uploadProductGroup = async (
     validImages: validImages.length,
     displayLocation,
     productGroupId,
-    productPrice
+    productPrice,
+    'All images will be grouped under': productGroupId
   });
 
   // Ensure bucket exists before starting uploads
@@ -121,8 +133,9 @@ export const uploadProductGroup = async (
     const imageData = validImages[i];
     console.log(`\n--- Processing image ${i + 1} of ${validImages.length} ---`);
     console.log('File:', imageData.file?.name);
-    console.log('Description:', imageData.description);
-    console.log('Price:', imageData.price);
+    console.log('Product Group ID:', productGroupId);
+    console.log('Sort Order:', i);
+    console.log('Will be grouped with other images:', validImages.length > 1);
     
     // Add a small delay between uploads to prevent overwhelming the server
     if (i > 0) {
@@ -134,14 +147,14 @@ export const uploadProductGroup = async (
       imageData,
       productName,
       displayLocation,
-      productGroupId,
-      i,
+      productGroupId, // Same group ID for all images
+      i, // Sequential sort order
       productPrice
     );
 
     if (result.success) {
       successCount++;
-      console.log(`✅ Image ${i + 1} uploaded successfully`);
+      console.log(`✅ Image ${i + 1} uploaded successfully to product group ${productGroupId}`);
     } else {
       errorCount++;
       const errorMsg = `Image ${i + 1} (${imageData.file?.name}) failed: ${result.error}`;
@@ -151,8 +164,10 @@ export const uploadProductGroup = async (
   }
 
   console.log('\n=== Upload Summary ===');
+  console.log('Product Group ID:', productGroupId);
   console.log('Success count:', successCount);
   console.log('Error count:', errorCount);
+  console.log('All successful images grouped together:', successCount > 1);
   console.log('Errors:', errors);
   
   return { successCount, errorCount, errors };
