@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Upload, Trash2, Edit, Save, X, Eye, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import BulkProductUpload from '@/components/BulkProductUpload';
 
 interface ProductImage {
   id: string;
@@ -22,6 +23,7 @@ interface ProductImage {
   price: number | null;
   is_active: boolean | null;
   sort_order: number | null;
+  product_group: string;
 }
 
 interface EditingProduct {
@@ -133,10 +135,11 @@ const ProductManager = () => {
             file_size: file.size,
             mime_type: file.type,
             display_location: bulkLocation,
-            description: file.name.split('.')[0], // Use filename as default description
+            description: file.name.split('.')[0],
             price: 0,
             is_active: true,
-            sort_order: 0
+            sort_order: 0,
+            product_group: crypto.randomUUID()
           });
 
         if (dbError) {
@@ -369,12 +372,15 @@ const ProductManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Bulk Upload Section */}
+      {/* Bulk Product Upload */}
+      <BulkProductUpload />
+
+      {/* Individual Image Upload Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
-            Upload Products to Collection
+            Upload Individual Images
           </CardTitle>
         </CardHeader>
         <CardContent>

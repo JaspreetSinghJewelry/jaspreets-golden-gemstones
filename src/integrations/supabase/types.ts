@@ -42,6 +42,7 @@ export type Database = {
           mime_type: string | null
           original_name: string | null
           price: number | null
+          product_group: string
           sort_order: number | null
           updated_at: string
           uploaded_at: string
@@ -58,6 +59,7 @@ export type Database = {
           mime_type?: string | null
           original_name?: string | null
           price?: number | null
+          product_group?: string
           sort_order?: number | null
           updated_at?: string
           uploaded_at?: string
@@ -74,6 +76,7 @@ export type Database = {
           mime_type?: string | null
           original_name?: string | null
           price?: number | null
+          product_group?: string
           sort_order?: number | null
           updated_at?: string
           uploaded_at?: string
