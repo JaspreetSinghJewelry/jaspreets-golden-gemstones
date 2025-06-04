@@ -43,6 +43,10 @@ const BulkProductUpload = () => {
   }, []);
 
   const handleUploadProductGroup = async () => {
+    console.log('Starting upload process...');
+    console.log('Product name:', productName);
+    console.log('Product images:', productImages);
+    
     const validation = validateUploadData(productImages, productName);
     
     if (!validation.isValid) {
@@ -65,9 +69,11 @@ const BulkProductUpload = () => {
           description: `Product "${productName}" created with ${result.successCount} images${result.errorCount > 0 ? `, ${result.errorCount} failed` : ''}`
         });
         
+        // Reset form
         setProductImages([{ file: null, description: '', price: '0' }]);
         setProductName('');
         
+        // Clear file inputs
         const fileInputs = document.querySelectorAll('input[type="file"]') as NodeListOf<HTMLInputElement>;
         fileInputs.forEach(input => input.value = '');
       } else {
@@ -89,7 +95,7 @@ const BulkProductUpload = () => {
     }
   };
 
-  // Auto-upload when conditions are met (only if autoUpload is enabled)
+  // Auto-upload when conditions are met
   useEffect(() => {
     if (!autoUpload || uploading) return;
 
@@ -110,24 +116,19 @@ const BulkProductUpload = () => {
   }, [productImages, productName, autoUpload, uploading]);
 
   // Calculate validation state
-  const selectedImageCount = productImages.filter(img => img.file !== null && img.file !== undefined).length;
+  const selectedImageCount = productImages.filter(img => img.file !== null).length;
   const hasProductName = productName.trim().length > 0;
-  const canUpload = hasProductName && selectedImageCount > 0 && !uploading;
+  const hasValidPrice = productImages[0]?.price && Number(productImages[0].price) > 0;
+  const canUpload = hasProductName && selectedImageCount > 0 && hasValidPrice && !uploading;
 
-  console.log('BulkProductUpload validation state:', {
+  console.log('Upload validation:', {
     productName: productName.trim(),
     hasProductName,
     selectedImageCount,
+    hasValidPrice,
     canUpload,
     uploading,
-    autoUpload,
-    productImagesDebug: productImages.map((img, index) => ({ 
-      index, 
-      hasFile: !!img.file, 
-      fileName: img.file?.name || 'no file',
-      description: img.description, 
-      price: img.price 
-    }))
+    autoUpload
   });
 
   return (
@@ -156,7 +157,7 @@ const BulkProductUpload = () => {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Product Images</Label>
+              <Label>Product Images (Multiple angles of the same product)</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -168,6 +169,16 @@ const BulkProductUpload = () => {
                 <Plus className="h-4 w-4" />
                 Add More Images
               </Button>
+            </div>
+
+            <div className="text-sm text-gray-600 mb-4">
+              <p>💡 <strong>Tip:</strong> Upload multiple images to show different angles of the same product:</p>
+              <ul className="list-disc list-inside mt-2 space-y-1">
+                <li>Image 1: Front view</li>
+                <li>Image 2: Side view</li>
+                <li>Image 3: Back view</li>
+                <li>Image 4: Detail shots</li>
+              </ul>
             </div>
 
             {productImages.map((imageData, index) => (

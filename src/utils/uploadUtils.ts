@@ -39,7 +39,7 @@ export const validateUploadData = (
   if (firstImage?.file && (!firstImage.price || Number(firstImage.price) <= 0)) {
     return {
       isValid: false,
-      errorMessage: "Please set a valid price for the first image"
+      errorMessage: "Please set a valid price for the first image (this will be the product price)"
     };
   }
 
@@ -89,6 +89,9 @@ export const uploadSingleImage = async (
 
     console.log('File uploaded to storage successfully, saving to database...');
 
+    // Use the price from the first image for all images in the group
+    const basePrice = sortOrder === 0 ? Number(imageData.price) || 0 : 0;
+
     const { error: dbError } = await supabase
       .from('images')
       .insert({
@@ -98,8 +101,8 @@ export const uploadSingleImage = async (
         file_size: file.size,
         mime_type: file.type,
         display_location: displayLocation,
-        description: imageData.description.trim() || productName,
-        price: Number(imageData.price) || 0,
+        description: imageData.description.trim() || `${productName} - Angle ${sortOrder + 1}`,
+        price: basePrice,
         is_active: true,
         sort_order: sortOrder,
         product_group: productGroupId
