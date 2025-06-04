@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,15 +63,19 @@ const Header = () => {
 
       {/* Desktop Navigation */}
       <nav className="hidden lg:flex space-x-6 text-sm">
-        {navItems.map((item) => (
-          <button
-            key={item.name}
-            onClick={() => navigate(item.path)}
-            className="text-black hover:text-gray-600 transition-colors"
-          >
-            {item.name}
-          </button>
-        ))}
+        <button
+          onClick={() => navigate('/')}
+          className="text-black hover:text-gray-600 transition-colors"
+        >
+          Home
+        </button>
+        
+        <button
+          onClick={() => navigate('/about')}
+          className="text-black hover:text-gray-600 transition-colors"
+        >
+          About Us
+        </button>
         
         {/* Collections Dropdown */}
         <DropdownMenu>
@@ -80,7 +85,7 @@ const Header = () => {
               <ChevronDown className="h-4 w-4 ml-1" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border shadow-lg">
+          <DropdownMenuContent className="bg-white border shadow-lg z-50">
             {collectionItems.map((item) => (
               <DropdownMenuItem
                 key={item.name}
@@ -92,6 +97,20 @@ const Header = () => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <button
+          onClick={() => navigate('/lab-grown-diamonds')}
+          className="text-black hover:text-gray-600 transition-colors"
+        >
+          Lab Grown Diamonds
+        </button>
+        
+        <button
+          onClick={() => navigate('/contact')}
+          className="text-black hover:text-gray-600 transition-colors"
+        >
+          Contact Us
+        </button>
       </nav>
 
       {/* Actions */}
@@ -166,39 +185,76 @@ const Header = () => {
         </Button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Desktop-like layout */}
       {isMenuOpen && (
-        <nav className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t">
-          <div className="flex flex-col p-4 space-y-3">
-            {navItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => {
-                  navigate(item.path);
-                  setIsMenuOpen(false);
-                }}
-                className="text-black hover:text-gray-600 transition-colors text-left py-2 text-sm md:text-base"
-              >
-                {item.name}
-              </button>
-            ))}
-            <div className="border-b border-gray-200 pb-2">
-              <span className="text-black font-medium py-2 block text-sm md:text-base">Collections</span>
-              {collectionItems.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => {
-                    navigate(item.path);
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-gray-600 hover:text-gray-800 transition-colors text-left py-1 pl-4 block text-sm"
-                >
-                  {item.name}
+        <nav className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t z-50 min-w-full overflow-x-auto">
+          <div className="flex flex-row items-center justify-start p-4 space-x-6 min-w-max">
+            <button
+              onClick={() => {
+                navigate('/');
+                setIsMenuOpen(false);
+              }}
+              className="text-black hover:text-gray-600 transition-colors whitespace-nowrap text-sm font-medium"
+            >
+              Home
+            </button>
+            
+            <button
+              onClick={() => {
+                navigate('/about');
+                setIsMenuOpen(false);
+              }}
+              className="text-black hover:text-gray-600 transition-colors whitespace-nowrap text-sm font-medium"
+            >
+              About Us
+            </button>
+            
+            {/* Mobile Collections Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-black hover:text-gray-600 transition-colors flex items-center whitespace-nowrap text-sm font-medium">
+                  Collections
+                  <ChevronDown className="h-4 w-4 ml-1" />
                 </button>
-              ))}
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white border shadow-lg z-50">
+                {collectionItems.map((item) => (
+                  <DropdownMenuItem
+                    key={item.name}
+                    onClick={() => {
+                      navigate(item.path);
+                      setIsMenuOpen(false);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    {item.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <button
+              onClick={() => {
+                navigate('/lab-grown-diamonds');
+                setIsMenuOpen(false);
+              }}
+              className="text-black hover:text-gray-600 transition-colors whitespace-nowrap text-sm font-medium"
+            >
+              Lab Grown Diamonds
+            </button>
+            
+            <button
+              onClick={() => {
+                navigate('/contact');
+                setIsMenuOpen(false);
+              }}
+              className="text-black hover:text-gray-600 transition-colors whitespace-nowrap text-sm font-medium"
+            >
+              Contact Us
+            </button>
+            
             <Button
-              className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm mt-4"
+              className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 text-sm whitespace-nowrap ml-4"
               onClick={() => {
                 navigate('/products');
                 setIsMenuOpen(false);
@@ -220,3 +276,4 @@ const Header = () => {
 };
 
 export default Header;
+
