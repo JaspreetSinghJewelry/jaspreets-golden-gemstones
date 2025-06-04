@@ -8,7 +8,6 @@ import AdminLogin from '@/components/AdminLogin';
 import ImageManager from '@/components/ImageManager';
 import ProductManager from '@/components/ProductManager';
 import BulkProductUpload from '@/components/BulkProductUpload';
-import SimpleImageUpload from '@/components/SimpleImageUpload';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
@@ -78,13 +77,12 @@ const Admin = () => {
                   Bulk Product Upload
                 </button>
                 <button
-                  onClick={() => setActiveTab('simple-upload')}
+                  onClick={() => setActiveTab('images')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === 'simple-upload'
+                    activeTab === 'images'
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
-               
                 >
                   <Images className="h-4 w-4 inline mr-2" />
                   Image Manager (Legacy)
@@ -109,7 +107,6 @@ const Admin = () => {
                     Bulk Product Upload
                   </>
                 )}
-                
                 {activeTab === 'images' && (
                   <>
                     <Images className="h-6 w-6" />

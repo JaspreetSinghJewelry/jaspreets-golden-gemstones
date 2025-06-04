@@ -72,22 +72,24 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Enhanced mobile compatibility for Android and iOS */
+  /* Enhanced mobile compatibility with improved zoom handling */
   html {
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    min-width: 1200px;
+    /* Allow natural zoom on mobile devices */
+    min-width: auto;
     /* iOS Safari bounce fix */
-    position: fixed;
+    position: relative;
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow-x: auto;
   }
   
   body {
-    min-width: 1200px;
+    /* Allow natural responsive behavior on mobile */
+    min-width: auto;
     overflow-x: auto;
     overflow-y: auto;
     height: 100vh;
@@ -145,99 +147,91 @@
   }
 }
 
-/* Force desktop appearance on all devices - Enhanced for mobile browsers */
+/* Responsive mobile-first design with improved zoom behavior */
 @media (max-width: 1199px) {
-  /* Override mobile styles to maintain desktop layout */
+  /* Allow natural responsive behavior instead of forcing desktop layout */
   body {
-    min-width: 1200px !important;
+    min-width: auto !important;
     overflow-x: auto !important;
     /* Better scrolling on mobile */
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
   }
   
-  /* Force desktop viewport */
+  /* Allow responsive viewport on mobile */
   html {
-    min-width: 1200px !important;
+    min-width: auto !important;
   }
   
-  /* Prevent responsive behavior - force desktop sizing */
+  /* Make container responsive */
   .container {
-    min-width: 1200px !important;
-    width: 1200px !important;
+    min-width: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
   
-  /* Maintain desktop grid layouts */
-  .grid {
-    display: grid !important;
-  }
-  
+  /* Responsive grid layouts for mobile */
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
   
   .sm\\:grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  .md\\:grid-cols-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   
+  .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  .lg\\:grid-cols-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  /* Responsive text sizes for better mobile reading */
+  .text-3xl { font-size: 1.5rem !important; }
+  .text-4xl { font-size: 1.875rem !important; }
+  .text-5xl { font-size: 2.25rem !important; }
+  
+  /* Better mobile spacing */
+  .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  
+  /* Responsive margins */
+  .mb-8 { margin-bottom: 1.5rem !important; }
+  .mb-10 { margin-bottom: 2rem !important; }
+  .mb-12 { margin-bottom: 2rem !important; }
+  
+  /* Better mobile gaps */
+  .gap-8 { gap: 1rem !important; }
+  .space-x-6 > * + * { margin-left: 1rem !important; }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 768px) and (max-width: 1199px) {
   .md\\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
   .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
   .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
-  
-  /* Force desktop text sizes */
-  .text-xs { font-size: 0.75rem !important; }
-  .text-sm { font-size: 0.875rem !important; }
-  .text-base { font-size: 1rem !important; }
-  .text-lg { font-size: 1.125rem !important; }
-  .text-xl { font-size: 1.25rem !important; }
-  .text-2xl { font-size: 1.5rem !important; }
-  .text-3xl { font-size: 1.875rem !important; }
-  .text-4xl { font-size: 2.25rem !important; }
-  .text-5xl { font-size: 3rem !important; }
-  
-  /* Force desktop spacing */
-  .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
-  .px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
-  .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-  .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-  .py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-  .py-16 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
-  
-  /* Force desktop margins */
-  .mb-4 { margin-bottom: 1rem !important; }
-  .mb-6 { margin-bottom: 1.5rem !important; }
-  .mb-8 { margin-bottom: 2rem !important; }
-  .mb-10 { margin-bottom: 2.5rem !important; }
-  .mb-12 { margin-bottom: 3rem !important; }
-  
-  /* Force desktop gaps */
-  .gap-4 { gap: 1rem !important; }
-  .gap-6 { gap: 1.5rem !important; }
-  .gap-8 { gap: 2rem !important; }
-  .space-x-6 > * + * { margin-left: 1.5rem !important; }
-  .space-y-4 > * + * { margin-top: 1rem !important; }
-  
-  /* Force desktop heights */
-  .h-16 { height: 4rem !important; }
-  .h-20 { height: 5rem !important; }
-  .h-24 { height: 6rem !important; }
-  .h-28 { height: 7rem !important; }
-  .h-64 { height: 16rem !important; }
-  .h-96 { height: 24rem !important; }
 }
 
 /* Mobile-specific enhancements */
 @media (max-width: 767px) {
-  /* Ensure horizontal scrolling works smoothly */
+  /* Ensure proper mobile zoom behavior */
   body {
     -webkit-overflow-scrolling: touch !important;
     scroll-behavior: smooth !important;
@@ -255,6 +249,10 @@
     min-height: 44px !important;
     min-width: 44px !important;
   }
+  
+  /* Responsive image containers */
+  .h-64 { height: 12rem !important; }
+  .h-96 { height: 16rem !important; }
 }
 
 /* Android-specific fixes */
@@ -269,7 +267,7 @@
 /* iOS-specific fixes */
 @supports (-webkit-touch-callout: none) {
   body {
-    /* Prevent iOS bounce scroll */
+    /* Allow natural iOS zoom behavior */
     position: relative;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -285,7 +283,7 @@
   }
 }
 
-/* Utility classes for maintaining desktop layout */
+/* Utility classes for responsive design */
 @layer utilities {
   .safe-area-inset {
     padding-top: env(safe-area-inset-top);
@@ -299,17 +297,18 @@
     height: 100dvh;
   }
   
-  /* Force desktop-like appearance on all devices */
-  .desktop-layout {
-    min-width: 1200px;
+  /* Responsive layout that adapts to device */
+  .responsive-layout {
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
   }
   
-  /* Responsive grid that maintains desktop look */
+  /* Responsive grid that maintains proper spacing */
   .responsive-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
   }
   
   /* Mobile-friendly touch targets */
