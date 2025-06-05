@@ -6,36 +6,32 @@ import { useNavigate } from 'react-router-dom';
 const Categories = () => {
   const navigate = useNavigate();
 
-  const labGrownProducts = [
-  {
-    id: 101,
-    name: 'Lab Grown Diamond Ring',
-    price: '₹45,999',
-    originalPrice: '₹55,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20ring.jpeg',
-  },
-  {
-    id: 102,
-    name: 'Lab Grown Diamond Necklace',
-    price: '₹38,999',
-    originalPrice: '₹48,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20necklace.jpeg',
-  },
-  {
-    id: 103,
-    name: 'Lab Grown Diamond Earrings',
-    price: '₹28,999',
-    originalPrice: '₹35,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20diamond%20earring.jpeg',
-  },
-  {
-    id: 104,
-    name: 'Lab Grown Diamond Bracelet',
-    price: '₹32,999',
-    originalPrice: '₹42,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20grown%20bracelet%20.jpg',
-  }
-];
+  const categories = [
+    {
+      name: 'Rings',
+      description: 'Elegant rings for every occasion',
+      image: '/lovable-uploads/9df94c16-4c5e-4dbe-a5b9-9fb8559ea956.png',
+      path: '/rings'
+    },
+    {
+      name: 'Necklaces',
+      description: 'Beautiful necklaces to complement your style',
+      image: '/lovable-uploads/a61e619a-3ddd-4e24-b1c2-119499cb9197.png',
+      path: '/necklaces'
+    },
+    {
+      name: 'Earrings',
+      description: 'Stunning earrings for any look',
+      image: '/lovable-uploads/e7a426e1-574e-46be-a349-51b1df8eb82c.png',
+      path: '/earrings'
+    },
+    {
+      name: 'Bracelets',
+      description: 'Graceful bracelets to adorn your wrists',
+      image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
+      path: '/bracelets'
+    }
+  ];
 
   return (
     <section className="px-6 py-20 bg-white">
