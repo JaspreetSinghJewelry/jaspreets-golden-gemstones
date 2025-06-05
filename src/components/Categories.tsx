@@ -28,16 +28,15 @@ const Categories = () => {
     {
       name: 'Bracelets',
       path: '/bracelets',
-      image: '/mnt/data/710fcff1-e2a5-47ca-abc8-1d9e1741d7f3.jpg',
+      image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//natural%20bracelet.jpg',
       description: 'Delicate bracelets for everyday elegance'
     },
     {
-  name: 'Lab Grown Diamonds',
-  path: '/lab-grown-diamonds',
-  image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20diamond%20earring.jpeg',
-  description: 'Sustainable and brilliant lab grown diamonds'
-}
-
+      name: 'Lab Grown Diamonds',
+      path: '/lab-grown-diamonds',
+      image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
+      description: 'Sustainable and brilliant lab grown diamonds'
+    }
   ];
 
   return (
