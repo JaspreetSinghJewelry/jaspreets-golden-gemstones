@@ -10,31 +10,31 @@ const Categories = () => {
     {
       name: 'Rings',
       path: '/rings',
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=300&h=300&fit=crop',
+      image: '/lovable-uploads/a61e619a-3ddd-4e24-b1c2-119499cb9197.png',
       description: 'Elegant rings for every occasion'
     },
     {
       name: 'Necklaces',
       path: '/necklaces',
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=300&fit=crop',
+      image: '/lovable-uploads/4e3fe8b3-6a21-4848-8c77-b4fe99f69237.png',
       description: 'Beautiful necklaces to complement your style'
     },
     {
       name: 'Earrings',
       path: '/earrings',
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&h=300&fit=crop',
+      image: '/lovable-uploads/25a36549-df61-4038-9168-526502498ede.png',
       description: 'Stunning earrings for any look'
     },
     {
       name: 'Bracelets',
       path: '/bracelets',
-      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=300&h=300&fit=crop',
+      image: '/lovable-uploads/9df94c16-4c5e-4dbe-a5b9-9fb8559ea956.png',
       description: 'Delicate bracelets for everyday elegance'
     },
     {
       name: 'Lab Grown Diamonds',
       path: '/lab-grown-diamonds',
-      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&h=300&fit=crop',
+      image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
       description: 'Sustainable and brilliant lab grown diamonds'
     }
   ];
@@ -55,6 +55,9 @@ const Categories = () => {
                   src={category.image} 
                   alt={category.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
                 />
               </div>
               <div className="flex-1 flex items-center justify-center text-center p-4">

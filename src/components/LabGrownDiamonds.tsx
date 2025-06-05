@@ -22,31 +22,31 @@ const LabGrownDiamonds = () => {
   const labGrownProducts = [
     {
       id: 101,
-      name: 'Lab Grown Diamond Solitaire',
-      price: '₹35,999',
-      originalPrice: '₹45,999',
-      image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop',
+      name: 'Lab Grown Diamond Ring',
+      price: '₹45,999',
+      originalPrice: '₹55,999',
+      image: '/lovable-uploads/a61e619a-3ddd-4e24-b1c2-119499cb9197.png',
     },
     {
       id: 102,
-      name: 'Eco-Friendly Diamond Earrings',
-      price: '₹18,999',
-      originalPrice: '₹25,999',
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=300&fit=crop',
+      name: 'Lab Grown Diamond Necklace',
+      price: '₹38,999',
+      originalPrice: '₹48,999',
+      image: '/lovable-uploads/4e3fe8b3-6a21-4848-8c77-b4fe99f69237.png',
     },
     {
       id: 103,
-      name: 'Sustainable Diamond Necklace',
-      price: '₹25,999',
-      originalPrice: '₹32,999',
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop',
+      name: 'Lab Grown Diamond Earrings',
+      price: '₹28,999',
+      originalPrice: '₹35,999',
+      image: '/lovable-uploads/25a36549-df61-4038-9168-526502498ede.png',
     },
     {
       id: 104,
-      name: 'Lab Created Diamond Ring',
-      price: '₹42,999',
-      originalPrice: '₹55,999',
-      image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop',
+      name: 'Lab Grown Diamond Bracelet',
+      price: '₹32,999',
+      originalPrice: '₹42,999',
+      image: '/lovable-uploads/e7a426e1-574e-46be-a349-51b1df8eb82c.png',
     }
   ];
 
