@@ -123,10 +123,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
             <p className="text-gray-600 text-sm md:text-base text-center md:text-left">
               © 2025 Jaspreet Singh Jewelry. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </div>
+            </p
     </footer>
   );
 };
