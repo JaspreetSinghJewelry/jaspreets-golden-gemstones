@@ -65,7 +65,6 @@ const LabGrownDiamonds = () => {
       id: product.id,
       name: product.name,
       price: product.price,
-      originalPrice: product.originalPrice,
       image: product.image
     });
   };

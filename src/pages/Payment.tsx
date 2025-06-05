@@ -46,13 +46,22 @@ const Payment = () => {
         user: user?.id
       });
 
+      // Convert cartItems to proper JSON format for database
+      const cartItemsJson = cartItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity
+      }));
+
       const { error } = await supabase
         .from('orders')
         .insert({
           order_id: orderId,
           user_id: user?.id || null,
-          customer_data: customerData,
-          cart_items: cartItems,
+          customer_data: customerData as any,
+          cart_items: cartItemsJson as any,
           sub_total: subTotal,
           taxes: taxes,
           total_amount: totalAmount,

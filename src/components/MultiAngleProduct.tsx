@@ -47,7 +47,6 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
       id: parseInt(product.id),
       name: product.name,
       price: product.price,
-      originalPrice: product.originalPrice || product.price,
       image: currentImage.url
     };
     addToCart(cartItem);

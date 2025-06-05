@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -98,6 +99,16 @@ const Products = () => {
     setFilteredProducts(sorted);
   };
 
+  const handleAddToCart = (product) => {
+    console.log('Adding product to cart:', product);
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+  };
+
   const getCategoryLabel = (category: string) => {
     switch (category) {
       case 'rings': return 'Rings';
@@ -176,7 +187,7 @@ const Products = () => {
                         <p className="text-gray-500 line-through text-sm">{product.originalPrice}</p>
                       )}
                     </div>
-                    <Button onClick={() => addToCart(product)} className="w-full bg-black hover:bg-gray-800 text-white">
+                    <Button onClick={() => handleAddToCart(product)} className="w-full bg-black hover:bg-gray-800 text-white">
                       <ShoppingBag className="h-4 w-4 mr-2" />
                       Add to Cart
                     </Button>
