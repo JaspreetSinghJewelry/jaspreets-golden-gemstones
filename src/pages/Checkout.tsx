@@ -29,7 +29,7 @@ const Checkout = () => {
   console.log('Checkout page rendered - Cart items length:', cartItems.length);
 
   const subTotal = getCartTotal();
-  const taxes = Math.round(subTotal * 0.18); // 18% GST
+  const taxes = Math.round(subTotal * 0.3); // 3% GST
   const totalAmount = subTotal + taxes;
 
   useEffect(() => {
