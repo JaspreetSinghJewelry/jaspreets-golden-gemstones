@@ -96,7 +96,9 @@ const Wishlist = () => {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <span className="text-2xl font-bold text-[#1F1E39]">{product.price}</span>
-                          <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
+                          {product.originalPrice && (
+                            <span className="text-gray-500 line-through ml-2">{product.originalPrice}</span>
+                          )}
                         </div>
                       </div>
                       
