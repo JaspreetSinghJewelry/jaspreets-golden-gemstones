@@ -2,16 +2,17 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings, Package, Upload } from 'lucide-react';
+import { LogOut, Images, Settings, Package, Upload, ShoppingBag } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
 import ImageManager from '@/components/ImageManager';
 import ProductManager from '@/components/ProductManager';
 import BulkProductUpload from '@/components/BulkProductUpload';
+import OrdersManager from '@/components/OrdersManager';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders'>('products');
 
   if (loading) {
     return (
@@ -77,6 +78,17 @@ const Admin = () => {
                   Bulk Product Upload
                 </button>
                 <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'orders'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <ShoppingBag className="h-4 w-4 inline mr-2" />
+                  Orders Management
+                </button>
+                <button
                   onClick={() => setActiveTab('images')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === 'images'
@@ -107,6 +119,12 @@ const Admin = () => {
                     Bulk Product Upload
                   </>
                 )}
+                {activeTab === 'orders' && (
+                  <>
+                    <ShoppingBag className="h-6 w-6" />
+                    Orders Management
+                  </>
+                )}
                 {activeTab === 'images' && (
                   <>
                     <Images className="h-6 w-6" />
@@ -119,6 +137,7 @@ const Admin = () => {
               <div className="p-6">
                 {activeTab === 'products' && <ProductManager />}
                 {activeTab === 'bulk-upload' && <BulkProductUpload />}
+                {activeTab === 'orders' && <OrdersManager />}
                 {activeTab === 'images' && <ImageManager />}
               </div>
             </CardContent>

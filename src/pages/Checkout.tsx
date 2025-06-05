@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,7 +28,7 @@ const Checkout = () => {
   console.log('Checkout page rendered - Cart items length:', cartItems.length);
 
   const subTotal = getCartTotal();
-  const taxes = Math.round(subTotal * 0.3); // 3% GST
+  const taxes = Math.round(subTotal * 0.03); // Changed to 3% GST
   const totalAmount = subTotal + taxes;
 
   useEffect(() => {
@@ -388,7 +387,7 @@ const Checkout = () => {
                       <span className="font-semibold">₹{subTotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-cream-900">
-                      <span className="font-medium">GST (18%)</span>
+                      <span className="font-medium">GST (3%)</span>
                       <span className="font-semibold">₹{taxes.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg border-t-2 border-cream-200 pt-3 text-cream-900">

@@ -24,17 +24,24 @@ const Payment = () => {
   }, [customerData, cartItems, navigate]);
 
   const subTotal = getCartTotal();
-  const taxes = Math.round(subTotal * 0.18); // 18% GST
+  const taxes = Math.round(subTotal * 0.03); // Changed to 3% GST
   const totalAmount = subTotal + taxes;
 
   const handlePlaceOrder = () => {
-    console.log('Order placed:', { 
-      items: cartItems, 
-      customer: customerData, 
-      total: totalAmount,
-      paymentMethod: selectedPayment
-    });
-    navigate('/order-success');
+    // Simulate random payment failure for demonstration
+    const paymentSuccess = Math.random() > 0.3; // 70% success rate
+    
+    if (paymentSuccess) {
+      console.log('Order placed:', { 
+        items: cartItems, 
+        customer: customerData, 
+        total: totalAmount,
+        paymentMethod: selectedPayment
+      });
+      navigate('/order-success');
+    } else {
+      navigate('/payment-failure');
+    }
   };
 
   if (cartItems.length === 0) {
@@ -158,7 +165,7 @@ const Payment = () => {
                       <span className="font-semibold">₹{subTotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-cream-900">
-                      <span className="font-medium">GST (18%)</span>
+                      <span className="font-medium">GST (3%)</span>
                       <span className="font-semibold">₹{taxes.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between font-bold text-xl text-cream-900 border-t-2 border-cream-300 pt-3">
