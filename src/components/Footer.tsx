@@ -124,20 +124,6 @@ const Footer = () => {
             <p className="text-gray-600 text-sm md:text-base text-center md:text-left">
               © 2025 Jaspreet Singh Jewelry. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center md:justify-end space-x-4 md:space-x-6">
-              <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
-                Privacy Policy
-              </Link>
-              <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
-                Terms of Service
-              </Link>
-              <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
-                Return Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
     </footer>
   );
 };
