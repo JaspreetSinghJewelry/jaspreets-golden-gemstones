@@ -6,38 +6,36 @@ import { useNavigate } from 'react-router-dom';
 const Categories = () => {
   const navigate = useNavigate();
 
-  const categories = [
-    {
-      name: 'Rings',
-      path: '/rings',
-      image: '/mnt/data/379e4151-0f4d-4798-b010-0e5a6c7062ac.jpg',
-      description: 'Elegant rings for every occasion'
-    },
-    {
-      name: 'Necklaces',
-      path: '/necklaces',
-      image: '/lovable-uploads/4e3fe8b3-6a21-4848-8c77-b4fe99f69237.png',
-      description: 'Beautiful necklaces to complement your style'
-    },
-    {
-      name: 'Earrings',
-      path: '/earrings',
-      image: '/lovable-uploads/25a36549-df61-4038-9168-526502498ede.png',
-      description: 'Stunning earrings for any look'
-    },
-    {
-      name: 'Bracelets',
-      path: '/bracelets',
-      image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//natural%20bracelet.jpg',
-      description: 'Delicate bracelets for everyday elegance'
-    },
-    {
-      name: 'Lab Grown Diamonds',
-      path: '/lab-grown-diamonds',
-      image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
-      description: 'Sustainable and brilliant lab grown diamonds'
-    }
-  ];
+  const labGrownProducts = [
+  {
+    id: 101,
+    name: 'Lab Grown Diamond Ring',
+    price: '₹45,999',
+    originalPrice: '₹55,999',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20ring.jpeg',
+  },
+  {
+    id: 102,
+    name: 'Lab Grown Diamond Necklace',
+    price: '₹38,999',
+    originalPrice: '₹48,999',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20necklace.jpeg',
+  },
+  {
+    id: 103,
+    name: 'Lab Grown Diamond Earrings',
+    price: '₹28,999',
+    originalPrice: '₹35,999',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20diamond%20earring.jpeg',
+  },
+  {
+    id: 104,
+    name: 'Lab Grown Diamond Bracelet',
+    price: '₹32,999',
+    originalPrice: '₹42,999',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20grown%20bracelet%20.jpg',
+  }
+];
 
   return (
     <section className="px-6 py-20 bg-white">
