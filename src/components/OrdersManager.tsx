@@ -55,11 +55,11 @@ const OrdersManager = () => {
 
       if (error) throw error;
       
-      // Type assertion to ensure proper typing
+      // Type assertion with proper validation
       const typedOrders = (data || []).map(order => ({
         ...order,
-        customer_data: order.customer_data as CustomerData,
-        cart_items: order.cart_items as CartItem[]
+        customer_data: order.customer_data as unknown as CustomerData,
+        cart_items: order.cart_items as unknown as CartItem[]
       }));
       
       setOrders(typedOrders);
