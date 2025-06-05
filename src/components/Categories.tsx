@@ -10,7 +10,7 @@ const Categories = () => {
     {
       name: 'Rings',
       path: '/rings',
-      image: '/lovable-uploads/a61e619a-3ddd-4e24-b1c2-119499cb9197.png',
+      image: '/mnt/data/379e4151-0f4d-4798-b010-0e5a6c7062ac.jpg',
       description: 'Elegant rings for every occasion'
     },
     {
@@ -28,7 +28,7 @@ const Categories = () => {
     {
       name: 'Bracelets',
       path: '/bracelets',
-      image: '/lovable-uploads/9df94c16-4c5e-4dbe-a5b9-9fb8559ea956.png',
+      image: '/mnt/data/710fcff1-e2a5-47ca-abc8-1d9e1741d7f3.jpg',
       description: 'Delicate bracelets for everyday elegance'
     },
     {
