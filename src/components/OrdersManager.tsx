@@ -43,6 +43,7 @@ interface Order {
   payment_method: string | null;
   payment_status: string;
   created_at: string;
+  user_id: string | null;
 }
 
 const OrdersManager = () => {
@@ -57,19 +58,29 @@ const OrdersManager = () => {
 
   const fetchOrders = async () => {
     try {
+      console.log('Fetching orders from admin panel...');
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching orders:', error);
+        throw error;
+      }
       
-      const typedOrders = (data || []).map(order => ({
-        ...order,
-        customer_data: order.customer_data as unknown as CustomerData,
-        cart_items: order.cart_items as unknown as CartItem[]
-      }));
+      console.log('Raw orders data:', data);
       
+      const typedOrders = (data || []).map(order => {
+        console.log('Processing order:', order.order_id, order.customer_data);
+        return {
+          ...order,
+          customer_data: order.customer_data as unknown as CustomerData,
+          cart_items: order.cart_items as unknown as CartItem[]
+        };
+      });
+      
+      console.log('Processed orders:', typedOrders);
       setOrders(typedOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -242,8 +253,11 @@ const OrdersManager = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Orders Management</h2>
-        <div className="text-sm text-gray-500">
-          Total Orders: {orders.length}
+        <div className="flex gap-4 text-sm text-gray-500">
+          <span>Total Orders: {orders.length}</span>
+          <Button variant="outline" size="sm" onClick={fetchOrders}>
+            Refresh
+          </Button>
         </div>
       </div>
 
@@ -252,6 +266,9 @@ const OrdersManager = () => {
           <CardContent className="p-8 text-center">
             <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">No orders found</p>
+            <Button variant="outline" onClick={fetchOrders} className="mt-4">
+              Refresh Orders
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -261,9 +278,10 @@ const OrdersManager = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Customer Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>City</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Amount</TableHead>
@@ -275,10 +293,11 @@ const OrdersManager = () => {
                   <TableRow key={order.id}>
                     <TableCell className="font-mono text-sm">{order.order_id}</TableCell>
                     <TableCell className="font-medium">
-                      {order.customer_data.firstName} {order.customer_data.lastName}
+                      {order.customer_data?.firstName || 'N/A'} {order.customer_data?.lastName || ''}
                     </TableCell>
-                    <TableCell>{order.customer_data.email}</TableCell>
-                    <TableCell>{order.customer_data.phone}</TableCell>
+                    <TableCell>{order.customer_data?.email || 'N/A'}</TableCell>
+                    <TableCell>{order.customer_data?.phone || 'N/A'}</TableCell>
+                    <TableCell>{order.customer_data?.city || 'N/A'}</TableCell>
                     <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
                     <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>

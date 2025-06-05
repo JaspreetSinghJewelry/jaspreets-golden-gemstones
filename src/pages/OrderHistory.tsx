@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, XCircle, Calendar, Package, Eye, ArrowLeft, Truck } from 'lucide-react';
+import { CheckCircle, XCircle, Calendar, Package, Eye, ArrowLeft, Truck, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -47,6 +47,7 @@ interface Order {
   payment_method: string | null;
   payment_status: string;
   created_at: string;
+  user_id: string | null;
 }
 
 const OrderHistory = () => {
@@ -65,16 +66,53 @@ const OrderHistory = () => {
   }, [user, isAuthenticated, navigate]);
 
   const fetchUserOrders = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found, skipping order fetch');
+      setLoading(false);
+      return;
+    }
 
     try {
-      const { data, error } = await supabase
+      console.log('Fetching orders for user:', user.id);
+      
+      // First try to fetch orders by user_id
+      let { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      // If no orders found by user_id, try to match by email
+      if (!data || data.length === 0) {
+        console.log('No orders found by user_id, trying to match by email:', user.email);
+        const { data: emailOrders, error: emailError } = await supabase
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (emailError) {
+          console.error('Error fetching orders by email:', emailError);
+        } else {
+          // Filter orders by email match in customer_data
+          const userOrders = emailOrders?.filter(order => {
+            try {
+              const customerData = order.customer_data as any;
+              return customerData && customerData.email === user.email;
+            } catch (e) {
+              console.error('Error parsing customer data:', e);
+              return false;
+            }
+          }) || [];
+          data = userOrders;
+        }
+      }
+
+      if (error) {
+        console.error('Error fetching user orders:', error);
+        throw error;
+      }
+      
+      console.log('Found orders:', data?.length || 0);
       
       const typedOrders = (data || []).map(order => ({
         ...order,
@@ -112,7 +150,24 @@ const OrderHistory = () => {
   };
 
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <Card className="w-full max-w-md text-center">
+            <CardContent className="p-8">
+              <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-gray-600 mb-2">Please Sign In</h2>
+              <p className="text-gray-500 mb-6">You need to be signed in to view your order history.</p>
+              <Button onClick={() => navigate('/auth')}>
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   if (loading) {
@@ -247,7 +302,13 @@ const OrderHistory = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Your Order History</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Your Order History</h1>
+          <Button variant="outline" onClick={() => navigate('/')}>
+            <Home className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+        </div>
         
         {orders.length === 0 ? (
           <Card>
@@ -255,13 +316,26 @@ const OrderHistory = () => {
               <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-gray-600 mb-2">No Orders Yet</h2>
               <p className="text-gray-500 mb-6">You haven't placed any orders yet. Start shopping to see your orders here!</p>
-              <Button onClick={() => navigate('/products')}>
-                Start Shopping
-              </Button>
+              <div className="flex gap-4 justify-center">
+                <Button onClick={() => navigate('/products')}>
+                  Start Shopping
+                </Button>
+                <Button variant="outline" onClick={fetchUserOrders}>
+                  Refresh Orders
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (
           <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Your Orders ({orders.length})</span>
+                <Button variant="outline" size="sm" onClick={fetchUserOrders}>
+                  Refresh
+                </Button>
+              </CardTitle>
+            </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
