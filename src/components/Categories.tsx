@@ -6,38 +6,39 @@ import { useNavigate } from 'react-router-dom';
 const Categories = () => {
   const navigate = useNavigate();
 
-  const categories = [
-    {
-      name: 'Rings',
-      path: '/rings',
-      image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//natural.jpg',
-      description: 'Elegant rings for every occasion'
-    },
-    {
-      name: 'Necklaces',
-      path: '/necklaces',
-      image: '/lovable-uploads/4e3fe8b3-6a21-4848-8c77-b4fe99f69237.png',
-      description: 'Beautiful necklaces to complement your style'
-    },
-    {
-      name: 'Earrings',
-      path: '/earrings',
-      image: '/lovable-uploads/25a36549-df61-4038-9168-526502498ede.png',
-      description: 'Stunning earrings for any look'
-    },
-    {
-      name: 'Bracelets',
-      path: '/bracelets',
-      image: '/mnt/data/710fcff1-e2a5-47ca-abc8-1d9e1741d7f3.jpg',
-      description: 'Delicate bracelets for everyday elegance'
-    },
-    {
-      name: 'Lab Grown Diamonds',
-      path: '/lab-grown-diamonds',
-      image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
-      description: 'Sustainable and brilliant lab grown diamonds'
-    }
-  ];
+const categories = [
+  {
+    name: 'Rings',
+    path: '/rings',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/natural.jpg',
+    description: 'Elegant rings for every occasion'
+  },
+  {
+    name: 'Necklaces',
+    path: '/necklaces',
+    image: '/lovable-uploads/4e3fe8b3-6a21-4848-8c77-b4fe99f69237.png',
+    description: 'Beautiful necklaces to complement your style'
+  },
+  {
+    name: 'Earrings',
+    path: '/earrings',
+    image: '/lovable-uploads/25a36549-df61-4038-9168-526502498ede.png',
+    description: 'Stunning earrings for any look'
+  },
+  {
+    name: 'Bracelets',
+    path: '/bracelets',
+    image: '/mnt/data/710fcff1-e2a5-47ca-abc8-1d9e1741d7f3.jpg',
+    description: 'Delicate bracelets for everyday elegance'
+  },
+  {
+    name: 'Lab Grown Diamonds',
+    path: '/lab-grown-diamonds',
+    image: '/lovable-uploads/5c836707-3db3-4bb2-9d20-0b4d82b97f07.png',
+    description: 'Sustainable and brilliant lab grown diamonds'
+  }
+];
+
 
   return (
     <section className="px-6 py-20 bg-white">
