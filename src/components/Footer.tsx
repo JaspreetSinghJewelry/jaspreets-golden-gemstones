@@ -124,6 +124,9 @@ const Footer = () => {
             <p className="text-gray-600 text-sm md:text-base text-center md:text-left">
               © 2025 Jaspreet Singh Jewelry. All rights reserved.
             </p>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };
