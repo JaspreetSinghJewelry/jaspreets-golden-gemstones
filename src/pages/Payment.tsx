@@ -7,12 +7,17 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock } from 'lucide-react';
 import PaymentOptions from '@/components/PaymentOptions';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 const Payment = () => {
-  const { cartItems, getCartTotal } = useCart();
+  const { cartItems, getCartTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedPayment, setSelectedPayment] = useState('card');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const customerData = location.state?.customerData;
   
@@ -27,20 +32,101 @@ const Payment = () => {
   const taxes = Math.round(subTotal * 0.03); // Changed to 3% GST
   const totalAmount = subTotal + taxes;
 
-  const handlePlaceOrder = () => {
-    // Simulate random payment failure for demonstration
-    const paymentSuccess = Math.random() > 0.3; // 70% success rate
-    
-    if (paymentSuccess) {
-      console.log('Order placed:', { 
-        items: cartItems, 
-        customer: customerData, 
-        total: totalAmount,
-        paymentMethod: selectedPayment
+  const generateOrderId = () => {
+    return 'JS' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
+  };
+
+  const saveOrderToDatabase = async (orderId: string, paymentStatus: string) => {
+    try {
+      console.log('Saving order to database:', {
+        orderId,
+        customerData,
+        cartItems,
+        paymentStatus,
+        user: user?.id
       });
-      navigate('/order-success');
-    } else {
-      navigate('/payment-failure');
+
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          order_id: orderId,
+          user_id: user?.id || null,
+          customer_data: customerData,
+          cart_items: cartItems,
+          sub_total: subTotal,
+          taxes: taxes,
+          total_amount: totalAmount,
+          payment_method: selectedPayment,
+          payment_status: paymentStatus,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Error saving order:', error);
+        throw error;
+      }
+
+      console.log('Order saved successfully to database');
+      return true;
+    } catch (error) {
+      console.error('Failed to save order:', error);
+      toast({
+        title: "Warning",
+        description: "Order processed but failed to save details. Please contact support.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Generate order ID
+      const orderId = generateOrderId();
+      
+      // Simulate payment processing
+      const paymentSuccess = Math.random() > 0.3; // 70% success rate
+      const paymentStatus = paymentSuccess ? 'success' : 'failed';
+      
+      console.log('Processing payment:', { orderId, paymentStatus });
+      
+      // Save order to database regardless of payment success/failure
+      await saveOrderToDatabase(orderId, paymentStatus);
+      
+      // Clear cart if payment was successful
+      if (paymentSuccess) {
+        clearCart();
+        navigate('/order-success', { 
+          state: { 
+            orderId,
+            customerData,
+            totalAmount,
+            paymentStatus: 'success'
+          }
+        });
+      } else {
+        navigate('/payment-failure', {
+          state: {
+            orderId,
+            customerData,
+            totalAmount,
+            paymentStatus: 'failed'
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error processing order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -72,6 +158,7 @@ const Payment = () => {
               variant="ghost" 
               onClick={() => navigate('/checkout')}
               className="text-cream-50 hover:text-cream-200 hover:bg-cream-800"
+              disabled={isProcessing}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Checkout
@@ -183,11 +270,12 @@ const Payment = () => {
                   {/* Pay Now Button */}
                   <Button 
                     onClick={handlePlaceOrder}
-                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105"
+                    disabled={isProcessing}
+                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
                     size="lg"
                   >
                     <Lock className="h-5 w-5 mr-2" />
-                    Pay Now - ₹{totalAmount.toLocaleString()}
+                    {isProcessing ? 'Processing...' : `Pay Now - ₹${totalAmount.toLocaleString()}`}
                   </Button>
                 </div>
               </CardContent>

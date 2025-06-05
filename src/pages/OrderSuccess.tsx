@@ -3,11 +3,16 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get order data from navigation state
+  const orderData = location.state;
+  const orderId = orderData?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
@@ -27,8 +32,13 @@ const OrderSuccess = () => {
             Thank you for your order. We'll send you a confirmation email shortly.
           </p>
           <p className="text-sm text-gray-500">
-            Order ID: #JS{Math.random().toString(36).substr(2, 9).toUpperCase()}
+            Order ID: {orderId}
           </p>
+          {orderData?.totalAmount && (
+            <p className="text-lg font-semibold text-green-600">
+              Total: ₹{orderData.totalAmount.toLocaleString()}
+            </p>
+          )}
           <div className="space-y-2 pt-4">
             <Button 
               onClick={() => navigate('/')}
@@ -38,7 +48,7 @@ const OrderSuccess = () => {
             </Button>
             <Button 
               variant="outline"
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/order-history')}
               className="w-full"
             >
               View Orders
