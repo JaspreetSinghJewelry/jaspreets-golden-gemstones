@@ -10,7 +10,7 @@ const Categories = () => {
     {
       name: 'Rings',
       path: '/rings',
-      image: '/https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//natural.jpg',
+      image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//natural.jpg',
       description: 'Elegant rings for every occasion'
     },
     {
