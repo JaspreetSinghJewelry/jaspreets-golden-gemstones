@@ -5,28 +5,29 @@ import { Button } from '@/components/ui/button';
 
 const LabGrownInstagramGallery = () => {
   // Updated lab grown images with your uploaded photos (same photos for consistency)
-  const labGrownImages = [
-    {
-      id: 1,
-      src: '/lovable-uploads/cae9a9c5-19f1-4f96-bdcc-f3053b3cff46.png',
-      alt: 'Lab Grown Diamond Jewelry'
-    },
-    {
-      id: 2,
-      src: '/lovable-uploads/0fd33372-c966-40bd-8e42-509dd3ca80a4.png',
-      alt: 'Sustainable Gold Earrings'
-    },
-    {
-      id: 3,
-      src: '/lovable-uploads/4c0dc0a9-0400-424e-858e-2c1137e80c4f.png',
-      alt: 'Eco-Friendly Necklace'
-    },
-    {
-      id: 4,
-      src: '/lovable-uploads/affebecb-9cbb-471f-bed5-13025cff9703.png',
-      alt: 'Lab Created Diamond Ring'
-    }
-  ];
+ const labGrownImages = [
+  {
+    id: 1,
+    src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/insta%201%20lab.png',
+    alt: 'Lab Grown Diamond Jewelry'
+  },
+  {
+    id: 2,
+    src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/insta%202%20lab%20(1).png',
+    alt: 'Sustainable Gold Earrings'
+  },
+  {
+    id: 3,
+    src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/insta%203%20lab.png',
+    alt: 'Eco-Friendly Necklace'
+  },
+  {
+    id: 4,
+    src: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/insta%204%20lab.png',
+    alt: 'Lab Created Diamond Ring'
+  }
+];
+
 
   return (
     <section className="py-8 bg-gradient-to-br from-green-50 to-[#0D0C29]/30 animate-fade-in">
