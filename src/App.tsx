@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import OrderSuccess from "./pages/OrderSuccess";
 import PaymentFailure from "./pages/PaymentFailure";
+import OrderHistory from "./pages/OrderHistory";
 import Admin from "./pages/Admin";
 import SignIn from "./pages/SignIn";
 import Wishlist from "./pages/Wishlist";
@@ -60,6 +62,7 @@ function App() {
                     <Route path="/payment" element={<Payment />} />
                     <Route path="/order-success" element={<OrderSuccess />} />
                     <Route path="/payment-failure" element={<PaymentFailure />} />
+                    <Route path="/order-history" element={<OrderHistory />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/signin" element={<SignIn />} />
                     <Route path="/wishlist" element={<Wishlist />} />

@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { User, Package, Truck, MessageCircle, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import TrackOrderModal from './TrackOrderModal';
 import { toast } from '@/hooks/use-toast';
 
@@ -19,11 +20,11 @@ interface AccountMenuProps {
 
 const AccountMenu = ({ children }: AccountMenuProps) => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [isTrackOrderOpen, setIsTrackOrderOpen] = useState(false);
 
   const handleOrderHistory = () => {
-    console.log('Order History clicked');
-    // Add navigation logic here
+    navigate('/order-history');
   };
 
   const handleTrackOrder = () => {
