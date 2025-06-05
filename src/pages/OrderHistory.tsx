@@ -73,48 +73,47 @@ const OrderHistory = () => {
     }
 
     try {
-      console.log('Fetching orders for user:', user.id);
+      console.log('Fetching ALL orders for user:', user.id, 'Email:', user.email);
       
-      // First try to fetch orders by user_id
-      let { data, error } = await supabase
+      // First get all orders
+      const { data: allOrders, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      // If no orders found by user_id, try to match by email
-      if (!data || data.length === 0) {
-        console.log('No orders found by user_id, trying to match by email:', user.email);
-        const { data: emailOrders, error: emailError } = await supabase
-          .from('orders')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (emailError) {
-          console.error('Error fetching orders by email:', emailError);
-        } else {
-          // Filter orders by email match in customer_data
-          const userOrders = emailOrders?.filter(order => {
-            try {
-              const customerData = order.customer_data as any;
-              return customerData && customerData.email === user.email;
-            } catch (e) {
-              console.error('Error parsing customer data:', e);
-              return false;
-            }
-          }) || [];
-          data = userOrders;
-        }
-      }
-
       if (error) {
-        console.error('Error fetching user orders:', error);
+        console.error('Error fetching orders:', error);
         throw error;
       }
+
+      console.log('Total orders in database:', allOrders?.length || 0);
+
+      // Filter orders for this user by user_id OR email match
+      const userOrders = allOrders?.filter(order => {
+        try {
+          // Check if order belongs to this user by user_id
+          if (order.user_id === user.id) {
+            console.log('Found order by user_id:', order.order_id);
+            return true;
+          }
+          
+          // Check if order belongs to this user by email in customer_data
+          const customerData = order.customer_data as any;
+          if (customerData && customerData.email === user.email) {
+            console.log('Found order by email match:', order.order_id, 'Email:', customerData.email);
+            return true;
+          }
+          
+          return false;
+        } catch (e) {
+          console.error('Error processing order:', order.id, e);
+          return false;
+        }
+      }) || [];
       
-      console.log('Found orders:', data?.length || 0);
+      console.log('Filtered user orders:', userOrders.length);
       
-      const typedOrders = (data || []).map(order => ({
+      const typedOrders = userOrders.map(order => ({
         ...order,
         customer_data: order.customer_data as unknown as CustomerData,
         cart_items: order.cart_items as unknown as CartItem[]
@@ -141,6 +140,8 @@ const OrderHistory = () => {
   const getDeliveryStatus = (paymentStatus: string) => {
     if (paymentStatus === 'completed' || paymentStatus === 'success') {
       return <Badge className="bg-blue-100 text-blue-800"><Truck className="h-3 w-3 mr-1" />In Transit</Badge>;
+    } else if (paymentStatus === 'failed' || paymentStatus === 'failure') {
+      return <Badge className="bg-red-100 text-red-800">Cancelled</Badge>;
     }
     return <Badge variant="secondary">Pending</Badge>;
   };
@@ -236,13 +237,13 @@ const OrderHistory = () => {
               <CardContent>
                 <div className="space-y-1">
                   <p className="font-medium">
-                    {selectedOrder.customer_data.firstName} {selectedOrder.customer_data.lastName}
+                    {selectedOrder.customer_data?.firstName || 'N/A'} {selectedOrder.customer_data?.lastName || ''}
                   </p>
-                  <p>{selectedOrder.customer_data.address}</p>
+                  <p>{selectedOrder.customer_data?.address || 'N/A'}</p>
                   <p>
-                    {selectedOrder.customer_data.city}, {selectedOrder.customer_data.state} - {selectedOrder.customer_data.pincode}
+                    {selectedOrder.customer_data?.city || 'N/A'}, {selectedOrder.customer_data?.state || 'N/A'} - {selectedOrder.customer_data?.pincode || 'N/A'}
                   </p>
-                  <p className="text-sm text-gray-600">{selectedOrder.customer_data.phone}</p>
+                  <p className="text-sm text-gray-600">{selectedOrder.customer_data?.phone || 'N/A'}</p>
                 </div>
               </CardContent>
             </Card>
@@ -263,7 +264,7 @@ const OrderHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selectedOrder.cart_items.map((item, index) => (
+                  {selectedOrder.cart_items?.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>₹{parseFloat(item.price).toLocaleString()}</TableCell>
@@ -272,7 +273,11 @@ const OrderHistory = () => {
                         ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )) || (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-gray-500">No items found</TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
               
@@ -356,7 +361,7 @@ const OrderHistory = () => {
                       <TableCell>
                         {new Date(order.created_at).toLocaleDateString('en-IN')}
                       </TableCell>
-                      <TableCell>{order.cart_items.length} item(s)</TableCell>
+                      <TableCell>{order.cart_items?.length || 0} item(s)</TableCell>
                       <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
                       <TableCell>{getDeliveryStatus(order.payment_status)}</TableCell>
                       <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>

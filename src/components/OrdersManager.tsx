@@ -58,7 +58,7 @@ const OrdersManager = () => {
 
   const fetchOrders = async () => {
     try {
-      console.log('Fetching orders from admin panel...');
+      console.log('Fetching ALL orders from admin panel...');
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -69,10 +69,10 @@ const OrdersManager = () => {
         throw error;
       }
       
-      console.log('Raw orders data:', data);
+      console.log('Raw orders data (ALL orders):', data);
       
       const typedOrders = (data || []).map(order => {
-        console.log('Processing order:', order.order_id, order.customer_data);
+        console.log('Processing order:', order.order_id, 'Status:', order.payment_status, 'Customer:', order.customer_data);
         return {
           ...order,
           customer_data: order.customer_data as unknown as CustomerData,
@@ -80,7 +80,7 @@ const OrdersManager = () => {
         };
       });
       
-      console.log('Processed orders:', typedOrders);
+      console.log('Total processed orders:', typedOrders.length);
       setOrders(typedOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -134,20 +134,20 @@ const OrdersManager = () => {
             <CardContent className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">Full Name</label>
-                <p className="text-lg">{selectedOrder.customer_data.firstName} {selectedOrder.customer_data.lastName}</p>
+                <p className="text-lg">{selectedOrder.customer_data?.firstName || 'N/A'} {selectedOrder.customer_data?.lastName || ''}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Email</label>
                 <p className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  {selectedOrder.customer_data.email}
+                  {selectedOrder.customer_data?.email || 'N/A'}
                 </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Phone</label>
                 <p className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-gray-400" />
-                  {selectedOrder.customer_data.phone}
+                  {selectedOrder.customer_data?.phone || 'N/A'}
                 </p>
               </div>
               <div>
@@ -155,8 +155,8 @@ const OrdersManager = () => {
                 <p className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-gray-400 mt-1" />
                   <div>
-                    <div>{selectedOrder.customer_data.address}</div>
-                    <div>{selectedOrder.customer_data.city}, {selectedOrder.customer_data.state} - {selectedOrder.customer_data.pincode}</div>
+                    <div>{selectedOrder.customer_data?.address || 'N/A'}</div>
+                    <div>{selectedOrder.customer_data?.city || 'N/A'}, {selectedOrder.customer_data?.state || 'N/A'} - {selectedOrder.customer_data?.pincode || 'N/A'}</div>
                   </div>
                 </p>
               </div>
@@ -218,14 +218,18 @@ const OrdersManager = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {selectedOrder.cart_items.map((item, index) => (
+                {selectedOrder.cart_items?.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>₹{item.price}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</TableCell>
                   </TableRow>
-                ))}
+                )) || (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-gray-500">No items found</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
             
