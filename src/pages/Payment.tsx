@@ -6,7 +6,6 @@ import { useCart } from '@/contexts/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock } from 'lucide-react';
-import PaymentOptions from '@/components/PaymentOptions';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -16,7 +15,6 @@ const Payment = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedPayment, setSelectedPayment] = useState('card');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const customerData = location.state?.customerData;
@@ -29,7 +27,7 @@ const Payment = () => {
   }, [customerData, cartItems, navigate]);
 
   const subTotal = getCartTotal();
-  const taxes = Math.round(subTotal * 0.03); // Changed to 3% GST
+  const taxes = Math.round(subTotal * 0.03); // 3% GST
   const totalAmount = subTotal + taxes;
 
   const generateOrderId = () => {
@@ -65,7 +63,7 @@ const Payment = () => {
           sub_total: subTotal,
           taxes: taxes,
           total_amount: totalAmount,
-          payment_method: selectedPayment,
+          payment_method: 'external_gateway',
           payment_status: paymentStatus,
           created_at: new Date().toISOString()
         });
@@ -88,7 +86,7 @@ const Payment = () => {
     }
   };
 
-  const handlePlaceOrder = async () => {
+  const handleProceedToPayment = async () => {
     if (isProcessing) return;
     
     setIsProcessing(true);
@@ -97,36 +95,29 @@ const Payment = () => {
       // Generate order ID
       const orderId = generateOrderId();
       
-      // Simulate payment processing
-      const paymentSuccess = Math.random() > 0.3; // 70% success rate
-      const paymentStatus = paymentSuccess ? 'success' : 'failed';
+      console.log('Proceeding to external payment gateway:', { orderId });
       
-      console.log('Processing payment:', { orderId, paymentStatus });
+      // Save order to database with pending status
+      await saveOrderToDatabase(orderId, 'pending');
       
-      // Save order to database regardless of payment success/failure
-      await saveOrderToDatabase(orderId, paymentStatus);
+      // TODO: Integrate with your payment gateway here
+      // Replace this with your actual payment gateway integration
+      // The payment gateway should redirect to:
+      // Success: /order-success with order data
+      // Failure: /payment-failure with order data
       
-      // Clear cart if payment was successful
-      if (paymentSuccess) {
-        clearCart();
-        navigate('/order-success', { 
-          state: { 
-            orderId,
-            customerData,
-            totalAmount,
-            paymentStatus: 'success'
-          }
-        });
-      } else {
-        navigate('/payment-failure', {
-          state: {
-            orderId,
-            customerData,
-            totalAmount,
-            paymentStatus: 'failed'
-          }
-        });
-      }
+      console.log('Payment Gateway Integration Required:');
+      console.log('Success URL: /order-success');
+      console.log('Failure URL: /payment-failure');
+      console.log('Order Data:', { orderId, customerData, totalAmount });
+      
+      // For now, show a message that payment gateway integration is needed
+      toast({
+        title: "Payment Gateway Integration Required",
+        description: "Please integrate your payment gateway with the provided URLs.",
+        variant: "default"
+      });
+      
     } catch (error) {
       console.error('Error processing order:', error);
       toast({
@@ -204,12 +195,34 @@ const Payment = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Payment Form */}
+          {/* Left Column - Payment Info */}
           <div className="lg:col-span-2">
-            <PaymentOptions 
-              selectedPayment={selectedPayment}
-              onPaymentChange={setSelectedPayment}
-            />
+            {/* Payment Gateway Info */}
+            <Card className="border-2 border-cream-200 bg-white/90 backdrop-blur-sm shadow-xl">
+              <CardHeader className="bg-cream-900 text-cream-50 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 font-bold">
+                  <CreditCard className="h-5 w-5" />
+                  Payment Gateway
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 bg-cream-100 rounded-full flex items-center justify-center mx-auto">
+                    <Lock className="h-10 w-10 text-cream-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-cream-900">Secure Payment Processing</h3>
+                  <p className="text-cream-700">
+                    You will be redirected to our secure payment gateway to complete your transaction.
+                  </p>
+                  <div className="bg-cream-50 p-4 rounded-lg border border-cream-200">
+                    <p className="text-sm text-cream-600">
+                      Your payment will be processed securely using industry-standard encryption. 
+                      We support all major payment methods including credit cards, debit cards, UPI, and net banking.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Security Info */}
             <Card className="border-2 border-green-200 bg-white/90 backdrop-blur-sm shadow-xl mt-6">
@@ -276,15 +289,15 @@ const Payment = () => {
                     <span className="text-sm font-medium">256-bit SSL Encrypted Payment</span>
                   </div>
 
-                  {/* Pay Now Button */}
+                  {/* Proceed to Payment Button */}
                   <Button 
-                    onClick={handlePlaceOrder}
+                    onClick={handleProceedToPayment}
                     disabled={isProcessing}
                     className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
                     size="lg"
                   >
                     <Lock className="h-5 w-5 mr-2" />
-                    {isProcessing ? 'Processing...' : `Pay Now - ₹${totalAmount.toLocaleString()}`}
+                    {isProcessing ? 'Processing...' : `Proceed to Payment - ₹${totalAmount.toLocaleString()}`}
                   </Button>
                 </div>
               </CardContent>
