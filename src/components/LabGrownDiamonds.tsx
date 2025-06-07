@@ -19,36 +19,38 @@ const LabGrownDiamonds = () => {
   const navigate = useNavigate();
   const [api, setApi] = useState(null);
 
-  const labGrownProducts = [
+ const labGrownProducts = [
   {
     id: 101,
     name: 'Lab Grown Diamond Ring',
     price: '₹45,999',
     originalPrice: '₹55,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20ring.jpeg',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//RL%201.png',
   },
   {
     id: 102,
     name: 'Lab Grown Diamond Necklace',
     price: '₹38,999',
     originalPrice: '₹48,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20necklace.jpeg',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//RL%202.png',
   },
   {
     id: 103,
     name: 'Lab Grown Diamond Earrings',
     price: '₹28,999',
     originalPrice: '₹35,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20earring.jpeg',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//RL%203.png',
   },
   {
     id: 104,
     name: 'Lab Grown Diamond Bracelet',
     price: '₹32,999',
     originalPrice: '₹42,999',
-    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20grown%20bracelet%20.jpg',
+    image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images//RL%204.png',
   }
 ];
+
+
 
 
   useEffect(() => {
