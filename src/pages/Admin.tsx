@@ -2,17 +2,18 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings, Package, Upload, ShoppingBag } from 'lucide-react';
+import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
 import ImageManager from '@/components/ImageManager';
 import ProductManager from '@/components/ProductManager';
 import BulkProductUpload from '@/components/BulkProductUpload';
 import OrdersManager from '@/components/OrdersManager';
+import UserManager from '@/components/UserManager';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
   if (loading) {
     return (
@@ -89,6 +90,17 @@ const Admin = () => {
                   Orders Management
                 </button>
                 <button
+                  onClick={() => setActiveTab('users')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'users'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Users className="h-4 w-4 inline mr-2" />
+                  User Management
+                </button>
+                <button
                   onClick={() => setActiveTab('images')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === 'images'
@@ -125,6 +137,12 @@ const Admin = () => {
                     Orders Management
                   </>
                 )}
+                {activeTab === 'users' && (
+                  <>
+                    <Users className="h-6 w-6" />
+                    User Management
+                  </>
+                )}
                 {activeTab === 'images' && (
                   <>
                     <Images className="h-6 w-6" />
@@ -138,6 +156,7 @@ const Admin = () => {
                 {activeTab === 'products' && <ProductManager />}
                 {activeTab === 'bulk-upload' && <BulkProductUpload />}
                 {activeTab === 'orders' && <OrdersManager />}
+                {activeTab === 'users' && <UserManager />}
                 {activeTab === 'images' && <ImageManager />}
               </div>
             </CardContent>
