@@ -16,11 +16,13 @@ interface VirtualTryOnProps {
 const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCategory }: VirtualTryOnProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [productImageLoaded, setProductImageLoaded] = useState<HTMLImageElement | null>(null);
 
   const startCamera = async () => {
     setIsLoading(true);
@@ -125,54 +127,135 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
     }, 500);
   };
 
-  const getOverlayPosition = (category: string, canvasWidth: number, canvasHeight: number) => {
-    // More accurate positioning based on typical face/body proportions
+  // Load and preprocess product image
+  useEffect(() => {
+    if (productImage) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        setProductImageLoaded(img);
+      };
+      img.onerror = () => {
+        console.error('Failed to load product image');
+      };
+      img.src = productImage;
+    }
+  }, [productImage]);
+
+  // Real-time overlay rendering
+  useEffect(() => {
+    if (!isStreaming || !productImageLoaded || !overlayCanvasRef.current || !videoRef.current) return;
+
+    const renderOverlay = () => {
+      const canvas = overlayCanvasRef.current!;
+      const video = videoRef.current!;
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) return;
+
+      // Set canvas size to match video
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw product overlay
+      drawProductOverlay(ctx, canvas.width, canvas.height);
+      
+      // Continue animation
+      if (isStreaming) {
+        requestAnimationFrame(renderOverlay);
+      }
+    };
+
+    renderOverlay();
+  }, [isStreaming, productImageLoaded, productCategory]);
+
+  const drawProductOverlay = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
+    if (!productImageLoaded) return;
+
+    // Improved positioning based on category with better proportions
+    switch (productCategory) {
+      case 'necklaces':
+        // Position around neck area
+        const necklaceX = canvasWidth * 0.2;
+        const necklaceY = canvasHeight * 0.25;
+        const necklaceWidth = canvasWidth * 0.6;
+        const necklaceHeight = canvasHeight * 0.35;
+        
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.drawImage(productImageLoaded, necklaceX, necklaceY, necklaceWidth, necklaceHeight);
+        ctx.restore();
+        break;
+        
+      case 'earrings':
+        // Position on both ears
+        const earSize = Math.min(canvasWidth, canvasHeight) * 0.08;
+        const earY = canvasHeight * 0.15;
+        
+        // Left earring (appears on right side due to mirror effect)
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.drawImage(productImageLoaded, canvasWidth * 0.75, earY, earSize, earSize * 1.2);
+        
+        // Right earring (appears on left side due to mirror effect)
+        ctx.scale(-1, 1);
+        ctx.drawImage(productImageLoaded, -canvasWidth * 0.25, earY, earSize, earSize * 1.2);
+        ctx.restore();
+        break;
+        
+      case 'rings':
+        // Position on ring finger area
+        const ringX = canvasWidth * 0.35;
+        const ringY = canvasHeight * 0.6;
+        const ringWidth = canvasWidth * 0.15;
+        const ringHeight = canvasHeight * 0.08;
+        
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.drawImage(productImageLoaded, ringX, ringY, ringWidth, ringHeight);
+        ctx.restore();
+        break;
+        
+      case 'bracelets':
+        // Position on wrist area
+        const braceletX = canvasWidth * 0.05;
+        const braceletY = canvasHeight * 0.5;
+        const braceletWidth = canvasWidth * 0.25;
+        const braceletHeight = canvasHeight * 0.15;
+        
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.drawImage(productImageLoaded, braceletX, braceletY, braceletWidth, braceletHeight);
+        ctx.restore();
+        break;
+        
+      default:
+        // Default positioning
+        ctx.save();
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(productImageLoaded, canvasWidth * 0.25, canvasHeight * 0.3, canvasWidth * 0.5, canvasHeight * 0.4);
+        ctx.restore();
+    }
+  };
+
+  const getGuidePosition = (category: string) => {
     switch (category) {
       case 'necklaces':
-        return {
-          x: canvasWidth * 0.25,
-          y: canvasHeight * 0.35,
-          width: canvasWidth * 0.5,
-          height: canvasHeight * 0.25
-        };
+        return { top: '25%', left: '20%', width: '60%', height: '35%', shape: 'rounded-full' };
       case 'earrings':
         return [
-          // Left earring
-          {
-            x: canvasWidth * 0.2,
-            y: canvasHeight * 0.2,
-            width: canvasWidth * 0.12,
-            height: canvasHeight * 0.15
-          },
-          // Right earring
-          {
-            x: canvasWidth * 0.68,
-            y: canvasHeight * 0.2,
-            width: canvasWidth * 0.12,
-            height: canvasHeight * 0.15
-          }
+          { top: '15%', left: '15%', width: '8%', height: '12%', shape: 'rounded-full' },
+          { top: '15%', right: '15%', width: '8%', height: '12%', shape: 'rounded-full' }
         ];
       case 'rings':
-        return {
-          x: canvasWidth * 0.4,
-          y: canvasHeight * 0.65,
-          width: canvasWidth * 0.2,
-          height: canvasHeight * 0.12
-        };
+        return { top: '60%', left: '35%', width: '15%', height: '8%', shape: 'rounded-lg' };
       case 'bracelets':
-        return {
-          x: canvasWidth * 0.15,
-          y: canvasHeight * 0.55,
-          width: canvasWidth * 0.3,
-          height: canvasHeight * 0.2
-        };
+        return { top: '50%', left: '5%', width: '25%', height: '15%', shape: 'rounded-full' };
       default:
-        return {
-          x: canvasWidth * 0.25,
-          y: canvasHeight * 0.3,
-          width: canvasWidth * 0.5,
-          height: canvasHeight * 0.4
-        };
+        return { top: '30%', left: '25%', width: '50%', height: '40%', shape: 'rounded-lg' };
     }
   };
 
@@ -210,36 +293,12 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
       
-      // Add product overlay if available
-      if (productImage && productCategory) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        
-        img.onload = () => {
-          const positions = getOverlayPosition(productCategory, canvas.width, canvas.height);
-          
-          if (Array.isArray(positions)) {
-            // Handle earrings (multiple positions)
-            positions.forEach(pos => {
-              ctx.drawImage(img, pos.x, pos.y, pos.width, pos.height);
-            });
-          } else {
-            // Handle single position items
-            ctx.drawImage(img, positions.x, positions.y, positions.width, positions.height);
-          }
-          
-          downloadImage(canvas);
-        };
-        
-        img.onerror = () => {
-          console.error('Failed to load product image');
-          downloadImage(canvas);
-        };
-        
-        img.src = productImage;
-      } else {
-        downloadImage(canvas);
+      // Add product overlay
+      if (productImageLoaded) {
+        drawProductOverlay(ctx, canvas.width, canvas.height);
       }
+      
+      downloadImage(canvas);
     } catch (error) {
       console.error('Error capturing photo:', error);
       toast({
@@ -296,6 +355,8 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
     };
   }, []);
 
+  const guidePositions = productCategory ? getGuidePosition(productCategory) : null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
@@ -331,6 +392,16 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
               }}
             />
             
+            {/* Overlay Canvas for real-time product overlay */}
+            <canvas
+              ref={overlayCanvasRef}
+              className="absolute inset-0 w-full h-96 object-cover pointer-events-none"
+              style={{ 
+                transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+                display: isStreaming ? 'block' : 'none'
+              }}
+            />
+            
             {/* Loading State */}
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
@@ -353,40 +424,42 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
             )}
             
             {/* Positioning Guides */}
-            {isStreaming && productCategory && (
+            {isStreaming && guidePositions && (
               <div className="absolute inset-0 pointer-events-none">
-                {productCategory === 'necklaces' && (
-                  <div className="absolute top-1/3 left-1/4 w-1/2 h-1/4 border-2 border-white/70 rounded-full">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-1 rounded">
-                      Necklace Area
-                    </div>
-                  </div>
-                )}
-                {productCategory === 'earrings' && (
-                  <>
-                    <div className="absolute top-1/5 left-1/5 w-12 h-16 border-2 border-white/70 rounded-full">
+                {Array.isArray(guidePositions) ? (
+                  // Multiple guides (earrings)
+                  guidePositions.map((guide, index) => (
+                    <div
+                      key={index}
+                      className={`absolute border-2 border-white/70 ${guide.shape}`}
+                      style={{
+                        top: guide.top,
+                        left: guide.left,
+                        right: guide.right,
+                        width: guide.width,
+                        height: guide.height
+                      }}
+                    >
                       <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-1 rounded">
-                        Left Ear
+                        {index === 0 ? 'Left Ear' : 'Right Ear'}
                       </div>
                     </div>
-                    <div className="absolute top-1/5 right-1/5 w-12 h-16 border-2 border-white/70 rounded-full">
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-1 rounded">
-                        Right Ear
-                      </div>
-                    </div>
-                  </>
-                )}
-                {productCategory === 'rings' && (
-                  <div className="absolute top-2/3 left-2/5 w-1/5 h-1/8 border-2 border-white/70 rounded-lg">
+                  ))
+                ) : (
+                  // Single guide
+                  <div
+                    className={`absolute border-2 border-white/70 ${guidePositions.shape}`}
+                    style={{
+                      top: guidePositions.top,
+                      left: guidePositions.left,
+                      width: guidePositions.width,
+                      height: guidePositions.height
+                    }}
+                  >
                     <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-1 rounded">
-                      Hand Area
-                    </div>
-                  </div>
-                )}
-                {productCategory === 'bracelets' && (
-                  <div className="absolute top-1/2 left-1/6 w-1/3 h-1/5 border-2 border-white/70 rounded-full">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white text-xs bg-black/50 px-2 py-1 rounded">
-                      Wrist Area
+                      {productCategory === 'necklaces' && 'Necklace Area'}
+                      {productCategory === 'rings' && 'Ring Area'}
+                      {productCategory === 'bracelets' && 'Bracelet Area'}
                     </div>
                   </div>
                 )}
@@ -445,8 +518,8 @@ const VirtualTryOn = ({ isOpen, onClose, productImage, productName, productCateg
               <li>1. Allow camera access when prompted</li>
               <li>2. Position yourself within the guide lines</li>
               <li>3. Ensure good lighting for best results</li>
-              <li>4. Click "Capture Photo" to save your try-on</li>
-              <li>5. Use "Flip Camera" to switch between front/back camera</li>
+              <li>4. The product will overlay automatically</li>
+              <li>5. Click "Capture Photo" to save your try-on</li>
             </ol>
             {productCategory && (
               <p className="mt-2 text-blue-600">
