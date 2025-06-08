@@ -1,12 +1,12 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Camera } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { supabase } from '@/integrations/supabase/client';
 import ProductDetailModal from './ProductDetailModal';
+import VirtualTryOn from './VirtualTryOn';
 
 const FeaturedProducts = () => {
   const { addToCart } = useCart();
@@ -14,6 +14,8 @@ const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTryOnOpen, setIsTryOnOpen] = useState(false);
+  const [tryOnProduct, setTryOnProduct] = useState(null);
 
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
@@ -85,6 +87,16 @@ const FeaturedProducts = () => {
     setSelectedProduct(null);
   };
 
+  const handleTryOn = (product) => {
+    setTryOnProduct(product);
+    setIsTryOnOpen(true);
+  };
+
+  const handleCloseTryOn = () => {
+    setIsTryOnOpen(false);
+    setTryOnProduct(null);
+  };
+
   if (products.length === 0) {
     return null;
   }
@@ -135,6 +147,7 @@ const FeaturedProducts = () => {
                     </div>
                   )}
                 </div>
+                
                 <h4 className="text-lg font-medium mb-1 text-black">{product.name}</h4>
                 <p className="text-sm text-gray-600 mb-2">{product.description}</p>
                 <div className="flex items-center gap-2 mb-4">
@@ -145,14 +158,24 @@ const FeaturedProducts = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Button 
-                    onClick={() => handleViewDetails(product)} 
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      onClick={() => handleViewDetails(product)} 
+                      variant="outline" 
+                      className="text-xs"
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      View Details
+                    </Button>
+                    <Button 
+                      onClick={() => handleTryOn(product)}
+                      variant="outline" 
+                      className="text-xs"
+                    >
+                      <Camera className="h-3 w-3 mr-1" />
+                      Try On
+                    </Button>
+                  </div>
                   <Button 
                     onClick={() => handleAddToCart(product)} 
                     className="w-full bg-black hover:bg-gray-800 text-white"
@@ -171,6 +194,14 @@ const FeaturedProducts = () => {
         product={selectedProduct}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+      />
+
+      <VirtualTryOn
+        isOpen={isTryOnOpen}
+        onClose={handleCloseTryOn}
+        productImage={tryOnProduct?.images[0]?.url}
+        productName={tryOnProduct?.name}
+        productCategory={tryOnProduct?.category}
       />
     </>
   );
