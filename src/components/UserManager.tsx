@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, RefreshCw, Calendar, Mail, Phone, User } from 'lucide-react';
+import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -52,6 +52,49 @@ const UserManager = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This action cannot be undone and will also delete all their orders.`)) {
+      return;
+    }
+
+    try {
+      // First delete user's orders
+      const { error: ordersError } = await supabase
+        .from('orders')
+        .delete()
+        .eq('user_id', userId);
+
+      if (ordersError) {
+        console.error('Error deleting user orders:', ordersError);
+      }
+
+      // Then delete the user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      toast({
+        title: "User Deleted",
+        description: `User "${userName || 'Unknown User'}" and all their data has been deleted successfully.`
+      });
+
+      // Refresh the users list
+      fetchUsers();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the user. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -117,6 +160,7 @@ const UserManager = () => {
                     <TableHead>Contact Info</TableHead>
                     <TableHead>Registration Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -166,6 +210,17 @@ const UserManager = () => {
                         <Badge variant="secondary" className="bg-green-100 text-green-700">
                           Active
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteUser(user.id, user.full_name || user.email || 'Unknown User')}
+                          className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

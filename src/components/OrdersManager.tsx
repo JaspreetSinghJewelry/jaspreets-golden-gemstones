@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Table, 
   TableBody, 
@@ -12,7 +10,8 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, XCircle, Calendar, User, Mail, Phone, MapPin, Package, Eye, CreditCard } from 'lucide-react';
+import { CheckCircle, XCircle, Calendar, User, Mail, Phone, MapPin, Package, Eye, CreditCard, Trash2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface CustomerData {
   firstName: string;
@@ -87,6 +86,38 @@ const OrdersManager = () => {
       console.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string, orderDisplayId: string) => {
+    if (!confirm(`Are you sure you want to delete order #${orderDisplayId}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Order Deleted",
+        description: `Order #${orderDisplayId} has been deleted successfully.`
+      });
+
+      // Refresh the orders list
+      fetchOrders();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the order. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -216,6 +247,7 @@ const OrdersManager = () => {
                         alt={item.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
+                          console.log('Image failed to load:', item.image);
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />
@@ -310,10 +342,10 @@ const OrdersManager = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-1 overflow-hidden">
-                          {order.cart_items?.slice(0, 2).map((item, index) => (
+                          {order.cart_items?.slice(0, 3).map((item, index) => (
                             <div
                               key={index}
-                              className="w-8 h-8 bg-gray-100 rounded border overflow-hidden"
+                              className="w-10 h-10 bg-gray-100 rounded border overflow-hidden flex-shrink-0"
                             >
                               {item.image ? (
                                 <img
@@ -321,19 +353,20 @@ const OrdersManager = () => {
                                   alt={item.name}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
+                                    console.log('Preview image failed to load:', item.image);
                                     e.currentTarget.src = '/placeholder.svg';
                                   }}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <Package className="h-3 w-3" />
+                                  <Package className="h-4 w-4" />
                                 </div>
                               )}
                             </div>
                           ))}
-                          {(order.cart_items?.length || 0) > 2 && (
-                            <div className="w-8 h-8 bg-gray-200 rounded border flex items-center justify-center text-xs font-medium text-gray-600">
-                              +{(order.cart_items?.length || 0) - 2}
+                          {(order.cart_items?.length || 0) > 3 && (
+                            <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center text-xs font-medium text-gray-600">
+                              +{(order.cart_items?.length || 0) - 3}
                             </div>
                           )}
                         </div>
@@ -348,15 +381,26 @@ const OrdersManager = () => {
                     <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
                     <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewOrder(order)}
-                        className="flex items-center gap-2"
-                      >
-                        <Eye className="h-4 w-4" />
-                        View
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewOrder(order)}
+                          className="flex items-center gap-2"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteOrder(order.id, order.order_id)}
+                          className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
