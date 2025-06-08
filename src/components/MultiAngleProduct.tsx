@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Eye, Camera } from 'lucide-react';
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import ProductDetailModal from './ProductDetailModal';
-import VirtualTryOn from './VirtualTryOn';
 
 interface ProductImage {
   id: string;
@@ -21,7 +20,6 @@ interface Product {
   price: string;
   originalPrice?: string;
   images: ProductImage[];
-  category?: string;
 }
 
 interface MultiAngleProductProps {
@@ -31,7 +29,6 @@ interface MultiAngleProductProps {
 const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isTryOnOpen, setIsTryOnOpen] = useState(false);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
@@ -79,18 +76,10 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
     setIsModalOpen(false);
   };
 
-  const handleTryOn = () => {
-    setIsTryOnOpen(true);
-  };
-
-  const handleCloseTryOn = () => {
-    setIsTryOnOpen(false);
-  };
-
   // Convert product to the format expected by ProductDetailModal
   const productDetailFormat = {
     ...product,
-    category: product.category || 'jewelry'
+    category: 'jewelry' // Default category, you might want to pass this as a prop
   };
 
   return (
@@ -197,16 +186,10 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
           </div>
           
           <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={handleViewDetails} variant="outline" className="text-xs">
-                <Eye className="h-3 w-3 mr-1" />
-                View Details
-              </Button>
-              <Button onClick={handleTryOn} variant="outline" className="text-xs">
-                <Camera className="h-3 w-3 mr-1" />
-                Try On
-              </Button>
-            </div>
+            <Button onClick={handleViewDetails} variant="outline" className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
             <Button onClick={handleAddToCart} className="w-full bg-black hover:bg-gray-800 text-white">
               <ShoppingBag className="h-4 w-4 mr-2" />
               Add to Cart
@@ -219,14 +202,6 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
         product={productDetailFormat}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-      />
-
-      <VirtualTryOn
-        isOpen={isTryOnOpen}
-        onClose={handleCloseTryOn}
-        productImage={currentImage.url}
-        productName={product.name}
-        productCategory={product.category}
       />
     </>
   );
