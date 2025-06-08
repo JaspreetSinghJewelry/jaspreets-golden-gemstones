@@ -30,6 +30,7 @@ interface CartItem {
   name: string;
   price: string;
   quantity: number;
+  image?: string;
 }
 
 interface Order {
@@ -123,7 +124,6 @@ const OrdersManager = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Customer Information Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -163,7 +163,6 @@ const OrdersManager = () => {
             </CardContent>
           </Card>
 
-          {/* Order Information Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -202,38 +201,47 @@ const OrdersManager = () => {
           </Card>
         </div>
 
-        {/* Order Items */}
         <Card>
           <CardHeader>
             <CardTitle>Order Items</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {selectedOrder.cart_items?.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>₹{item.price}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>₹{(parseFloat(item.price) * item.quantity).toLocaleString()}</TableCell>
-                  </TableRow>
-                )) || (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-gray-500">No items found</TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+            <div className="space-y-4">
+              {selectedOrder.cart_items?.map((item, index) => (
+                <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
+                  <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <Package className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 mb-1">{item.name}</h4>
+                    <p className="text-sm text-gray-500 mb-1">Quantity: {item.quantity}</p>
+                    <p className="text-sm font-medium">₹{parseFloat(item.price).toLocaleString()} each</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-lg">
+                      ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )) || (
+                <div className="text-center text-gray-500 py-8">No items found</div>
+              )}
+            </div>
             
-            <div className="mt-4 space-y-2 border-t pt-4">
+            <div className="mt-6 space-y-2 border-t pt-4">
               <div className="flex justify-between">
                 <span>Sub Total:</span>
                 <span>₹{selectedOrder.sub_total.toLocaleString()}</span>
@@ -283,9 +291,9 @@ const OrdersManager = () => {
                 <TableRow>
                   <TableHead>Order ID</TableHead>
                   <TableHead>Customer Name</TableHead>
+                  <TableHead>Items Preview</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead>City</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Amount</TableHead>
@@ -299,10 +307,44 @@ const OrdersManager = () => {
                     <TableCell className="font-medium">
                       {order.customer_data?.firstName || 'N/A'} {order.customer_data?.lastName || ''}
                     </TableCell>
-                    <TableCell>{order.customer_data?.email || 'N/A'}</TableCell>
-                    <TableCell>{order.customer_data?.phone || 'N/A'}</TableCell>
-                    <TableCell>{order.customer_data?.city || 'N/A'}</TableCell>
-                    <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-1 overflow-hidden">
+                          {order.cart_items?.slice(0, 2).map((item, index) => (
+                            <div
+                              key={index}
+                              className="w-8 h-8 bg-gray-100 rounded border overflow-hidden"
+                            >
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/placeholder.svg';
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                  <Package className="h-3 w-3" />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          {(order.cart_items?.length || 0) > 2 && (
+                            <div className="w-8 h-8 bg-gray-200 rounded border flex items-center justify-center text-xs font-medium text-gray-600">
+                              +{(order.cart_items?.length || 0) - 2}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {order.cart_items?.length || 0} item(s)
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{order.customer_data?.email || 'N/A'}</TableCell>
+                    <TableCell className="text-sm">{order.customer_data?.phone || 'N/A'}</TableCell>
+                    <TableCell className="text-sm">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
                     <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>
                     <TableCell>

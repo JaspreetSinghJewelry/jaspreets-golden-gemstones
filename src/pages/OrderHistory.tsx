@@ -34,6 +34,7 @@ interface CartItem {
   name: string;
   price: string;
   quantity: number;
+  image?: string;
 }
 
 interface Order {
@@ -75,7 +76,6 @@ const OrderHistory = () => {
     try {
       console.log('Fetching ALL orders for user:', user.id, 'Email:', user.email);
       
-      // First get all orders
       const { data: allOrders, error } = await supabase
         .from('orders')
         .select('*')
@@ -88,16 +88,13 @@ const OrderHistory = () => {
 
       console.log('Total orders in database:', allOrders?.length || 0);
 
-      // Filter orders for this user by user_id OR email match
       const userOrders = allOrders?.filter(order => {
         try {
-          // Check if order belongs to this user by user_id
           if (order.user_id === user.id) {
             console.log('Found order by user_id:', order.order_id);
             return true;
           }
           
-          // Check if order belongs to this user by email in customer_data
           const customerData = order.customer_data as any;
           if (customerData && customerData.email === user.email) {
             console.log('Found order by email match:', order.order_id, 'Email:', customerData.email);
@@ -254,32 +251,40 @@ const OrderHistory = () => {
               <CardTitle>Order Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedOrder.cart_items?.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell>₹{parseFloat(item.price).toLocaleString()}</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell className="text-right">
+              <div className="space-y-4">
+                {selectedOrder.cart_items?.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder.svg';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <Package className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">{item.name}</h4>
+                      <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                      <p className="text-sm font-medium">₹{parseFloat(item.price).toLocaleString()} each</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-lg">
                         ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  )) || (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-gray-500">No items found</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                      </p>
+                    </div>
+                  </div>
+                )) || (
+                  <div className="text-center text-gray-500 py-8">No items found</div>
+                )}
+              </div>
               
               <div className="mt-6 space-y-2 border-t pt-4">
                 <div className="flex justify-between">
@@ -332,56 +337,74 @@ const OrderHistory = () => {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Your Orders ({orders.length})</span>
-                <Button variant="outline" size="sm" onClick={fetchUserOrders}>
-                  Refresh
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Items</TableHead>
-                    <TableHead>Payment Status</TableHead>
-                    <TableHead>Delivery Status</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-mono text-sm">{order.order_id}</TableCell>
-                      <TableCell>
-                        {new Date(order.created_at).toLocaleDateString('en-IN')}
-                      </TableCell>
-                      <TableCell>{order.cart_items?.length || 0} item(s)</TableCell>
-                      <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
-                      <TableCell>{getDeliveryStatus(order.payment_status)}</TableCell>
-                      <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewOrder(order)}
-                          className="flex items-center gap-2"
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <Card key={order.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="font-mono text-lg font-medium">#{order.order_id}</h3>
+                      <p className="text-sm text-gray-500">
+                        {new Date(order.created_at).toLocaleDateString('en-IN')} • {order.cart_items?.length || 0} item(s)
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-xl">₹{order.total_amount.toLocaleString()}</p>
+                      <div className="flex gap-2 mt-1">
+                        {getStatusBadge(order.payment_status)}
+                        {getDeliveryStatus(order.payment_status)}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex -space-x-2 overflow-hidden">
+                      {order.cart_items?.slice(0, 3).map((item, index) => (
+                        <div
+                          key={index}
+                          className="w-10 h-10 bg-gray-100 rounded-full border-2 border-white overflow-hidden"
                         >
-                          <Eye className="h-4 w-4" />
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = '/placeholder.svg';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <Package className="h-4 w-4" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {(order.cart_items?.length || 0) > 3 && (
+                        <div className="w-10 h-10 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center text-xs font-medium text-gray-600">
+                          +{(order.cart_items?.length || 0) - 3}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600">
+                        {order.cart_items?.map(item => item.name).join(', ')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => handleViewOrder(order)}
+                    className="w-full"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Order Details
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
       <Footer />
