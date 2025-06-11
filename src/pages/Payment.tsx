@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
-import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -18,12 +18,17 @@ const Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasInitiated, setHasInitiated] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const customerData = location.state?.customerData;
   
   useEffect(() => {
     // Redirect to checkout if no customer data is available
     if (!customerData || cartItems.length === 0) {
+      console.log('Redirecting to checkout - missing data:', { 
+        hasCustomerData: !!customerData, 
+        cartItemsLength: cartItems.length 
+      });
       navigate('/checkout');
     }
   }, [customerData, cartItems, navigate]);
@@ -36,9 +41,9 @@ const Payment = () => {
     return 'JS' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
   };
 
-  const createPayUForm = (payuUrl: string, formData: any) => {
+  const createPayUForm = useCallback((payuUrl: string, formData: any) => {
     console.log('Creating PayU form with URL:', payuUrl);
-    console.log('Form data:', formData);
+    console.log('Form data keys:', Object.keys(formData));
     
     // Remove any existing PayU forms
     const existingForms = document.querySelectorAll('form[data-payu-form]');
@@ -48,7 +53,7 @@ const Payment = () => {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = payuUrl;
-    form.target = '_self';
+    form.target = '_top'; // Use _top instead of _self
     form.setAttribute('data-payu-form', 'true');
     form.style.display = 'none';
     
@@ -70,8 +75,14 @@ const Payment = () => {
     try {
       form.submit();
       console.log('Form submitted successfully');
-    } catch (error) {
-      console.error('Error submitting form:', error);
+      
+      // Set a timeout to show success message if form submission was successful
+      setTimeout(() => {
+        console.log('Form submission timeout - assuming successful redirect');
+      }, 1000);
+      
+    } catch (submitError) {
+      console.error('Error submitting form:', submitError);
       throw new Error('Failed to redirect to PayU');
     }
     
@@ -80,10 +91,10 @@ const Payment = () => {
       if (document.body.contains(form)) {
         document.body.removeChild(form);
       }
-    }, 2000);
-  };
+    }, 3000);
+  }, []);
 
-  const handleProceedToPayment = async () => {
+  const handleProceedToPayment = useCallback(async () => {
     // Prevent multiple calls
     if (isProcessing || hasInitiated) {
       console.log('Payment already in progress, ignoring duplicate call');
@@ -102,20 +113,23 @@ const Payment = () => {
       
       // Prepare customer data with defaults for testing
       const processedCustomerData = {
-        ...customerData,
-        firstName: customerData.firstName || 'Test',
-        lastName: customerData.lastName || 'User',
-        email: customerData.email || 'test@example.com',
-        phone: customerData.phone || '9999999999',
-        address: customerData.address || 'Test Address',
-        city: customerData.city || 'Test City',
-        state: customerData.state || 'Test State',
-        pincode: customerData.pincode || '123456'
+        firstName: customerData.firstName?.trim() || 'Test',
+        lastName: customerData.lastName?.trim() || 'User',
+        email: customerData.email?.trim() || 'test@example.com',
+        phone: customerData.phone?.trim() || '9999999999',
+        address: customerData.address?.trim() || 'Test Address',
+        city: customerData.city?.trim() || 'Test City',
+        state: customerData.state?.trim() || 'Test State',
+        pincode: customerData.pincode?.trim() || '123456'
       };
       
-      // Call PayU initiation edge function with timeout
+      console.log('Processed customer data:', processedCustomerData);
+      
+      // Call PayU initiation edge function with extended timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+      
+      console.log('Calling supabase function...');
       
       const { data, error } = await supabase.functions.invoke('payu-initiate', {
         body: {
@@ -133,19 +147,35 @@ const Payment = () => {
             subTotal,
             taxes
           }
+        },
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
 
       clearTimeout(timeoutId);
+
+      console.log('Supabase function response:', { data, error });
 
       if (error) {
         console.error('PayU function error:', error);
         throw new Error(`Payment initialization failed: ${error.message}`);
       }
 
-      console.log('PayU response received:', data);
+      if (!data) {
+        console.error('No data received from PayU function');
+        throw new Error('No response received from payment gateway');
+      }
 
-      if (!data || !data.payuUrl || !data.formData) {
+      if (!data.success) {
+        console.error('PayU function returned error:', data.error || data.details);
+        throw new Error(data.error || 'Payment gateway returned an error');
+      }
+
+      console.log('PayU response received successfully:', data);
+
+      if (!data.payuUrl || !data.formData) {
+        console.error('Invalid response structure:', data);
         throw new Error('Invalid response from payment gateway');
       }
 
@@ -153,6 +183,7 @@ const Payment = () => {
       const requiredParams = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'hash'];
       for (const param of requiredParams) {
         if (!data.formData[param]) {
+          console.error(`Missing required parameter: ${param}`, data.formData);
           throw new Error(`Missing required parameter: ${param}`);
         }
       }
@@ -182,6 +213,7 @@ const Payment = () => {
       // Reset states on error
       setIsProcessing(false);
       setHasInitiated(false);
+      setRetryCount(prev => prev + 1);
       
       const errorMessage = error instanceof Error ? error.message : "Failed to initiate payment. Please try again.";
       setError(errorMessage);
@@ -192,7 +224,27 @@ const Payment = () => {
         variant: "destructive"
       });
     }
-  };
+  }, [cartItems, customerData, totalAmount, subTotal, taxes, clearCart, createPayUForm, isProcessing, hasInitiated]);
+
+  const handleRetry = useCallback(() => {
+    console.log('Retrying payment - attempt:', retryCount + 1);
+    setError(null);
+    setIsProcessing(false);
+    setHasInitiated(false);
+    
+    // Small delay before retry
+    setTimeout(() => {
+      handleProceedToPayment();
+    }, 1000);
+  }, [handleProceedToPayment, retryCount]);
+
+  const handleBackToCheckout = useCallback(() => {
+    console.log('Navigating back to checkout');
+    setError(null);
+    setIsProcessing(false);
+    setHasInitiated(false);
+    navigate('/checkout');
+  }, [navigate]);
 
   if (cartItems.length === 0) {
     return (
@@ -220,7 +272,7 @@ const Payment = () => {
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
-              onClick={() => navigate('/checkout')}
+              onClick={handleBackToCheckout}
               className="text-cream-50 hover:text-cream-200 hover:bg-cream-800"
               disabled={isProcessing}
             >
@@ -267,20 +319,42 @@ const Payment = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 text-red-700">
                     <AlertCircle className="h-6 w-6" />
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-bold text-lg">Payment Error</h3>
-                      <p className="text-sm">{error}</p>
-                      <Button 
-                        onClick={() => {
-                          setError(null);
-                          setIsProcessing(false);
-                          setHasInitiated(false);
-                        }}
-                        className="mt-3 bg-red-600 text-white hover:bg-red-700"
-                        size="sm"
-                      >
-                        Try Again
-                      </Button>
+                      <p className="text-sm mb-3">{error}</p>
+                      {retryCount < 3 && (
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={handleRetry}
+                            className="bg-red-600 text-white hover:bg-red-700"
+                            size="sm"
+                            disabled={isProcessing}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Try Again
+                          </Button>
+                          <Button 
+                            onClick={handleBackToCheckout}
+                            variant="outline"
+                            size="sm"
+                            disabled={isProcessing}
+                          >
+                            Back to Checkout
+                          </Button>
+                        </div>
+                      )}
+                      {retryCount >= 3 && (
+                        <div className="text-sm">
+                          <p className="mb-2">Multiple attempts failed. Please:</p>
+                          <Button 
+                            onClick={handleBackToCheckout}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Go Back and Try Different Details
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
