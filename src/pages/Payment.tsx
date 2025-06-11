@@ -76,14 +76,19 @@ const Payment = () => {
         throw new Error('Invalid response from payment gateway');
       }
 
-      // Clear cart before redirecting
-      clearCart();
+      // Store order data in sessionStorage before redirect
+      sessionStorage.setItem('pendingOrder', JSON.stringify({
+        orderId,
+        amount: totalAmount,
+        customerData,
+        cartItems
+      }));
 
-      // Create and submit PayU form automatically
+      // Create form for PayU redirect
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = data.payuUrl;
-      form.target = '_self';
+      form.style.display = 'none';
 
       // Add all form data as hidden inputs
       Object.entries(data.formData).forEach(([key, value]) => {
@@ -94,13 +99,23 @@ const Payment = () => {
         form.appendChild(input);
       });
 
-      // Add form to document and submit immediately
+      // Add form to document
       document.body.appendChild(form);
       
       console.log('Submitting PayU form with data:', data.formData);
       
-      // Submit form to redirect to PayU payment page
+      // Clear cart only after successful form creation
+      clearCart();
+      
+      // Submit form immediately
       form.submit();
+      
+      // Clean up form after submission
+      setTimeout(() => {
+        if (document.body.contains(form)) {
+          document.body.removeChild(form);
+        }
+      }, 1000);
       
     } catch (error) {
       console.error('Error processing PayU payment:', error);
@@ -110,7 +125,7 @@ const Payment = () => {
         description: "Failed to initiate payment. Please try again.",
         variant: "destructive"
       });
-    } finally {
+      
       setIsProcessing(false);
     }
   };
@@ -220,6 +235,15 @@ const Payment = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {isProcessing && (
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
+                      <div className="flex items-center gap-3">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <span className="text-blue-800 font-medium">Redirecting to PayU Payment Gateway...</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -299,6 +323,12 @@ const Payment = () => {
                     <Lock className="h-5 w-5 mr-2" />
                     {isProcessing ? 'Redirecting to PayU...' : `Pay with PayU - ₹${totalAmount.toLocaleString()}`}
                   </Button>
+                  
+                  {isProcessing && (
+                    <p className="text-sm text-cream-600 text-center">
+                      Please wait while we redirect you to PayU's secure payment page...
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>

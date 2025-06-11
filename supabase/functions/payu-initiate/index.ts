@@ -22,12 +22,15 @@ serve(async (req) => {
     const salt = Deno.env.get('PAYU_SALT')
 
     if (!merchantKey || !salt) {
+      console.error('PayU credentials not found')
       throw new Error('PayU credentials not configured')
     }
 
+    console.log('PayU credentials found:', { merchantKey: merchantKey.substring(0, 3) + '***', salt: salt.substring(0, 3) + '***' })
+
     // Create Supabase client
-    const supabaseUrl = 'https://bxscivdpwersyohpaamn.supabase.co'
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc'
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     // Extract data from orderData
@@ -40,7 +43,14 @@ serve(async (req) => {
       taxes
     } = orderData
 
-    // PayU payment parameters - using test URL
+    // Validate required data
+    if (!orderId || !amount || !customerData) {
+      throw new Error('Missing required order data')
+    }
+
+    console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
+
+    // PayU payment parameters
     const payuData = {
       key: merchantKey,
       txnid: orderId,
@@ -50,8 +60,8 @@ serve(async (req) => {
       lastname: customerData.lastName,
       email: customerData.email,
       phone: customerData.phone,
-      surl: 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify',
-      furl: 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify',
+      surl: `${supabaseUrl}/functions/v1/payu-verify`,
+      furl: `${supabaseUrl}/functions/v1/payu-verify`,
       udf1: orderId,
       udf2: customerData.address,
       udf3: customerData.city,
@@ -59,9 +69,17 @@ serve(async (req) => {
       udf5: customerData.pincode
     }
 
+    console.log('PayU data prepared:', { 
+      txnid: payuData.txnid, 
+      amount: payuData.amount, 
+      email: payuData.email,
+      surl: payuData.surl,
+      furl: payuData.furl
+    })
+
     // Generate hash for security
     const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
-    console.log('Hash string:', hashString)
+    console.log('Hash string created for:', payuData.txnid)
 
     // Create hash using Web Crypto API
     const encoder = new TextEncoder()
@@ -70,7 +88,7 @@ serve(async (req) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
-    console.log('Generated hash:', hash)
+    console.log('Hash generated successfully for order:', orderId)
 
     // Save order to database with pending status
     const { error: orderError } = await supabase
@@ -89,10 +107,12 @@ serve(async (req) => {
 
     if (orderError) {
       console.error('Error saving order:', orderError)
-      throw orderError
+      throw new Error(`Database error: ${orderError.message}`)
     }
 
-    // Return PayU form data - using test environment
+    console.log('Order saved to database:', orderId)
+
+    // Return PayU form data
     const response = {
       payuUrl: 'https://test.payu.in/_payment',
       formData: {
@@ -101,7 +121,7 @@ serve(async (req) => {
       }
     }
 
-    console.log('PayU response:', response)
+    console.log('PayU response prepared for order:', orderId)
 
     return new Response(JSON.stringify(response), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -109,7 +129,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('PayU initiation error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: 'PayU payment initiation failed'
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
