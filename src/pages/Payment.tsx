@@ -16,6 +16,7 @@ const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasInitiated, setHasInitiated] = useState(false);
 
   const customerData = location.state?.customerData;
   
@@ -35,11 +36,20 @@ const Payment = () => {
   };
 
   const createPayUForm = (payuUrl: string, formData: any) => {
+    console.log('Creating PayU form with URL:', payuUrl);
+    console.log('Form data:', formData);
+    
+    // Remove any existing PayU forms
+    const existingForms = document.querySelectorAll('form[data-payu-form]');
+    existingForms.forEach(form => form.remove());
+    
     // Create a form element
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = payuUrl;
-    form.target = '_self'; // Open in same window
+    form.target = '_self';
+    form.setAttribute('data-payu-form', 'true');
+    form.style.display = 'none';
     
     // Add all form data as hidden inputs
     Object.entries(formData).forEach(([key, value]) => {
@@ -53,24 +63,34 @@ const Payment = () => {
     // Add form to document body
     document.body.appendChild(form);
     
-    console.log('Form created with action:', payuUrl);
-    console.log('Form data:', formData);
+    console.log('Form created successfully, submitting...');
     
-    // Submit the form
-    form.submit();
+    // Submit the form immediately
+    try {
+      form.submit();
+      console.log('Form submitted successfully');
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      throw new Error('Failed to redirect to PayU');
+    }
     
-    // Remove form after a short delay
+    // Clean up form after a delay
     setTimeout(() => {
       if (document.body.contains(form)) {
         document.body.removeChild(form);
       }
-    }, 1000);
+    }, 2000);
   };
 
   const handleProceedToPayment = async () => {
-    if (isProcessing) return;
+    // Prevent multiple calls
+    if (isProcessing || hasInitiated) {
+      console.log('Payment already in progress, ignoring duplicate call');
+      return;
+    }
     
     setIsProcessing(true);
+    setHasInitiated(true);
     
     try {
       // Generate order ID
@@ -78,7 +98,10 @@ const Payment = () => {
       
       console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
       
-      // Call PayU initiation edge function
+      // Call PayU initiation edge function with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const { data, error } = await supabase.functions.invoke('payu-initiate', {
         body: {
           orderData: {
@@ -98,15 +121,25 @@ const Payment = () => {
         }
       });
 
+      clearTimeout(timeoutId);
+
       if (error) {
         console.error('PayU function error:', error);
-        throw error;
+        throw new Error(`Payment initialization failed: ${error.message}`);
       }
 
       console.log('PayU response received:', data);
 
       if (!data || !data.payuUrl || !data.formData) {
         throw new Error('Invalid response from payment gateway');
+      }
+
+      // Validate required PayU parameters
+      const requiredParams = ['key', 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'hash'];
+      for (const param of requiredParams) {
+        if (!data.formData[param]) {
+          throw new Error(`Missing required parameter: ${param}`);
+        }
       }
 
       // Store order data in sessionStorage before redirect
@@ -122,19 +155,24 @@ const Payment = () => {
       // Clear cart before redirect
       clearCart();
       
+      // Small delay to ensure cart is cleared
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Create and submit form to PayU
       createPayUForm(data.payuUrl, data.formData);
       
     } catch (error) {
       console.error('Error processing PayU payment:', error);
       
+      // Reset states on error
+      setIsProcessing(false);
+      setHasInitiated(false);
+      
       toast({
         title: "Payment Error",
-        description: "Failed to initiate payment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
         variant: "destructive"
       });
-      
-      setIsProcessing(false);
     }
   };
 
@@ -250,6 +288,7 @@ const Payment = () => {
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                         <span className="text-blue-800 font-medium">Redirecting to PayU Payment Gateway...</span>
                       </div>
+                      <p className="text-blue-600 text-sm mt-2">Please wait, do not refresh or close this page.</p>
                     </div>
                   )}
                 </div>
@@ -324,8 +363,8 @@ const Payment = () => {
                   {/* Proceed to Payment Button */}
                   <Button 
                     onClick={handleProceedToPayment}
-                    disabled={isProcessing}
-                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
+                    disabled={isProcessing || hasInitiated}
+                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                   >
                     <Lock className="h-5 w-5 mr-2" />
