@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,58 +33,6 @@ const Payment = () => {
     return 'JS' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
   };
 
-  const saveOrderToDatabase = async (orderId: string, paymentStatus: string) => {
-    try {
-      console.log('Saving order to database:', {
-        orderId,
-        customerData,
-        cartItems,
-        paymentStatus,
-        user: user?.id
-      });
-
-      // Convert cartItems to proper JSON format for database
-      const cartItemsJson = cartItems.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        quantity: item.quantity
-      }));
-
-      const { error } = await supabase
-        .from('orders')
-        .insert({
-          order_id: orderId,
-          user_id: user?.id || null,
-          customer_data: customerData as any,
-          cart_items: cartItemsJson as any,
-          sub_total: subTotal,
-          taxes: taxes,
-          total_amount: totalAmount,
-          payment_method: 'external_gateway',
-          payment_status: paymentStatus,
-          created_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error saving order:', error);
-        throw error;
-      }
-
-      console.log('Order saved successfully to database');
-      return true;
-    } catch (error) {
-      console.error('Failed to save order:', error);
-      toast({
-        title: "Warning",
-        description: "Order processed but failed to save details. Please contact support.",
-        variant: "destructive"
-      });
-      return false;
-    }
-  };
-
   const handleProceedToPayment = async () => {
     if (isProcessing) return;
     
@@ -95,34 +42,72 @@ const Payment = () => {
       // Generate order ID
       const orderId = generateOrderId();
       
-      console.log('Proceeding to external payment gateway:', { orderId });
+      console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
       
-      // Save order to database with pending status
-      await saveOrderToDatabase(orderId, 'pending');
-      
-      // TODO: Integrate with your payment gateway here
-      // Replace this with your actual payment gateway integration
-      // The payment gateway should redirect to:
-      // Success: /order-success with order data
-      // Failure: /payment-failure with order data
-      
-      console.log('Payment Gateway Integration Required:');
-      console.log('Success URL: /order-success');
-      console.log('Failure URL: /payment-failure');
-      console.log('Order Data:', { orderId, customerData, totalAmount });
-      
-      // For now, show a message that payment gateway integration is needed
-      toast({
-        title: "Payment Gateway Integration Required",
-        description: "Please integrate your payment gateway with the provided URLs.",
-        variant: "default"
+      // Call PayU initiation edge function
+      const { data, error } = await supabase.functions.invoke('payu-initiate', {
+        body: {
+          orderData: {
+            orderId,
+            amount: totalAmount,
+            customerData,
+            cartItems: cartItems.map(item => ({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              image: item.image,
+              quantity: item.quantity
+            })),
+            subTotal,
+            taxes
+          }
+        }
       });
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('PayU response:', data);
+
+      // Create and submit PayU form
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = data.payuUrl;
+
+      // Add all form data as hidden inputs
+      Object.entries(data.formData).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      // Override success and failure URLs to include verification
+      const surlInput = form.querySelector('input[name="surl"]') as HTMLInputElement;
+      const furlInput = form.querySelector('input[name="furl"]') as HTMLInputElement;
+      
+      if (surlInput) {
+        surlInput.value = 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify';
+      }
+      if (furlInput) {
+        furlInput.value = 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify';
+      }
+
+      document.body.appendChild(form);
+      
+      // Clear cart before redirecting
+      clearCart();
+      
+      // Submit form to redirect to PayU
+      form.submit();
       
     } catch (error) {
-      console.error('Error processing order:', error);
+      console.error('Error processing PayU payment:', error);
       toast({
-        title: "Error",
-        description: "Failed to process order. Please try again.",
+        title: "Payment Error",
+        description: "Failed to initiate payment. Please try again.",
         variant: "destructive"
       });
     } finally {
