@@ -40,7 +40,7 @@ serve(async (req) => {
       taxes
     } = orderData
 
-    // PayU payment parameters - using test URL for now
+    // PayU payment parameters - using test URL
     const payuData = {
       key: merchantKey,
       txnid: orderId,
@@ -59,7 +59,7 @@ serve(async (req) => {
       udf5: customerData.pincode
     }
 
-    // Generate hash
+    // Generate hash for security
     const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
     console.log('Hash string:', hashString)
 
