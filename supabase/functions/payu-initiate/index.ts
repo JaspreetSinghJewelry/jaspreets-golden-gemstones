@@ -40,7 +40,7 @@ serve(async (req) => {
       taxes
     } = orderData
 
-    // PayU payment parameters
+    // PayU payment parameters - using test URL for now
     const payuData = {
       key: merchantKey,
       txnid: orderId,
@@ -50,8 +50,8 @@ serve(async (req) => {
       lastname: customerData.lastName,
       email: customerData.email,
       phone: customerData.phone,
-      surl: 'https://jaspreets-golden-gemstones.lovable.app/order-success',
-      furl: 'https://jaspreets-golden-gemstones.lovable.app/payment-failure',
+      surl: 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify',
+      furl: 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify',
       udf1: orderId,
       udf2: customerData.address,
       udf3: customerData.city,
@@ -92,9 +92,9 @@ serve(async (req) => {
       throw orderError
     }
 
-    // Return PayU form data
+    // Return PayU form data - using test environment
     const response = {
-      payuUrl: 'https://secure.payu.in/_payment',
+      payuUrl: 'https://test.payu.in/_payment',
       formData: {
         ...payuData,
         hash: hash

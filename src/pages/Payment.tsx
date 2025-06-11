@@ -15,6 +15,7 @@ const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const customerData = location.state?.customerData;
   
@@ -36,6 +37,16 @@ const Payment = () => {
   const handleProceedToPayment = async () => {
     if (isProcessing) return;
     
+    // Rate limiting check
+    if (retryCount >= 3) {
+      toast({
+        title: "Too Many Attempts",
+        description: "Please wait 60 seconds before trying again to avoid rate limiting.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsProcessing(true);
     
     try {
@@ -43,6 +54,11 @@ const Payment = () => {
       const orderId = generateOrderId();
       
       console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
+      
+      // Add delay to prevent rate limiting
+      if (retryCount > 0) {
+        await new Promise(resolve => setTimeout(resolve, 2000 * retryCount));
+      }
       
       // Call PayU initiation edge function
       const { data, error } = await supabase.functions.invoke('payu-initiate', {
@@ -65,15 +81,21 @@ const Payment = () => {
       });
 
       if (error) {
+        console.error('PayU function error:', error);
         throw error;
       }
 
       console.log('PayU response:', data);
 
+      if (!data || !data.payuUrl || !data.formData) {
+        throw new Error('Invalid response from payment gateway');
+      }
+
       // Create and submit PayU form
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = data.payuUrl;
+      form.target = '_self';
 
       // Add all form data as hidden inputs
       Object.entries(data.formData).forEach(([key, value]) => {
@@ -84,30 +106,32 @@ const Payment = () => {
         form.appendChild(input);
       });
 
-      // Override success and failure URLs to include verification
-      const surlInput = form.querySelector('input[name="surl"]') as HTMLInputElement;
-      const furlInput = form.querySelector('input[name="furl"]') as HTMLInputElement;
-      
-      if (surlInput) {
-        surlInput.value = 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify';
-      }
-      if (furlInput) {
-        furlInput.value = 'https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-verify';
-      }
-
       document.body.appendChild(form);
       
       // Clear cart before redirecting
       clearCart();
+      
+      // Add success message
+      toast({
+        title: "Redirecting to Payment Gateway",
+        description: "Please complete your payment on the PayU page.",
+      });
       
       // Submit form to redirect to PayU
       form.submit();
       
     } catch (error) {
       console.error('Error processing PayU payment:', error);
+      setRetryCount(prev => prev + 1);
+      
+      let errorMessage = "Failed to initiate payment. Please try again.";
+      if (error.message?.includes('Too many requests')) {
+        errorMessage = "Too many payment requests. Please wait 60 seconds and try again.";
+      }
+      
       toast({
         title: "Payment Error",
-        description: "Failed to initiate payment. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -115,6 +139,7 @@ const Payment = () => {
     }
   };
 
+  
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-cream-50 flex items-center justify-center">
@@ -187,7 +212,7 @@ const Payment = () => {
               <CardHeader className="bg-cream-900 text-cream-50 rounded-t-lg">
                 <CardTitle className="flex items-center gap-2 font-bold">
                   <CreditCard className="h-5 w-5" />
-                  Payment Gateway
+                  PayU Payment Gateway
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -195,16 +220,23 @@ const Payment = () => {
                   <div className="w-20 h-20 bg-cream-100 rounded-full flex items-center justify-center mx-auto">
                     <Lock className="h-10 w-10 text-cream-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-cream-900">Secure Payment Processing</h3>
+                  <h3 className="text-xl font-bold text-cream-900">Secure PayU Payment Processing</h3>
                   <p className="text-cream-700">
-                    You will be redirected to our secure payment gateway to complete your transaction.
+                    You will be redirected to PayU's secure payment gateway to complete your transaction.
                   </p>
                   <div className="bg-cream-50 p-4 rounded-lg border border-cream-200">
                     <p className="text-sm text-cream-600">
-                      Your payment will be processed securely using industry-standard encryption. 
+                      Your payment will be processed securely using PayU's industry-standard encryption. 
                       We support all major payment methods including credit cards, debit cards, UPI, and net banking.
                     </p>
                   </div>
+                  {retryCount > 0 && (
+                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <p className="text-sm text-yellow-700">
+                        Attempt {retryCount + 1} of 3. If you continue to experience issues, please wait 60 seconds between attempts.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -216,7 +248,7 @@ const Payment = () => {
                   <Lock className="h-6 w-6" />
                   <div>
                     <h3 className="font-bold text-lg">Your payment is secure</h3>
-                    <p className="text-sm">We use 256-bit SSL encryption to protect your personal and payment information</p>
+                    <p className="text-sm">We use PayU's 256-bit SSL encryption to protect your personal and payment information</p>
                   </div>
                 </div>
               </CardContent>
@@ -271,18 +303,18 @@ const Payment = () => {
                   {/* Security Badge */}
                   <div className="flex items-center gap-2 text-green-700 bg-green-50 p-3 rounded-lg border border-green-200 mt-4">
                     <Shield className="h-4 w-4" />
-                    <span className="text-sm font-medium">256-bit SSL Encrypted Payment</span>
+                    <span className="text-sm font-medium">PayU 256-bit SSL Encrypted Payment</span>
                   </div>
 
                   {/* Proceed to Payment Button */}
                   <Button 
                     onClick={handleProceedToPayment}
-                    disabled={isProcessing}
+                    disabled={isProcessing || retryCount >= 3}
                     className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
                     size="lg"
                   >
                     <Lock className="h-5 w-5 mr-2" />
-                    {isProcessing ? 'Processing...' : `Proceed to Payment - ₹${totalAmount.toLocaleString()}`}
+                    {isProcessing ? 'Processing...' : retryCount >= 3 ? 'Rate Limited - Wait 60s' : `Pay with PayU - ₹${totalAmount.toLocaleString()}`}
                   </Button>
                 </div>
               </CardContent>
