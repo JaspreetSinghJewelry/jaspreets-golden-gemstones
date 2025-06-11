@@ -34,6 +34,39 @@ const Payment = () => {
     return 'JS' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 4).toUpperCase();
   };
 
+  const createPayUForm = (payuUrl: string, formData: any) => {
+    // Create a form element
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = payuUrl;
+    form.target = '_self'; // Open in same window
+    
+    // Add all form data as hidden inputs
+    Object.entries(formData).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value as string;
+      form.appendChild(input);
+    });
+
+    // Add form to document body
+    document.body.appendChild(form);
+    
+    console.log('Form created with action:', payuUrl);
+    console.log('Form data:', formData);
+    
+    // Submit the form
+    form.submit();
+    
+    // Remove form after a short delay
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
+      }
+    }, 1000);
+  };
+
   const handleProceedToPayment = async () => {
     if (isProcessing) return;
     
@@ -70,7 +103,7 @@ const Payment = () => {
         throw error;
       }
 
-      console.log('PayU response:', data);
+      console.log('PayU response received:', data);
 
       if (!data || !data.payuUrl || !data.formData) {
         throw new Error('Invalid response from payment gateway');
@@ -84,38 +117,13 @@ const Payment = () => {
         cartItems
       }));
 
-      // Create form for PayU redirect
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = data.payuUrl;
-      form.style.display = 'none';
-
-      // Add all form data as hidden inputs
-      Object.entries(data.formData).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
-      });
-
-      // Add form to document
-      document.body.appendChild(form);
+      console.log('Redirecting to PayU with URL:', data.payuUrl);
       
-      console.log('Submitting PayU form with data:', data.formData);
-      
-      // Clear cart only after successful form creation
+      // Clear cart before redirect
       clearCart();
       
-      // Submit form immediately
-      form.submit();
-      
-      // Clean up form after submission
-      setTimeout(() => {
-        if (document.body.contains(form)) {
-          document.body.removeChild(form);
-        }
-      }, 1000);
+      // Create and submit form to PayU
+      createPayUForm(data.payuUrl, data.formData);
       
     } catch (error) {
       console.error('Error processing PayU payment:', error);

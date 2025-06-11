@@ -57,16 +57,16 @@ serve(async (req) => {
       amount: amount.toString(),
       productinfo: `Order ${orderId} - ${cartItems.length} items`,
       firstname: customerData.firstName,
-      lastname: customerData.lastName,
+      lastname: customerData.lastName || '',
       email: customerData.email,
       phone: customerData.phone,
       surl: `${supabaseUrl}/functions/v1/payu-verify`,
       furl: `${supabaseUrl}/functions/v1/payu-verify`,
       udf1: orderId,
-      udf2: customerData.address,
-      udf3: customerData.city,
-      udf4: customerData.state,
-      udf5: customerData.pincode
+      udf2: customerData.address || '',
+      udf3: customerData.city || '',
+      udf4: customerData.state || '',
+      udf5: customerData.pincode || ''
     }
 
     console.log('PayU data prepared:', { 
@@ -112,9 +112,9 @@ serve(async (req) => {
 
     console.log('Order saved to database:', orderId)
 
-    // Return PayU form data
+    // Return PayU form data with correct URL - using secure.payu.in for test environment
     const response = {
-      payuUrl: 'https://test.payu.in/_payment',
+      payuUrl: 'https://secure.payu.in/_payment',
       formData: {
         ...payuData,
         hash: hash
