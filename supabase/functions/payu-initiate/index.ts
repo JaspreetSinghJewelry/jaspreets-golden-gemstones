@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -6,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Rate limiting map to prevent duplicate requests
+// Rate limiting map - more lenient
 const requestTracker = new Map<string, number>();
 
 serve(async (req) => {
@@ -17,7 +18,7 @@ serve(async (req) => {
 
   try {
     console.log('PayU initiate function called - Method:', req.method)
-    console.log('Request headers:', Object.fromEntries(req.headers.entries()))
+    console.log('Content-Type:', req.headers.get('content-type'))
 
     // Validate request method
     if (req.method !== 'POST') {
@@ -31,34 +32,66 @@ serve(async (req) => {
       })
     }
 
-    // Parse request body with error handling
+    // Parse request body with better error handling
     let orderData;
     try {
       const body = await req.text()
-      console.log('Raw request body:', body)
+      console.log('Raw request body length:', body.length)
+      console.log('Raw request body preview:', body.substring(0, 200))
       
-      if (!body) {
-        throw new Error('Empty request body')
+      if (!body || body.trim() === '') {
+        console.error('Empty request body received')
+        return new Response(JSON.stringify({ 
+          error: 'Empty request body',
+          details: 'Request body cannot be empty. Please ensure order data is provided.'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
       
-      const parsedBody = JSON.parse(body)
+      let parsedBody;
+      try {
+        parsedBody = JSON.parse(body)
+      } catch (jsonError) {
+        console.error('JSON parse error:', jsonError)
+        return new Response(JSON.stringify({ 
+          error: 'Invalid JSON format',
+          details: 'Request body must be valid JSON'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      
       orderData = parsedBody.orderData
       
       if (!orderData) {
-        throw new Error('Missing orderData in request body')
+        console.error('Missing orderData in request body. Body keys:', Object.keys(parsedBody))
+        return new Response(JSON.stringify({ 
+          error: 'Missing orderData',
+          details: 'Request must contain orderData field with payment information'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
     } catch (parseError) {
       console.error('Error parsing request body:', parseError)
       return new Response(JSON.stringify({ 
-        error: 'Invalid request body',
-        details: 'Request body must be valid JSON with orderData field'
+        error: 'Request parsing failed',
+        details: parseError.message || 'Unable to parse request body'
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    console.log('PayU payment initiation request:', orderData)
+    console.log('PayU payment initiation request received:', { 
+      orderId: orderData.orderId, 
+      amount: orderData.amount,
+      hasCustomerData: !!orderData.customerData
+    })
 
     // Get PayU credentials from secrets
     const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
@@ -68,14 +101,14 @@ serve(async (req) => {
       console.error('PayU credentials not found')
       return new Response(JSON.stringify({ 
         error: 'Payment gateway not configured',
-        details: 'PayU credentials are missing'
+        details: 'PayU credentials are missing. Please contact support.'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    console.log('PayU credentials found:', { merchantKey: merchantKey.substring(0, 3) + '***', salt: salt.substring(0, 3) + '***' })
+    console.log('PayU credentials verified')
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -85,7 +118,7 @@ serve(async (req) => {
       console.error('Supabase configuration missing')
       return new Response(JSON.stringify({ 
         error: 'Database configuration error',
-        details: 'Supabase credentials missing'
+        details: 'Database credentials missing'
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -99,14 +132,18 @@ serve(async (req) => {
       orderId,
       amount,
       customerData,
-      cartItems,
+      cartItems = [],
       subTotal,
       taxes
     } = orderData
 
     // Validate required data
     if (!orderId || !amount || !customerData) {
-      console.error('Missing required order data:', { orderId, amount, customerData: !!customerData })
+      console.error('Missing required order data:', { 
+        hasOrderId: !!orderId, 
+        hasAmount: !!amount, 
+        hasCustomerData: !!customerData 
+      })
       return new Response(JSON.stringify({ 
         error: 'Invalid order data',
         details: 'Missing required fields: orderId, amount, or customerData'
@@ -116,16 +153,16 @@ serve(async (req) => {
       })
     }
 
-    // Check for duplicate request (rate limiting) - more lenient timing
+    // More lenient rate limiting - 3 second cooldown
     const requestKey = `${orderId}_${customerData.email || 'no-email'}`
     const now = Date.now()
     const lastRequest = requestTracker.get(requestKey)
     
-    if (lastRequest && (now - lastRequest) < 5000) { // 5 second cooldown instead of 10
-      console.log('Duplicate request detected for:', requestKey, 'Time since last:', now - lastRequest)
+    if (lastRequest && (now - lastRequest) < 3000) {
+      console.log('Rate limit hit for:', requestKey, 'Time since last:', now - lastRequest)
       return new Response(JSON.stringify({ 
         error: 'Too many requests',
-        details: 'Please wait before making another payment request'
+        details: 'Please wait a moment before trying again'
       }), {
         status: 429,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -134,41 +171,45 @@ serve(async (req) => {
     
     requestTracker.set(requestKey, now)
 
-    // Clean up old entries (keep only last 50 entries)
-    if (requestTracker.size > 50) {
+    // Clean up old entries
+    if (requestTracker.size > 100) {
       const entries = Array.from(requestTracker.entries())
       const sortedEntries = entries.sort((a, b) => b[1] - a[1])
       requestTracker.clear()
-      sortedEntries.slice(0, 25).forEach(([key, value]) => {
+      sortedEntries.slice(0, 50).forEach(([key, value]) => {
         requestTracker.set(key, value)
       })
     }
 
     console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
 
-    // Process and validate customer data with more robust defaults
+    // Process and validate customer data with better defaults
     const processedCustomerData = {
-      firstName: (customerData.firstName || 'Test').trim(),
-      lastName: (customerData.lastName || 'User').trim(),
-      email: customerData.email || 'test@example.com',
-      phone: customerData.phone || '9999999999',
-      address: (customerData.address || 'Test Address').trim(),
-      city: (customerData.city || 'Test City').trim(),
-      state: (customerData.state || 'Test State').trim(),
-      pincode: (customerData.pincode || '123456').trim()
+      firstName: String(customerData.firstName || 'Test').trim() || 'Test',
+      lastName: String(customerData.lastName || 'User').trim() || 'User',
+      email: String(customerData.email || 'test@example.com').trim() || 'test@example.com',
+      phone: String(customerData.phone || '9999999999').replace(/\D/g, '').slice(-10) || '9999999999',
+      address: String(customerData.address || 'Test Address').trim() || 'Test Address',
+      city: String(customerData.city || 'Test City').trim() || 'Test City',
+      state: String(customerData.state || 'Test State').trim() || 'Test State',
+      pincode: String(customerData.pincode || '123456').replace(/\D/g, '').slice(-6) || '123456'
     }
 
-    // Validate email format - more permissive
+    // Validate email format - use default if invalid
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(processedCustomerData.email)) {
-      console.log('Invalid email format, using default test email')
+      console.log('Invalid email format, using default')
       processedCustomerData.email = 'test@example.com'
     }
 
-    // Validate phone number
+    // Ensure phone number is valid
     if (processedCustomerData.phone.length < 10) {
-      console.log('Invalid phone number, using default')
       processedCustomerData.phone = '9999999999'
+    }
+
+    // Ensure pincode is valid
+    if (processedCustomerData.pincode.length < 6) {
+      processedCustomerData.pincode = '123456'
     }
 
     console.log('Processed customer data:', processedCustomerData)
@@ -177,8 +218,8 @@ serve(async (req) => {
     const payuData = {
       key: merchantKey,
       txnid: orderId,
-      amount: amount.toString(),
-      productinfo: `Order ${orderId} - ${cartItems?.length || 0} items`,
+      amount: String(amount),
+      productinfo: `Order ${orderId} - ${cartItems.length} items`,
       firstname: processedCustomerData.firstName,
       lastname: processedCustomerData.lastName,
       email: processedCustomerData.email,
@@ -196,13 +237,12 @@ serve(async (req) => {
       txnid: payuData.txnid, 
       amount: payuData.amount, 
       email: payuData.email,
-      surl: payuData.surl,
-      furl: payuData.furl
+      productinfo: payuData.productinfo
     })
 
     // Generate hash for security
     const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
-    console.log('Hash string created for:', payuData.txnid)
+    console.log('Hash string prepared for transaction:', payuData.txnid)
 
     // Create hash using Web Crypto API
     const encoder = new TextEncoder()
@@ -220,7 +260,7 @@ serve(async (req) => {
         .upsert({
           order_id: orderId,
           customer_data: processedCustomerData,
-          cart_items: cartItems || [],
+          cart_items: cartItems,
           sub_total: subTotal || amount,
           taxes: taxes || 0,
           total_amount: amount,
@@ -231,15 +271,14 @@ serve(async (req) => {
         })
 
       if (orderError) {
-        console.error('Error saving order:', orderError)
-        // Don't fail the payment if database save fails, just log it
-        console.log('Continuing payment process despite database error')
+        console.error('Error saving order to database:', orderError)
+        // Continue with payment even if database save fails
       } else {
-        console.log('Order saved to database:', orderId)
+        console.log('Order saved to database successfully:', orderId)
       }
     } catch (dbError) {
-      console.error('Database error:', dbError)
-      // Continue with payment even if database fails
+      console.error('Database operation error:', dbError)
+      // Continue with payment
     }
 
     // Return PayU form data
@@ -255,14 +294,15 @@ serve(async (req) => {
     console.log('PayU response prepared successfully for order:', orderId)
 
     return new Response(JSON.stringify(response), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
 
   } catch (error) {
     console.error('PayU initiation error:', error)
     return new Response(JSON.stringify({ 
-      error: error.message || 'Payment initialization failed',
-      details: 'PayU payment initiation failed',
+      error: 'Payment initialization failed',
+      details: error.message || 'An unexpected error occurred during payment initialization',
       timestamp: new Date().toISOString()
     }), {
       status: 500,

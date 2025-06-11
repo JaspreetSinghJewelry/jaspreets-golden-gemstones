@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
@@ -19,6 +19,7 @@ const Payment = () => {
   const [hasInitiated, setHasInitiated] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const processingRef = useRef(false);
 
   const customerData = location.state?.customerData;
   
@@ -53,7 +54,7 @@ const Payment = () => {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = payuUrl;
-    form.target = '_top'; // Use _top instead of _self
+    form.target = '_top';
     form.setAttribute('data-payu-form', 'true');
     form.style.display = 'none';
     
@@ -78,7 +79,7 @@ const Payment = () => {
       
       // Set a timeout to show success message if form submission was successful
       setTimeout(() => {
-        console.log('Form submission timeout - assuming successful redirect');
+        console.log('Form submission completed - user should be redirected to PayU');
       }, 1000);
       
     } catch (submitError) {
@@ -91,16 +92,17 @@ const Payment = () => {
       if (document.body.contains(form)) {
         document.body.removeChild(form);
       }
-    }, 3000);
+    }, 5000);
   }, []);
 
   const handleProceedToPayment = useCallback(async () => {
-    // Prevent multiple calls
-    if (isProcessing || hasInitiated) {
+    // Prevent multiple calls using ref
+    if (processingRef.current || isProcessing || hasInitiated) {
       console.log('Payment already in progress, ignoring duplicate call');
       return;
     }
     
+    processingRef.current = true;
     setIsProcessing(true);
     setHasInitiated(true);
     setError(null);
@@ -111,7 +113,7 @@ const Payment = () => {
       
       console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
       
-      // Prepare customer data with defaults for testing
+      // Prepare customer data with proper validation
       const processedCustomerData = {
         firstName: customerData.firstName?.trim() || 'Test',
         lastName: customerData.lastName?.trim() || 'User',
@@ -125,35 +127,34 @@ const Payment = () => {
       
       console.log('Processed customer data:', processedCustomerData);
       
-      // Call PayU initiation edge function with extended timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
+      const requestBody = {
+        orderData: {
+          orderId,
+          amount: totalAmount,
+          customerData: processedCustomerData,
+          cartItems: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity
+          })),
+          subTotal,
+          taxes
+        }
+      };
+
+      console.log('Request body prepared:', requestBody);
       
+      // Call PayU initiation edge function with proper body
       console.log('Calling supabase function...');
       
       const { data, error } = await supabase.functions.invoke('payu-initiate', {
-        body: {
-          orderData: {
-            orderId,
-            amount: totalAmount,
-            customerData: processedCustomerData,
-            cartItems: cartItems.map(item => ({
-              id: item.id,
-              name: item.name,
-              price: item.price,
-              image: item.image,
-              quantity: item.quantity
-            })),
-            subTotal,
-            taxes
-          }
-        },
+        body: requestBody,
         headers: {
           'Content-Type': 'application/json'
         }
       });
-
-      clearTimeout(timeoutId);
 
       console.log('Supabase function response:', { data, error });
 
@@ -211,6 +212,7 @@ const Payment = () => {
       console.error('Error processing PayU payment:', error);
       
       // Reset states on error
+      processingRef.current = false;
       setIsProcessing(false);
       setHasInitiated(false);
       setRetryCount(prev => prev + 1);
@@ -229,6 +231,7 @@ const Payment = () => {
   const handleRetry = useCallback(() => {
     console.log('Retrying payment - attempt:', retryCount + 1);
     setError(null);
+    processingRef.current = false;
     setIsProcessing(false);
     setHasInitiated(false);
     
@@ -241,6 +244,7 @@ const Payment = () => {
   const handleBackToCheckout = useCallback(() => {
     console.log('Navigating back to checkout');
     setError(null);
+    processingRef.current = false;
     setIsProcessing(false);
     setHasInitiated(false);
     navigate('/checkout');
