@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -57,11 +58,11 @@ serve(async (req) => {
     }
 
     // Check for duplicate request (rate limiting)
-    const requestKey = `${orderId}_${customerData.email}`
+    const requestKey = `${orderId}_${customerData.email || 'no-email'}`
     const now = Date.now()
     const lastRequest = requestTracker.get(requestKey)
     
-    if (lastRequest && (now - lastRequest) < 5000) { // 5 second cooldown
+    if (lastRequest && (now - lastRequest) < 10000) { // 10 second cooldown
       console.log('Duplicate request detected for:', requestKey)
       throw new Error('Please wait before making another payment request')
     }
@@ -80,16 +81,29 @@ serve(async (req) => {
 
     console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(customerData.email)) {
-      throw new Error('Invalid email address')
+    // More lenient email validation for testing
+    const emailRegex = /\S+@\S+\.\S+/
+    if (customerData.email && !emailRegex.test(customerData.email)) {
+      console.log('Invalid email format, using default test email')
+      customerData.email = 'test@example.com' // Use default for testing
+    }
+
+    // Ensure email exists
+    if (!customerData.email) {
+      customerData.email = 'test@example.com'
     }
 
     // Validate phone number (basic validation)
     if (!customerData.phone || customerData.phone.length < 10) {
-      throw new Error('Invalid phone number')
+      console.log('Invalid phone number, using default')
+      customerData.phone = '9999999999' // Use default for testing
     }
+
+    // Ensure required fields have values
+    const firstName = customerData.firstName?.trim() || 'Test'
+    const lastName = customerData.lastName?.trim() || 'User'
+    const email = customerData.email.trim()
+    const phone = customerData.phone.trim()
 
     // PayU payment parameters
     const payuData = {
@@ -97,10 +111,10 @@ serve(async (req) => {
       txnid: orderId,
       amount: amount.toString(),
       productinfo: `Order ${orderId} - ${cartItems.length} items`,
-      firstname: customerData.firstName.trim(),
-      lastname: customerData.lastName?.trim() || '',
-      email: customerData.email.trim(),
-      phone: customerData.phone.trim(),
+      firstname: firstName,
+      lastname: lastName,
+      email: email,
+      phone: phone,
       surl: `${supabaseUrl}/functions/v1/payu-verify`,
       furl: `${supabaseUrl}/functions/v1/payu-verify`,
       udf1: orderId,
@@ -178,7 +192,7 @@ serve(async (req) => {
 
     // Return PayU form data with correct URL
     const response = {
-      payuUrl: 'https://secure.payu.in/_payment',
+      payuUrl: 'https://test.payu.in/_payment',
       formData: {
         ...payuData,
         hash: hash

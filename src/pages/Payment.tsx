@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FancyText } from '@/components/ui/fancy-text';
-import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, CreditCard, Shield, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ const Payment = () => {
   const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasInitiated, setHasInitiated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const customerData = location.state?.customerData;
   
@@ -91,12 +92,26 @@ const Payment = () => {
     
     setIsProcessing(true);
     setHasInitiated(true);
+    setError(null);
     
     try {
       // Generate order ID
       const orderId = generateOrderId();
       
       console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
+      
+      // Prepare customer data with defaults for testing
+      const processedCustomerData = {
+        ...customerData,
+        firstName: customerData.firstName || 'Test',
+        lastName: customerData.lastName || 'User',
+        email: customerData.email || 'test@example.com',
+        phone: customerData.phone || '9999999999',
+        address: customerData.address || 'Test Address',
+        city: customerData.city || 'Test City',
+        state: customerData.state || 'Test State',
+        pincode: customerData.pincode || '123456'
+      };
       
       // Call PayU initiation edge function with timeout
       const controller = new AbortController();
@@ -107,7 +122,7 @@ const Payment = () => {
           orderData: {
             orderId,
             amount: totalAmount,
-            customerData,
+            customerData: processedCustomerData,
             cartItems: cartItems.map(item => ({
               id: item.id,
               name: item.name,
@@ -146,7 +161,7 @@ const Payment = () => {
       sessionStorage.setItem('pendingOrder', JSON.stringify({
         orderId,
         amount: totalAmount,
-        customerData,
+        customerData: processedCustomerData,
         cartItems
       }));
 
@@ -168,9 +183,12 @@ const Payment = () => {
       setIsProcessing(false);
       setHasInitiated(false);
       
+      const errorMessage = error instanceof Error ? error.message : "Failed to initiate payment. Please try again.";
+      setError(errorMessage);
+      
       toast({
         title: "Payment Error",
-        description: error instanceof Error ? error.message : "Failed to initiate payment. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     }
@@ -243,6 +261,32 @@ const Payment = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Payment Info */}
           <div className="lg:col-span-2">
+            {/* Error Display */}
+            {error && (
+              <Card className="border-2 border-red-200 bg-red-50 shadow-xl mb-6">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 text-red-700">
+                    <AlertCircle className="h-6 w-6" />
+                    <div>
+                      <h3 className="font-bold text-lg">Payment Error</h3>
+                      <p className="text-sm">{error}</p>
+                      <Button 
+                        onClick={() => {
+                          setError(null);
+                          setIsProcessing(false);
+                          setHasInitiated(false);
+                        }}
+                        className="mt-3 bg-red-600 text-white hover:bg-red-700"
+                        size="sm"
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Payment Gateway Info */}
             <Card className="border-2 border-cream-200 bg-white/90 backdrop-blur-sm shadow-xl">
               <CardHeader className="bg-cream-900 text-cream-50 rounded-t-lg">
@@ -363,7 +407,7 @@ const Payment = () => {
                   {/* Proceed to Payment Button */}
                   <Button 
                     onClick={handleProceedToPayment}
-                    disabled={isProcessing || hasInitiated}
+                    disabled={isProcessing || hasInitiated || !!error}
                     className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                   >
