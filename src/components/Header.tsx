@@ -19,6 +19,7 @@ import SearchModal from './SearchModal';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated } = useAuth();
@@ -78,26 +79,37 @@ const Header = () => {
           About Us
         </button>
         
-        {/* Collections Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="transition-colors flex items-center" style={{ color: '#C8A157' }}>
-              Collections
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border shadow-lg z-50">
+        {/* Collections Dropdown with Hover Animation */}
+        <div 
+          className="relative"
+          onMouseEnter={() => setIsCollectionsHovered(true)}
+          onMouseLeave={() => setIsCollectionsHovered(false)}
+        >
+          <button 
+            className="transition-colors flex items-center group" 
+            style={{ color: '#C8A157' }}
+          >
+            Collections
+            <ChevronDown className={`h-4 w-4 ml-1 transition-transform duration-300 ${isCollectionsHovered ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {/* Dropdown Menu with Animation */}
+          <div className={`absolute top-full left-0 mt-2 w-48 bg-white border shadow-lg rounded-md z-50 transition-all duration-300 transform ${
+            isCollectionsHovered 
+              ? 'opacity-100 translate-y-0 visible' 
+              : 'opacity-0 -translate-y-2 invisible'
+          }`}>
             {collectionItems.map((item) => (
-              <DropdownMenuItem
+              <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className="cursor-pointer hover:bg-gray-100"
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md"
               >
                 {item.name}
-              </DropdownMenuItem>
+              </button>
             ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </div>
+        </div>
 
         <button
           onClick={() => navigate('/lab-grown-diamonds')}

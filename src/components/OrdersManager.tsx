@@ -97,27 +97,35 @@ const OrdersManager = () => {
     }
 
     try {
+      console.log('Attempting to delete order with ID:', orderId);
+      
       const { error } = await supabase
         .from('orders')
         .delete()
         .eq('id', orderId);
 
       if (error) {
+        console.error('Supabase delete error:', error);
         throw error;
       }
 
+      console.log('Order deleted successfully');
+      
       toast({
         title: "Order Deleted",
-        description: `Order #${orderDisplayId} has been deleted successfully.`
+        description: `Order #${orderDisplayId} has been deleted successfully.`,
       });
 
-      // Refresh the orders list
-      fetchOrders();
-    } catch (error) {
+      // Remove the deleted order from local state immediately for better UX
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      
+      // Also refresh from database to ensure consistency
+      await fetchOrders();
+    } catch (error: any) {
       console.error('Error deleting order:', error);
       toast({
         title: "Error",
-        description: "Failed to delete the order. Please try again.",
+        description: `Failed to delete the order: ${error.message || 'Please try again.'}`,
         variant: "destructive"
       });
     }
@@ -397,7 +405,7 @@ const OrdersManager = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteOrder(order.id, order.order_id)}
-                          className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                           Delete
