@@ -46,11 +46,7 @@ const Footer = () => {
                     Jewelry Care Guide
                   </Link>
                 </li>
-                <li>
-                  <Link to="/guides/size-Guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
-                    Size Guide
-                  </Link>
-                </li>
+               
               </ul>
             </div>
 
