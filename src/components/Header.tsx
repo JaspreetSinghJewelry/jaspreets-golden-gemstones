@@ -22,9 +22,17 @@ const Header = () => {
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Safely get auth state with fallback
+  let isAuthenticated = false;
+  try {
+    const auth = useAuth();
+    isAuthenticated = auth.isAuthenticated;
+  } catch (error) {
+    console.warn('Auth not available in Header:', error);
+  }
  
   const navItems = [
     { name: 'Home', path: '/' },

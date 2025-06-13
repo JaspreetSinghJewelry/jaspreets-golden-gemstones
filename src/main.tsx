@@ -39,12 +39,24 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           height: '100vh',
           flexDirection: 'column',
           padding: '20px',
-          backgroundColor: '#f8f9fa'
+          backgroundColor: '#f8f9fa',
+          fontFamily: 'Arial, sans-serif'
         }}>
           <h1 style={{ color: '#333', marginBottom: '20px' }}>Something went wrong.</h1>
           <p style={{ color: '#666', marginBottom: '20px', textAlign: 'center' }}>
             We're sorry, but something went wrong. Please try refreshing the page.
           </p>
+          <pre style={{ 
+            backgroundColor: '#f5f5f5', 
+            padding: '10px', 
+            borderRadius: '4px', 
+            fontSize: '12px', 
+            maxWidth: '80%', 
+            overflow: 'auto',
+            marginBottom: '20px'
+          }}>
+            {this.state.error?.message || 'Unknown error'}
+          </pre>
           <button 
             onClick={() => window.location.reload()}
             style={{
@@ -71,13 +83,6 @@ const renderApp = () => {
   const rootElement = document.getElementById('root');
   if (!rootElement) {
     console.error('Root element not found');
-    document.body.innerHTML = `
-      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: Arial, sans-serif;">
-        <h1>Failed to load application</h1>
-        <p>Root element not found. Please contact support.</p>
-        <button onclick="window.location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Refresh Page</button>
-      </div>
-    `;
     return;
   }
 
@@ -94,19 +99,8 @@ const renderApp = () => {
     console.log('App rendered successfully');
   } catch (error) {
     console.error('Failed to render app:', error);
-    rootElement.innerHTML = `
-      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: Arial, sans-serif; padding: 20px;">
-        <h1 style="color: #333; margin-bottom: 20px;">Failed to load application</h1>
-        <p style="color: #666; margin-bottom: 20px; text-align: center;">Please check the console for errors and refresh the page.</p>
-        <button onclick="window.location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Refresh Page</button>
-      </div>
-    `;
   }
 };
 
-// Render the app when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', renderApp);
-} else {
-  renderApp();
-}
+// Render the app
+renderApp();
