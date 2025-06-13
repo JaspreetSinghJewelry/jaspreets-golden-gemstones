@@ -23,9 +23,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
@@ -35,13 +38,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       console.log('Initial session check:', session);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
@@ -180,7 +187,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Instead of throwing an error, return a safe default state
+    console.warn('useAuth called outside AuthProvider, returning default state');
+    return {
+      user: null,
+      session: null,
+      isAuthenticated: false,
+      signUp: async () => ({ error: { message: 'Auth not available' } }),
+      signIn: async () => ({ error: { message: 'Auth not available' } }),
+      signOut: async () => {},
+      loading: false,
+      isSessionValid: () => false,
+      login: () => {}
+    };
   }
   return context;
 };

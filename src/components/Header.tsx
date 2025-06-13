@@ -13,7 +13,6 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useNavigate } from 'react-router-dom';
 import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
-import { useAuth } from '@/hooks/useAuth';
 import SearchModal from './SearchModal';
 
 const Header = () => {
@@ -22,9 +21,18 @@ const Header = () => {
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Safe auth state - will not throw errors
+  let isAuthenticated = false;
+  try {
+    const { useAuth } = require('@/hooks/useAuth');
+    const auth = useAuth();
+    isAuthenticated = auth?.isAuthenticated || false;
+  } catch (error) {
+    console.warn('Auth not available in Header:', error);
+  }
  
   const navItems = [
     { name: 'Home', path: '/' },

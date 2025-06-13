@@ -15,12 +15,11 @@ const Index = () => {
   
   console.log('Index page rendering...');
   
-  // Simplified auth check with better error handling
+  // Safe auth check - will not throw errors
   let isAuthenticated = false;
   let loading = false;
   
   try {
-    // Dynamically import useAuth to prevent errors
     const { useAuth } = require("@/hooks/useAuth");
     const authState = useAuth();
     isAuthenticated = authState?.isAuthenticated || false;

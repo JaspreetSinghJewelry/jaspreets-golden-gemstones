@@ -49,7 +49,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Auth providers that can fail gracefully
+// Safe Auth providers that can fail gracefully
 const AuthProvidersWrapper = ({ children }: { children: React.ReactNode }) => {
   try {
     const { AuthProvider } = require("@/hooks/useAuth");
@@ -63,7 +63,7 @@ const AuthProvidersWrapper = ({ children }: { children: React.ReactNode }) => {
       </AuthProvider>
     );
   } catch (error) {
-    console.warn('Auth providers not available:', error);
+    console.warn('Auth providers not available, continuing without auth:', error);
     return <>{children}</>;
   }
 };
