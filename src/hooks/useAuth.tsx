@@ -25,29 +25,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     let mounted = true;
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!mounted) return;
-        console.log('Auth state changed:', event, session);
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const initAuth = async () => {
+      try {
+        console.log('Initializing auth...');
+        
+        // Set up auth state listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          (event, session) => {
+            if (!mounted) return;
+            console.log('Auth state changed:', event, session?.user?.id || 'no user');
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+          }
+        );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return;
-      console.log('Initial session check:', session);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+        // Check for existing session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+        } else {
+          console.log('Initial session check:', session?.user?.id || 'no session');
+        }
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+
+        return () => {
+          mounted = false;
+          subscription.unsubscribe();
+        };
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
     };
   }, []);
 
@@ -55,21 +77,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Attempting signup for:', email);
       
-      // Clean and validate email
       const cleanEmail = email.trim().toLowerCase();
       
-      // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(cleanEmail)) {
         return { error: { message: 'Please enter a valid email address' } };
       }
 
-      // Validate password
       if (password.length < 6) {
         return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
-      // Validate required fields
       if (!fullName.trim()) {
         return { error: { message: 'Full name is required' } };
       }
@@ -92,7 +110,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Signup response:', { data, error });
       
       if (error) {
-        // Handle specific Supabase errors
         if (error.message?.includes('User already registered')) {
           return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
         }
@@ -113,10 +130,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Attempting signin for:', email);
       
-      // Clean email
       const cleanEmail = email.trim().toLowerCase();
       
-      // Basic validation
       if (!cleanEmail || !password) {
         return { error: { message: 'Please enter both email and password' } };
       }
@@ -129,7 +144,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Signin response:', { data, error });
       
       if (error) {
-        // Handle specific errors
         if (error.message?.includes('Invalid login credentials')) {
           return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         }
@@ -150,7 +164,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Attempting signout');
       await supabase.auth.signOut();
-      // Clear cart data on logout
       localStorage.removeItem('cartItems');
     } catch (err) {
       console.error('Signout error:', err);
@@ -162,8 +175,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const login = (phoneNumber: string, name: string) => {
-    // This is a mock function for the phone-based login
-    // In a real implementation, this would integrate with your phone auth system
     console.log('Phone login attempted:', phoneNumber, name);
   };
 
@@ -187,7 +198,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // Return a safe default state instead of throwing an error
     console.warn('useAuth called outside AuthProvider, returning default state');
     return {
       user: null,

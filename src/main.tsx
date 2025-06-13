@@ -80,15 +80,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
 // Function to safely render the app
 const renderApp = () => {
-  const rootElement = document.getElementById('root');
-  if (!rootElement) {
-    console.error('Root element not found');
-    return;
-  }
-
-  const root = createRoot(rootElement);
-
   try {
+    const rootElement = document.getElementById('root');
+    if (!rootElement) {
+      console.error('Root element not found');
+      return;
+    }
+
+    const root = createRoot(rootElement);
+    
     root.render(
       <StrictMode>
         <ErrorBoundary>
@@ -96,9 +96,16 @@ const renderApp = () => {
         </ErrorBoundary>
       </StrictMode>
     );
+    
     console.log('App rendered successfully');
   } catch (error) {
     console.error('Failed to render app:', error);
+    // Fallback rendering without StrictMode
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      const root = createRoot(rootElement);
+      root.render(<div>Application failed to load. Please refresh the page.</div>);
+    }
   }
 };
 

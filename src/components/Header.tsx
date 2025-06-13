@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,22 +24,7 @@ const Header = () => {
   const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Safely get auth state with fallback
-  let isAuthenticated = false;
-  try {
-    const auth = useAuth();
-    isAuthenticated = auth.isAuthenticated;
-  } catch (error) {
-    console.warn('Auth not available in Header:', error);
-  }
- 
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
-    { name: 'Contact Us', path: '/contact' },
-  ];
+  const { isAuthenticated } = useAuth();
 
   const collectionItems = [
     { name: 'Rings', path: '/rings' },
