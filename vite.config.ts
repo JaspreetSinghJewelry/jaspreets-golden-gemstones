@@ -4,8 +4,9 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: './', // ✅ Use './' for GitHub Pages + custom domain
+  base: mode === 'production' ? '/jaspreets-golden-gemstones/' : '/',
   server: {
     host: "::",
     port: 8080,
@@ -28,10 +29,5 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       },
     },
-    target: 'esnext',
-    minify: 'esbuild',
-  },
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
 }));
