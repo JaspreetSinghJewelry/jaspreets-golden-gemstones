@@ -6,7 +6,8 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/' : '/',
+  // For custom domain, base should be '/' not the repo name
+  base: '/',
   server: {
     host: "::",
     port: 8080,
@@ -20,20 +21,5 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-  },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
-    target: 'esnext',
-    minify: 'esbuild',
-  },
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
 }));
