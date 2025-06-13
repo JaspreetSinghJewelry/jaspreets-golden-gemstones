@@ -11,6 +11,7 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error?: Error;
 }
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -19,11 +20,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: any): ErrorBoundaryState {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    console.error('Error boundary caught error:', error);
+    return { hasError: true, error };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error boundary caught an error:', error, errorInfo);
   }
 
@@ -35,10 +37,27 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           justifyContent: 'center', 
           alignItems: 'center', 
           height: '100vh',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          padding: '20px',
+          backgroundColor: '#f8f9fa'
         }}>
-          <h1>Something went wrong.</h1>
-          <button onClick={() => window.location.reload()}>Refresh Page</button>
+          <h1 style={{ color: '#333', marginBottom: '20px' }}>Something went wrong.</h1>
+          <p style={{ color: '#666', marginBottom: '20px', textAlign: 'center' }}>
+            We're sorry, but something went wrong. Please try refreshing the page.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Refresh Page
+          </button>
         </div>
       );
     }
@@ -47,28 +66,47 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error('Root element not found');
-}
+// Function to safely render the app
+const renderApp = () => {
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    console.error('Root element not found');
+    document.body.innerHTML = `
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: Arial, sans-serif;">
+        <h1>Failed to load application</h1>
+        <p>Root element not found. Please contact support.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Refresh Page</button>
+      </div>
+    `;
+    return;
+  }
 
-const root = createRoot(rootElement);
+  const root = createRoot(rootElement);
 
-try {
-  root.render(
-    <StrictMode>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </StrictMode>
-  );
-} catch (error) {
-  console.error('Failed to render app:', error);
-  rootElement.innerHTML = `
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
-      <h1>Failed to load application</h1>
-      <p>Please check the console for errors and refresh the page.</p>
-      <button onclick="window.location.reload()">Refresh Page</button>
-    </div>
-  `;
+  try {
+    root.render(
+      <StrictMode>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </StrictMode>
+    );
+    console.log('App rendered successfully');
+  } catch (error) {
+    console.error('Failed to render app:', error);
+    rootElement.innerHTML = `
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; font-family: Arial, sans-serif; padding: 20px;">
+        <h1 style="color: #333; margin-bottom: 20px;">Failed to load application</h1>
+        <p style="color: #666; margin-bottom: 20px; text-align: center;">Please check the console for errors and refresh the page.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Refresh Page</button>
+      </div>
+    `;
+  }
+};
+
+// Render the app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  renderApp();
 }

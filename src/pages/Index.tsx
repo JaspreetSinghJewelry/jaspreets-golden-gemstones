@@ -9,31 +9,33 @@ import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
-import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   
   console.log('Index page rendering...');
   
-  // Simplified auth check with error handling
+  // Simplified auth check with better error handling
   let isAuthenticated = false;
   let loading = false;
   
   try {
+    // Dynamically import useAuth to prevent errors
+    const { useAuth } = require("@/hooks/useAuth");
     const authState = useAuth();
-    isAuthenticated = authState.isAuthenticated;
-    loading = authState.loading;
+    isAuthenticated = authState?.isAuthenticated || false;
+    loading = authState?.loading || false;
   } catch (error) {
-    console.warn('Auth hook error:', error);
+    console.warn('Auth hook not available or failed:', error);
+    // Continue without auth - this is non-blocking
   }
 
   useEffect(() => {
-    // Show login popup after 3 seconds if user is not authenticated
+    // Show login popup after 5 seconds if user is not authenticated
     if (!loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
