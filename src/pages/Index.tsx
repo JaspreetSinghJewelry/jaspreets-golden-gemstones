@@ -15,6 +15,8 @@ const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
 
+  console.log('Index page rendering, isAuthenticated:', isAuthenticated, 'loading:', loading);
+
   useEffect(() => {
     // Show login popup after 3 seconds if user is not authenticated
     if (!loading && !isAuthenticated) {
