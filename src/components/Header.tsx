@@ -51,21 +51,21 @@ const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center px-4 md:px-8 lg:px-16 xl:px-24 py-3 md:py-4 shadow-sm sticky top-0 z-50 responsive-layout" style={{ backgroundColor: '#001c39' }}>
+    <header className="flex justify-between items-center px-4 sm:px-8 md:px-16 lg:px-24 py-2 shadow-sm sticky top-0 z-50" style={{ backgroundColor: '#001c39' }}>
       {/* Logo */}
-      <div className="flex items-center cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
+      <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
         <img 
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
-          className="h-10 sm:h-12 md:h-16 lg:h-20 w-auto"
+          className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto"
         />
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden lg:flex space-x-4 xl:space-x-6 text-sm">
+      <nav className="hidden lg:flex space-x-6 text-sm">
         <button
           onClick={() => navigate('/')}
-          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
+          className="transition-colors"
           style={{ color: '#C8A157' }}
         >
           Home
@@ -73,7 +73,7 @@ const Header = () => {
         
         <button
           onClick={() => navigate('/about')}
-          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
+          className="transition-colors"
           style={{ color: '#C8A157' }}
         >
           About Us
@@ -86,7 +86,7 @@ const Header = () => {
           onMouseLeave={() => setIsCollectionsHovered(false)}
         >
           <button 
-            className="transition-colors hover:opacity-80 flex items-center group px-2 py-1 touch-target" 
+            className="transition-colors flex items-center group" 
             style={{ color: '#C8A157' }}
           >
             Collections
@@ -103,7 +103,7 @@ const Header = () => {
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md touch-target"
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md"
               >
                 {item.name}
               </button>
@@ -113,7 +113,7 @@ const Header = () => {
 
         <button
           onClick={() => navigate('/lab-grown-diamonds')}
-          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
+          className="transition-colors"
           style={{ color: '#C8A157' }}
         >
           Lab Grown Diamonds
@@ -121,7 +121,7 @@ const Header = () => {
         
         <button
           onClick={() => navigate('/contact')}
-          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
+          className="transition-colors"
           style={{ color: '#C8A157' }}
         >
           Contact Us
@@ -129,28 +129,28 @@ const Header = () => {
       </nav>
 
       {/* Actions */}
-      <div className="flex items-center space-x-1 sm:space-x-2">
+      <div className="flex items-center space-x-2 md:space-x-4">
         <Button 
           ref={searchButtonRef}
           variant="ghost" 
           size="icon" 
-          className="hover:bg-white/10 h-10 w-10 touch-target"
+          className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10"
           style={{ color: '#C8A157' }}
           onClick={() => setIsSearchOpen(true)}
         >
-          <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+          <Search className="h-4 w-4 md:h-5 md:w-5" />
         </Button>
         
         <Button 
           variant="ghost" 
           size="icon" 
-          className="hover:bg-white/10 relative h-10 w-10 touch-target"
+          className="hover:bg-white/10 relative h-8 w-8 md:h-10 md:w-10"
           style={{ color: '#C8A157' }}
           onClick={handleWishlistClick}
         >
-          <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
+          <Heart className="h-4 w-4 md:h-5 md:w-5" />
           {wishlistCount > 0 && (
-            <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+            <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
               {wishlistCount}
             </span>
           )}
@@ -158,27 +158,27 @@ const Header = () => {
         
         {isAuthenticated ? (
           <AccountMenu>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 h-10 w-10 touch-target" style={{ color: '#C8A157' }}>
-              <User className="h-4 w-4 sm:h-5 sm:w-5" />
+            <Button variant="ghost" size="icon" className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10" style={{ color: '#C8A157' }}>
+              <User className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </AccountMenu>
         ) : (
           <Button 
             variant="ghost" 
             size="icon" 
-            className="hover:bg-white/10 h-10 w-10 touch-target"
+            className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10"
             style={{ color: '#C8A157' }}
             onClick={handleUserAction}
           >
-            <User className="h-4 w-4 sm:h-5 sm:w-5" />
+            <User className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
         )}
         
         <CartDrawer>
-          <Button variant="ghost" size="icon" className="hover:bg-white/10 relative h-10 w-10 touch-target" style={{ color: '#C8A157' }}>
-            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
+          <Button variant="ghost" size="icon" className="hover:bg-white/10 relative h-8 w-8 md:h-10 md:w-10" style={{ color: '#C8A157' }}>
+            <ShoppingBag className="h-4 w-4 md:h-5 md:w-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+              <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
                 {cartCount}
               </span>
             )}
@@ -186,7 +186,7 @@ const Header = () => {
         </CartDrawer>
 
         <Button
-          className="text-white px-3 py-2 rounded-full hover:opacity-80 text-sm hidden sm:block touch-target"
+          className="text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:opacity-80 text-xs md:text-sm hidden sm:block"
           style={{ backgroundColor: '#C8A157' }}
           onClick={() => navigate('/products')}
         >
@@ -197,24 +197,24 @@ const Header = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden hover:bg-white/10 h-10 w-10 touch-target"
+          className="lg:hidden hover:bg-white/10 h-8 w-8 md:h-10 md:w-10"
           style={{ color: '#C8A157' }}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {isMenuOpen ? <X className="h-4 w-4 md:h-5 md:w-5" /> : <Menu className="h-4 w-4 md:h-5 md:w-5" />}
         </Button>
       </div>
 
-      {/* Mobile Navigation - Optimized for mobile */}
+      {/* Mobile Navigation - Desktop-like layout */}
       {isMenuOpen && (
-        <nav className="lg:hidden absolute top-full left-0 right-0 shadow-lg border-t z-50 overflow-hidden" style={{ backgroundColor: '#001c39' }}>
-          <div className="flex flex-col p-4 space-y-4">
+        <nav className="lg:hidden absolute top-full left-0 right-0 shadow-lg border-t z-50 min-w-full overflow-x-auto" style={{ backgroundColor: '#001c39' }}>
+          <div className="flex flex-row items-center justify-start p-4 space-x-6 min-w-max">
             <button
               onClick={() => {
                 navigate('/');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-3 touch-target"
+              className="transition-colors whitespace-nowrap text-sm font-medium"
               style={{ color: '#C8A157' }}
             >
               Home
@@ -225,7 +225,7 @@ const Header = () => {
                 navigate('/about');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-3 touch-target"
+              className="transition-colors whitespace-nowrap text-sm font-medium"
               style={{ color: '#C8A157' }}
             >
               About Us
@@ -234,12 +234,12 @@ const Header = () => {
             {/* Mobile Collections Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="transition-colors flex items-center justify-between text-base font-medium py-3 touch-target" style={{ color: '#C8A157' }}>
+                <button className="transition-colors flex items-center whitespace-nowrap text-sm font-medium" style={{ color: '#C8A157' }}>
                   Collections
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 ml-1" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border shadow-lg z-50 w-full">
+              <DropdownMenuContent className="bg-white border shadow-lg z-50">
                 {collectionItems.map((item) => (
                   <DropdownMenuItem
                     key={item.name}
@@ -247,7 +247,7 @@ const Header = () => {
                       navigate(item.path);
                       setIsMenuOpen(false);
                     }}
-                    className="cursor-pointer hover:bg-gray-100 py-3 text-base touch-target"
+                    className="cursor-pointer hover:bg-gray-100"
                   >
                     {item.name}
                   </DropdownMenuItem>
@@ -260,7 +260,7 @@ const Header = () => {
                 navigate('/lab-grown-diamonds');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-3 touch-target"
+              className="transition-colors whitespace-nowrap text-sm font-medium"
               style={{ color: '#C8A157' }}
             >
               Lab Grown Diamonds
@@ -271,14 +271,14 @@ const Header = () => {
                 navigate('/contact');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-3 touch-target"
+              className="transition-colors whitespace-nowrap text-sm font-medium"
               style={{ color: '#C8A157' }}
             >
               Contact Us
             </button>
             
             <Button
-              className="text-white px-4 py-3 rounded-full hover:opacity-80 text-base mt-4 touch-target"
+              className="text-white px-4 py-2 rounded-full hover:opacity-80 text-sm whitespace-nowrap ml-4"
               style={{ backgroundColor: '#C8A157' }}
               onClick={() => {
                 navigate('/products');
