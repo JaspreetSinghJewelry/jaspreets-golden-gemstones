@@ -6,8 +6,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  // For custom domain, base should be '/' not the repo name
-  base: '/',
+  base: mode === 'production' ? '/jaspreets-golden-gemstones/' : '/',
   server: {
     host: "::",
     port: 8080,
