@@ -13,7 +13,20 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const { isAuthenticated, loading } = useAuth();
+  
+  console.log('Index page rendering...');
+  
+  // Simplified auth check with error handling
+  let isAuthenticated = false;
+  let loading = false;
+  
+  try {
+    const authState = useAuth();
+    isAuthenticated = authState.isAuthenticated;
+    loading = authState.loading;
+  } catch (error) {
+    console.warn('Auth hook error:', error);
+  }
 
   useEffect(() => {
     // Show login popup after 3 seconds if user is not authenticated

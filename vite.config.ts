@@ -24,10 +24,18 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+        },
       },
     },
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  }
 }));
