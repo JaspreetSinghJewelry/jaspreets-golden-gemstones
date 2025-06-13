@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { AdminAuthProvider } from "@/hooks/useAdminAuth";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import { Suspense } from "react";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Auth from "./pages/Auth";
@@ -41,61 +42,92 @@ import GemstoneGuide from "./pages/GemstoneGuide";
 import GiftingGuide from "./pages/GiftingGuide";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// Loading component for Suspense fallback
+const LoadingPage = () => (
+  <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="text-center">
+      <h1 className="text-2xl font-bold mb-4" style={{ color: '#001c39' }}>Jaspreet Singh Jewelry</h1>
+      <p className="text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <AdminAuthProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/payment" element={<Payment />} />
-                    <Route path="/order-success" element={<OrderSuccess />} />
-                    <Route path="/payment-failure" element={<PaymentFailure />} />
-                    <Route path="/order-history" element={<OrderHistory />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/signin" element={<SignIn />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/collections" element={<Collections />} />
-                    <Route path="/rings" element={<Rings />} />
-                    <Route path="/necklaces" element={<Necklaces />} />
-                    <Route path="/earrings" element={<Earrings />} />
-                    <Route path="/bracelets" element={<Bracelets />} />
-                    <Route path="/bridal" element={<Bridal />} />
-                    <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/terms-conditions" element={<TermsConditions />} />
-                    <Route path="/exchange-buyback-policy" element={<ExchangeBuybackPolicy />} />
-                    <Route path="/defective-product-policy" element={<DefectiveProductPolicy />} />
-                    <Route path="/fraud-warning" element={<FraudWarning />} />
-                    <Route path="/jewelry-care-guide" element={<JewelryCareGuide />} />
-                    <Route path="/diamond-solitaire-guide" element={<DiamondSolitaireGuide />} />
-                    <Route path="/buying-price-guide" element={<BuyingPriceGuide />} />
-                    <Route path="/certification-guide" element={<CertificationGuide />} />
-                    <Route path="/gemstone-guide" element={<GemstoneGuide />} />
-                    <Route path="/gifting-guide" element={<GiftingGuide />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </WishlistProvider>
-            </CartProvider>
-          </AdminAuthProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  try {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            <AdminAuthProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <Suspense fallback={<LoadingPage />}>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/auth" element={<Auth />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route path="/payment" element={<Payment />} />
+                        <Route path="/order-success" element={<OrderSuccess />} />
+                        <Route path="/payment-failure" element={<PaymentFailure />} />
+                        <Route path="/order-history" element={<OrderHistory />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/signin" element={<SignIn />} />
+                        <Route path="/wishlist" element={<Wishlist />} />
+                        <Route path="/about" element={<AboutUs />} />
+                        <Route path="/contact" element={<ContactUs />} />
+                        <Route path="/collections" element={<Collections />} />
+                        <Route path="/rings" element={<Rings />} />
+                        <Route path="/necklaces" element={<Necklaces />} />
+                        <Route path="/earrings" element={<Earrings />} />
+                        <Route path="/bracelets" element={<Bracelets />} />
+                        <Route path="/bridal" element={<Bridal />} />
+                        <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/terms-conditions" element={<TermsConditions />} />
+                        <Route path="/exchange-buyback-policy" element={<ExchangeBuybackPolicy />} />
+                        <Route path="/defective-product-policy" element={<DefectiveProductPolicy />} />
+                        <Route path="/fraud-warning" element={<FraudWarning />} />
+                        <Route path="/jewelry-care-guide" element={<JewelryCareGuide />} />
+                        <Route path="/diamond-solitaire-guide" element={<DiamondSolitaireGuide />} />
+                        <Route path="/buying-price-guide" element={<BuyingPriceGuide />} />
+                        <Route path="/certification-guide" element={<CertificationGuide />} />
+                        <Route path="/gemstone-guide" element={<GemstoneGuide />} />
+                        <Route path="/gifting-guide" element={<GiftingGuide />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </BrowserRouter>
+                </WishlistProvider>
+              </CartProvider>
+            </AdminAuthProvider>
+          </AuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error('App rendering error:', error);
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4" style={{ color: '#001c39' }}>Jaspreet Singh Jewelry</h1>
+          <p className="text-red-600">Something went wrong. Please refresh the page.</p>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
