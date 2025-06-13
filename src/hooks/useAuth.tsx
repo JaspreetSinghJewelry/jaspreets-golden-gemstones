@@ -23,53 +23,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
-    const initAuth = async () => {
+    console.log('AuthProvider: Initializing auth...');
+    
+    // Get initial session
+    const getSession = async () => {
       try {
-        console.log('Initializing auth...');
-        
-        // Set up auth state listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (event, session) => {
-            if (!mounted) return;
-            console.log('Auth state changed:', event, session?.user?.id || 'no user');
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-          }
-        );
-
-        // Check for existing session
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error getting session:', error);
         } else {
-          console.log('Initial session check:', session?.user?.id || 'no session');
-        }
-        
-        if (mounted) {
+          console.log('Initial session:', session?.user?.id || 'no session');
           setSession(session);
           setUser(session?.user ?? null);
-          setLoading(false);
         }
-
-        return () => {
-          mounted = false;
-          subscription.unsubscribe();
-        };
       } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (mounted) {
-          setLoading(false);
-        }
+        console.error('Auth session error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    initAuth();
+    getSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id || 'no user');
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
 
     return () => {
-      mounted = false;
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -77,27 +64,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Attempting signup for:', email);
       
-      const cleanEmail = email.trim().toLowerCase();
-      
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(cleanEmail)) {
-        return { error: { message: 'Please enter a valid email address' } };
-      }
-
-      if (password.length < 6) {
-        return { error: { message: 'Password must be at least 6 characters long' } };
-      }
-
-      if (!fullName.trim()) {
-        return { error: { message: 'Full name is required' } };
-      }
-
-      if (!phone.trim()) {
-        return { error: { message: 'Phone number is required' } };
-      }
-
       const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           data: {
@@ -108,18 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       console.log('Signup response:', { data, error });
-      
-      if (error) {
-        if (error.message?.includes('User already registered')) {
-          return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
-        }
-        if (error.message?.includes('invalid')) {
-          return { error: { message: 'Please check your email address and try again.' } };
-        }
-        return { error };
-      }
-
-      return { error: null };
+      return { error };
     } catch (err) {
       console.error('Signup error:', err);
       return { error: { message: 'An unexpected error occurred. Please try again.' } };
@@ -130,30 +87,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Attempting signin for:', email);
       
-      const cleanEmail = email.trim().toLowerCase();
-      
-      if (!cleanEmail || !password) {
-        return { error: { message: 'Please enter both email and password' } };
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
+        email: email.trim().toLowerCase(),
         password
       });
       
       console.log('Signin response:', { data, error });
-      
-      if (error) {
-        if (error.message?.includes('Invalid login credentials')) {
-          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
-        }
-        if (error.message?.includes('Email not confirmed')) {
-          return { error: { message: 'Please check your email and confirm your account before signing in.' } };
-        }
-        return { error };
-      }
-
-      return { error: null };
+      return { error };
     } catch (err) {
       console.error('Signin error:', err);
       return { error: { message: 'An unexpected error occurred. Please try again.' } };

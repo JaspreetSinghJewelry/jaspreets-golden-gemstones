@@ -20,11 +20,17 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
-  const { cartCount } = useCart();
-  const { wishlistCount } = useWishlist();
+  
+  // Safe access to context values with fallbacks
+  const cart = useCart();
+  const wishlist = useWishlist();
+  const auth = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
-  const { isAuthenticated } = useAuth();
+
+  const cartCount = cart?.cartCount || 0;
+  const wishlistCount = wishlist?.wishlistCount || 0;
+  const isAuthenticated = auth?.isAuthenticated || false;
 
   const collectionItems = [
     { name: 'Rings', path: '/rings' },
@@ -51,6 +57,10 @@ const Header = () => {
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
           className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto"
+          onError={(e) => {
+            console.error('Logo failed to load');
+            e.currentTarget.style.display = 'none';
+          }}
         />
       </div>
 
