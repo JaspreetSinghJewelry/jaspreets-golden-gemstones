@@ -1,11 +1,11 @@
 
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error(
@@ -15,24 +15,30 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <div className="min-h-[60vh] flex items-center justify-center bg-gray-50">
-        <div className="text-center px-4">
-          <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Page Not Found</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-            The page you're looking for doesn't exist or has been moved.
-          </p>
-          <Link 
-            to="/" 
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="text-center max-w-md mx-auto p-8">
+        <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Page Not Found</h2>
+        <p className="text-gray-600 mb-8">
+          The page you are looking for doesn't exist or has been moved.
+        </p>
+        <div className="space-y-4">
+          <Button 
+            onClick={() => navigate('/')}
+            className="w-full"
+            style={{ backgroundColor: '#C8A157' }}
           >
-            Return to Home
-          </Link>
+            Go to Homepage
+          </Button>
+          <Button 
+            onClick={() => navigate('/products')}
+            variant="outline"
+            className="w-full"
+          >
+            Browse Products
+          </Button>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
