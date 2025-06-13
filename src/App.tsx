@@ -43,9 +43,6 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Get the base path for GitHub Pages
-const basename = import.meta.env.PROD ? '/jaspreets-golden-gemstones' : '';
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -56,7 +53,7 @@ function App() {
               <WishlistProvider>
                 <Toaster />
                 <Sonner />
-                <BrowserRouter basename={basename}>
+                <BrowserRouter>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/products" element={<Products />} />
