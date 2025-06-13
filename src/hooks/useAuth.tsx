@@ -187,7 +187,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // Instead of throwing an error, return a safe default state
+    // Return a safe default state instead of throwing an error
     console.warn('useAuth called outside AuthProvider, returning default state');
     return {
       user: null,
