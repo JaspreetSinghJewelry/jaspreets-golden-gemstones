@@ -133,42 +133,48 @@
   }
 }
 
-/* Mobile-first responsive breakpoints */
+/* Mobile-first responsive breakpoints with better spacing */
 @media (max-width: 640px) {
   .container {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
   
-  /* Mobile typography */
-  .text-3xl { font-size: 1.5rem !important; line-height: 2rem !important; }
-  .text-4xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
-  .text-5xl { font-size: 2.25rem !important; line-height: 2.5rem !important; }
+  /* Mobile typography improvements */
+  .text-3xl { font-size: 1.75rem !important; line-height: 2.25rem !important; }
+  .text-4xl { font-size: 2rem !important; line-height: 2.5rem !important; }
+  .text-5xl { font-size: 2.5rem !important; line-height: 3rem !important; }
   
-  /* Mobile spacing */
+  /* Mobile spacing improvements */
   .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
   .px-16 { padding-left: 1rem !important; padding-right: 1rem !important; }
   .px-24 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+  .py-16 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+  .py-20 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
   
   /* Mobile margins */
-  .mb-8 { margin-bottom: 1.5rem !important; }
-  .mb-12 { margin-bottom: 2rem !important; }
+  .mb-8 { margin-bottom: 2rem !important; }
+  .mb-12 { margin-bottom: 3rem !important; }
   
-  /* Mobile grid layouts */
+  /* Mobile grid layouts - better responsive behavior */
   .grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
-  .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
   .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .grid-cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   
   /* Mobile gaps */
-  .gap-8 { gap: 1rem !important; }
-  .gap-6 { gap: 0.75rem !important; }
+  .gap-8 { gap: 1.5rem !important; }
+  .gap-6 { gap: 1rem !important; }
   
   /* Mobile image heights */
-  .h-64 { height: 12rem !important; }
-  .h-96 { height: 16rem !important; }
+  .h-64 { height: 14rem !important; }
+  .h-96 { height: 18rem !important; }
+  
+  /* Mobile section spacing */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
 
 @media (min-width: 641px) and (max-width: 768px) {
@@ -179,7 +185,7 @@
   
   /* Tablet grid layouts */
   .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-  .grid-cols-4 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .grid-cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
 }
 
@@ -191,7 +197,7 @@
   
   /* Desktop tablet grid layouts */
   .grid-cols-4 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-  .grid-cols-5 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .grid-cols-5 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
 }
 
 /* iOS specific fixes */
@@ -248,6 +254,16 @@
     min-height: 44px;
     min-width: 44px;
     touch-action: manipulation;
+  }
+  
+  /* Mobile-specific classes */
+  @media (max-width: 640px) {
+    .mobile-text-center { text-align: center !important; }
+    .mobile-full-width { width: 100% !important; }
+    .mobile-hidden { display: none !important; }
+    .mobile-block { display: block !important; }
+    .mobile-px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+    .mobile-py-8 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
   }
 }
 

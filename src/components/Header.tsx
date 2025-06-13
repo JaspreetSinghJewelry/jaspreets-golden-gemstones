@@ -51,13 +51,13 @@ const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center px-4 md:px-8 lg:px-16 xl:px-24 py-2 shadow-sm sticky top-0 z-50" style={{ backgroundColor: '#001c39' }}>
+    <header className="flex justify-between items-center px-4 md:px-8 lg:px-16 xl:px-24 py-3 md:py-4 shadow-sm sticky top-0 z-50 responsive-layout" style={{ backgroundColor: '#001c39' }}>
       {/* Logo */}
       <div className="flex items-center cursor-pointer flex-shrink-0" onClick={() => navigate('/')}>
         <img 
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
-          className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto"
+          className="h-10 sm:h-12 md:h-16 lg:h-20 w-auto"
         />
       </div>
 
@@ -65,7 +65,7 @@ const Header = () => {
       <nav className="hidden lg:flex space-x-4 xl:space-x-6 text-sm">
         <button
           onClick={() => navigate('/')}
-          className="transition-colors hover:opacity-80 px-2 py-1"
+          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
           style={{ color: '#C8A157' }}
         >
           Home
@@ -73,7 +73,7 @@ const Header = () => {
         
         <button
           onClick={() => navigate('/about')}
-          className="transition-colors hover:opacity-80 px-2 py-1"
+          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
           style={{ color: '#C8A157' }}
         >
           About Us
@@ -86,7 +86,7 @@ const Header = () => {
           onMouseLeave={() => setIsCollectionsHovered(false)}
         >
           <button 
-            className="transition-colors hover:opacity-80 flex items-center group px-2 py-1" 
+            className="transition-colors hover:opacity-80 flex items-center group px-2 py-1 touch-target" 
             style={{ color: '#C8A157' }}
           >
             Collections
@@ -103,7 +103,7 @@ const Header = () => {
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md"
+                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md touch-target"
               >
                 {item.name}
               </button>
@@ -113,7 +113,7 @@ const Header = () => {
 
         <button
           onClick={() => navigate('/lab-grown-diamonds')}
-          className="transition-colors hover:opacity-80 px-2 py-1"
+          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
           style={{ color: '#C8A157' }}
         >
           Lab Grown Diamonds
@@ -121,7 +121,7 @@ const Header = () => {
         
         <button
           onClick={() => navigate('/contact')}
-          className="transition-colors hover:opacity-80 px-2 py-1"
+          className="transition-colors hover:opacity-80 px-2 py-1 touch-target"
           style={{ color: '#C8A157' }}
         >
           Contact Us
@@ -134,7 +134,7 @@ const Header = () => {
           ref={searchButtonRef}
           variant="ghost" 
           size="icon" 
-          className="hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10 touch-target"
+          className="hover:bg-white/10 h-10 w-10 touch-target"
           style={{ color: '#C8A157' }}
           onClick={() => setIsSearchOpen(true)}
         >
@@ -144,13 +144,13 @@ const Header = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="hover:bg-white/10 relative h-8 w-8 sm:h-10 sm:w-10 touch-target"
+          className="hover:bg-white/10 relative h-10 w-10 touch-target"
           style={{ color: '#C8A157' }}
           onClick={handleWishlistClick}
         >
           <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
           {wishlistCount > 0 && (
-            <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+            <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
               {wishlistCount}
             </span>
           )}
@@ -158,7 +158,7 @@ const Header = () => {
         
         {isAuthenticated ? (
           <AccountMenu>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10 touch-target" style={{ color: '#C8A157' }}>
+            <Button variant="ghost" size="icon" className="hover:bg-white/10 h-10 w-10 touch-target" style={{ color: '#C8A157' }}>
               <User className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </AccountMenu>
@@ -166,7 +166,7 @@ const Header = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10 touch-target"
+            className="hover:bg-white/10 h-10 w-10 touch-target"
             style={{ color: '#C8A157' }}
             onClick={handleUserAction}
           >
@@ -175,10 +175,10 @@ const Header = () => {
         )}
         
         <CartDrawer>
-          <Button variant="ghost" size="icon" className="hover:bg-white/10 relative h-8 w-8 sm:h-10 sm:w-10 touch-target" style={{ color: '#C8A157' }}>
+          <Button variant="ghost" size="icon" className="hover:bg-white/10 relative h-10 w-10 touch-target" style={{ color: '#C8A157' }}>
             <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+              <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
                 {cartCount}
               </span>
             )}
@@ -186,7 +186,7 @@ const Header = () => {
         </CartDrawer>
 
         <Button
-          className="text-white px-3 py-1 sm:px-4 sm:py-2 rounded-full hover:opacity-80 text-xs sm:text-sm hidden sm:block touch-target"
+          className="text-white px-3 py-2 rounded-full hover:opacity-80 text-sm hidden sm:block touch-target"
           style={{ backgroundColor: '#C8A157' }}
           onClick={() => navigate('/products')}
         >
@@ -197,11 +197,11 @@ const Header = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10 touch-target"
+          className="lg:hidden hover:bg-white/10 h-10 w-10 touch-target"
           style={{ color: '#C8A157' }}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
 
@@ -214,7 +214,7 @@ const Header = () => {
                 navigate('/');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-2 touch-target"
+              className="transition-colors text-left text-base font-medium py-3 touch-target"
               style={{ color: '#C8A157' }}
             >
               Home
@@ -225,7 +225,7 @@ const Header = () => {
                 navigate('/about');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-2 touch-target"
+              className="transition-colors text-left text-base font-medium py-3 touch-target"
               style={{ color: '#C8A157' }}
             >
               About Us
@@ -234,7 +234,7 @@ const Header = () => {
             {/* Mobile Collections Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="transition-colors flex items-center justify-between text-base font-medium py-2 touch-target" style={{ color: '#C8A157' }}>
+                <button className="transition-colors flex items-center justify-between text-base font-medium py-3 touch-target" style={{ color: '#C8A157' }}>
                   Collections
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -260,7 +260,7 @@ const Header = () => {
                 navigate('/lab-grown-diamonds');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-2 touch-target"
+              className="transition-colors text-left text-base font-medium py-3 touch-target"
               style={{ color: '#C8A157' }}
             >
               Lab Grown Diamonds
@@ -271,7 +271,7 @@ const Header = () => {
                 navigate('/contact');
                 setIsMenuOpen(false);
               }}
-              className="transition-colors text-left text-base font-medium py-2 touch-target"
+              className="transition-colors text-left text-base font-medium py-3 touch-target"
               style={{ color: '#C8A157' }}
             >
               Contact Us
