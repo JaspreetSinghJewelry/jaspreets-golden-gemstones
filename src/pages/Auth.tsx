@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FancyText } from '@/components/ui/fancy-text';
-import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -40,7 +40,7 @@ const Auth = () => {
 
     if (!email.trim()) {
       errors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(email.trim())) {
       errors.email = 'Please enter a valid email address';
     }
 
@@ -53,6 +53,8 @@ const Auth = () => {
     if (mode === 'signup') {
       if (!fullName.trim()) {
         errors.fullName = 'Full name is required';
+      } else if (fullName.trim().length < 2) {
+        errors.fullName = 'Full name must be at least 2 characters long';
       }
 
       if (!phone.trim()) {
@@ -75,12 +77,12 @@ const Auth = () => {
 
     setIsLoading(true);
     setFormErrors({});
-    console.log(`Auth Page: Starting ${mode} process for:`, email);
+    console.log(`Auth Page: Starting ${mode} process for:`, email.trim());
 
     try {
       if (mode === 'signin') {
         console.log('Auth Page: Attempting signin...');
-        const { error } = await signIn(email, password);
+        const { error } = await signIn(email.trim(), password);
         
         if (error) {
           console.error('Auth Page: Signin failed:', error);
@@ -98,15 +100,39 @@ const Auth = () => {
         }
       } else {
         console.log('Auth Page: Attempting signup...');
-        const { error } = await signUp(email, password, fullName, phone);
+        const { error } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
         
         if (error) {
           console.error('Auth Page: Signup failed:', error);
-          toast({
-            title: "Sign Up Failed", 
-            description: error.message,
-            variant: "destructive"
-          });
+          
+          // Handle specific signup errors
+          if (error.message.includes('already exists')) {
+            toast({
+              title: "Account Already Exists",
+              description: "An account with this email already exists. Please sign in instead.",
+              variant: "destructive"
+            });
+            setMode('signin');
+            setPassword('');
+            setFullName('');
+            setPhone('');
+          } else if (error.message.includes('confirmation link')) {
+            toast({
+              title: "Check Your Email",
+              description: error.message,
+            });
+            // Show a success-like message for email confirmation
+            setMode('signin');
+            setPassword('');
+            setFullName('');
+            setPhone('');
+          } else {
+            toast({
+              title: "Sign Up Failed", 
+              description: error.message,
+              variant: "destructive"
+            });
+          }
         } else {
           console.log('Auth Page: Signup successful');
           toast({
@@ -317,6 +343,21 @@ const Auth = () => {
                 }
               </Button>
             </div>
+
+            {/* Email confirmation help */}
+            {mode === 'signin' && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
+                  <div>
+                    <h3 className="text-sm font-medium text-blue-800">Email Confirmation Required</h3>
+                    <div className="mt-1 text-sm text-blue-700">
+                      <p>If you just signed up, please check your email and click the confirmation link before signing in.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

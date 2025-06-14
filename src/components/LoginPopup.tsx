@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Mail, Lock, User, Phone, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,7 +48,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
     if (!email.trim()) {
       errors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(email.trim())) {
       errors.email = 'Please enter a valid email address';
     }
 
@@ -61,10 +61,14 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     if (activeTab === 'signup') {
       if (!fullName.trim()) {
         errors.fullName = 'Full name is required';
+      } else if (fullName.trim().length < 2) {
+        errors.fullName = 'Full name must be at least 2 characters long';
       }
 
       if (!phone.trim()) {
         errors.phone = 'Phone number is required';
+      } else if (phone.trim().length < 10) {
+        errors.phone = 'Please enter a valid phone number';
       }
     }
 
@@ -84,7 +88,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
     try {
       if (activeTab === 'signin') {
-        const { error } = await signIn(email, password);
+        const { error } = await signIn(email.trim(), password);
         if (error) {
           toast({
             title: "Sign In Failed",
@@ -99,13 +103,34 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           onClose();
         }
       } else {
-        const { error } = await signUp(email, password, fullName, phone);
+        const { error } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
         if (error) {
-          toast({
-            title: "Sign Up Failed", 
-            description: error.message,
-            variant: "destructive"
-          });
+          if (error.message.includes('already exists')) {
+            toast({
+              title: "Account Already Exists",
+              description: "An account with this email already exists. Please sign in instead.",
+              variant: "destructive"
+            });
+            setActiveTab('signin');
+            setPassword('');
+            setFullName('');
+            setPhone('');
+          } else if (error.message.includes('confirmation link')) {
+            toast({
+              title: "Check Your Email",
+              description: error.message,
+            });
+            setActiveTab('signin');
+            setPassword('');
+            setFullName('');
+            setPhone('');
+          } else {
+            toast({
+              title: "Sign Up Failed", 
+              description: error.message,
+              variant: "destructive"
+            });
+          }
         } else {
           toast({
             title: "Account Created!",
@@ -202,6 +227,18 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
+
+              {/* Email confirmation help */}
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="flex items-start">
+                  <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5 mr-2" />
+                  <div>
+                    <p className="text-xs text-blue-700">
+                      New user? Please check your email and click the confirmation link after signing up.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </form>
           </TabsContent>
 

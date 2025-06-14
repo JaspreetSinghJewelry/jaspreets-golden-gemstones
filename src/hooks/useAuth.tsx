@@ -34,17 +34,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         console.log('Auth: Auth state changed:', { event, hasSession: !!session, hasUser: !!session?.user });
         
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          setSession(session);
-          setUser(session?.user ?? null);
-        } else if (event === 'SIGNED_OUT') {
-          setSession(null);
-          setUser(null);
-        } else {
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-        
+        setSession(session);
+        setUser(session?.user ?? null);
         setLoading(false);
       }
     );
@@ -65,12 +56,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
       } catch (error) {
         console.error('Auth: Exception during initialization:', error);
         if (mounted) {
           setSession(null);
           setUser(null);
+        }
+      } finally {
+        if (mounted) {
           setLoading(false);
         }
       }
@@ -97,8 +90,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
+      // Clean and validate email
+      const cleanEmail = email.trim().toLowerCase();
+      
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
+        email: cleanEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
@@ -111,10 +107,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signup error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
+        }
+        
         return { error: { message: error.message } };
       }
 
       console.log('Auth: Signup successful:', data);
+      
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        return { error: { message: 'Please check your email and click the confirmation link to activate your account.' } };
+      }
+      
       return { error: null };
     } catch (err) {
       console.error('Auth: Signup exception:', err);
@@ -134,24 +142,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
+      // Clean email before sending
+      const cleanEmail = email.trim().toLowerCase();
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: cleanEmail,
         password
       });
       
       if (error) {
         console.error('Auth: Signin error:', error);
-        let errorMessage = error.message;
         
+        // Provide more specific error messages
         if (error.message.includes('Invalid login credentials')) {
-          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         } else if (error.message.includes('Email not confirmed')) {
-          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+          return { error: { message: 'Please check your email and click the confirmation link before signing in.' } };
         } else if (error.message.includes('Too many requests')) {
-          errorMessage = 'Too many sign-in attempts. Please wait a moment and try again.';
+          return { error: { message: 'Too many sign-in attempts. Please wait a moment and try again.' } };
+        } else if (error.message.includes('signup_disabled')) {
+          return { error: { message: 'Sign ups are currently disabled. Please contact support.' } };
         }
         
-        return { error: { message: errorMessage } };
+        return { error: { message: error.message } };
       }
 
       if (!data?.user || !data?.session) {
