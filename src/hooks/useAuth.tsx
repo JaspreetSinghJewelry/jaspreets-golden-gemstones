@@ -25,57 +25,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     console.log('Auth: Initializing AuthProvider...');
     
-    let mounted = true;
-
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        
-        console.log('Auth: Auth state changed:', { event, hasSession: !!session, hasUser: !!session?.user });
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    );
-
-    // Then initialize auth state
-    const initializeAuth = async () => {
+    // Get initial session
+    const getInitialSession = async () => {
       try {
-        console.log('Auth: Getting initial session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (!mounted) return;
-        
         if (error) {
-          console.error('Auth: Error getting initial session:', error);
+          console.error('Auth: Error getting session:', error);
         } else {
-          console.log('Auth: Initial session retrieved:', { hasSession: !!session, hasUser: !!session?.user });
+          console.log('Auth: Initial session:', { hasSession: !!session });
+          setSession(session);
+          setUser(session?.user ?? null);
         }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
       } catch (error) {
-        console.error('Auth: Exception during initialization:', error);
-        if (mounted) {
-          setSession(null);
-          setUser(null);
-        }
+        console.error('Auth: Exception getting session:', error);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
-    initializeAuth();
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth: State change:', { event, hasSession: !!session });
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    getInitialSession();
 
     return () => {
-      mounted = false;
       console.log('Auth: Cleaning up subscription');
       subscription.unsubscribe();
     };
@@ -93,14 +74,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
-      // Clean and validate email
       const cleanEmail = email.trim().toLowerCase();
       
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: fullName.trim(),
             phone: phone.trim()
@@ -129,7 +108,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Email and password are required' } };
       }
 
-      // Clean email before sending
       const cleanEmail = email.trim().toLowerCase();
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -139,22 +117,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signin error:', error);
-        
-        // Provide more specific error messages
-        if (error.message.includes('Invalid login credentials')) {
-          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
-        } else if (error.message.includes('Email not confirmed')) {
-          return { error: { message: 'Please check your email and click the confirmation link before signing in.' } };
-        }
-        
         return { error: { message: error.message } };
       }
 
-      if (!data?.user || !data?.session) {
-        return { error: { message: 'Authentication failed. Please try again.' } };
-      }
-
-      console.log('Auth: Signin successful:', { userId: data.user.id });
+      console.log('Auth: Signin successful:', { userId: data.user?.id });
       return { error: null };
     } catch (err) {
       console.error('Auth: Signin exception:', err);
@@ -174,8 +140,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('Auth: Signout successful');
       }
       
-      setSession(null);
-      setUser(null);
       localStorage.removeItem('cartItems');
     } catch (err) {
       console.error('Auth: Signout exception:', err);
@@ -187,7 +151,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const login = (phoneNumber: string, name: string) => {
-    console.log('Auth: Phone login not implemented - redirecting to email auth');
+    console.log('Auth: Phone login not implemented');
   };
 
   const value = {
@@ -201,13 +165,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isSessionValid,
     login
   };
-
-  console.log('Auth: Rendering AuthProvider with values:', { 
-    hasUser: !!user, 
-    hasSession: !!session, 
-    isAuthenticated: !!user && !!session, 
-    loading 
-  });
 
   return (
     <AuthContext.Provider value={value}>
