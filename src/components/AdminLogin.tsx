@@ -13,15 +13,11 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { adminLogin } = useAdminAuth();
 
-  console.log('AdminLogin: Component rendered');
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('AdminLogin: Form submitted');
     setIsLoading(true);
     
     const success = await adminLogin(userId, password);
-    console.log('AdminLogin: Login result:', success);
     
     setIsLoading(false);
     if (!success) {
@@ -38,9 +34,6 @@ const AdminLogin = () => {
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">Admin Access</CardTitle>
           <p className="text-gray-600">Restricted Area - Admin Only</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Demo credentials: admin / admin123
-          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

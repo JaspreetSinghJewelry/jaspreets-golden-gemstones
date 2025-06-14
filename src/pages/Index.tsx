@@ -10,7 +10,6 @@ import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
-import AdminAccess from '@/components/AdminAccess';
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -51,7 +50,6 @@ const Index = () => {
         isOpen={showLoginPopup} 
         onClose={() => setShowLoginPopup(false)}
       />
-      <AdminAccess />
     </div>
   );
 };

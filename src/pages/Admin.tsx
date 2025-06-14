@@ -5,69 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
-
-// Temporary placeholder components to avoid 404 errors
-const ImageManager = () => (
-  <div className="p-4">
-    <h3 className="text-lg font-semibold mb-2">Image Manager</h3>
-    <p className="text-gray-600">Image management functionality will be implemented here.</p>
-  </div>
-);
-
-const ProductManager = () => (
-  <div className="p-4">
-    <h3 className="text-lg font-semibold mb-2">Product Manager</h3>
-    <p className="text-gray-600">Product management functionality will be implemented here.</p>
-  </div>
-);
-
-const BulkProductUpload = () => (
-  <div className="p-4">
-    <h3 className="text-lg font-semibold mb-2">Bulk Product Upload</h3>
-    <p className="text-gray-600">Bulk upload functionality will be implemented here.</p>
-  </div>
-);
-
-const OrdersManager = () => (
-  <div className="p-4">
-    <h3 className="text-lg font-semibold mb-2">Orders Manager</h3>
-    <p className="text-gray-600">Orders management functionality will be implemented here.</p>
-  </div>
-);
-
-const UserManager = () => (
-  <div className="p-4">
-    <h3 className="text-lg font-semibold mb-2">User Manager</h3>
-    <p className="text-gray-600">User management functionality will be implemented here.</p>
-  </div>
-);
+import ImageManager from '@/components/ImageManager';
+import ProductManager from '@/components/ProductManager';
+import BulkProductUpload from '@/components/BulkProductUpload';
+import OrdersManager from '@/components/OrdersManager';
+import UserManager from '@/components/UserManager';
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
-  console.log('Admin: Component rendered', { isAdminAuthenticated, loading });
-  console.log('Admin: Current URL:', window.location.href);
-  console.log('Admin: Current pathname:', window.location.pathname);
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg font-medium text-gray-600">Loading admin panel...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
       </div>
     );
   }
 
   if (!isAdminAuthenticated) {
-    console.log('Admin: User not authenticated, showing login');
     return <AdminLogin />;
   }
 
-  console.log('Admin: User authenticated, showing admin panel');
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="admin-panel">
+      <header className="admin-header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -88,8 +50,8 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="admin-content">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Tab Navigation */}
           <div className="mb-6">
             <div className="border-b border-gray-200">

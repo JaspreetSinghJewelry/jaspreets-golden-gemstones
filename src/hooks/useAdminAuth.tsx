@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface AdminAuthContextType {
@@ -16,12 +17,8 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('AdminAuth: Initializing AdminAuthProvider...');
-    
     // Check if admin is already logged in
     const adminToken = localStorage.getItem('admin_session');
-    console.log('AdminAuth: Found admin token:', !!adminToken);
-    
     if (adminToken) {
       setIsAdminAuthenticated(true);
     }
@@ -30,7 +27,7 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const adminLogin = async (userId: string, password: string): Promise<boolean> => {
     try {
-      console.log('AdminAuth: Attempting admin login for:', userId);
+      console.log('Attempting admin login...');
       
       // For demo purposes, using simple comparison
       // In production, you'd hash the password and compare with database
@@ -53,7 +50,7 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
         return false;
       }
     } catch (error) {
-      console.error('AdminAuth: Admin login error:', error);
+      console.error('Admin login error:', error);
       toast({
         title: "Login Error",
         description: "An error occurred during login",
@@ -64,22 +61,17 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const adminLogout = () => {
-    console.log('AdminAuth: Admin logout');
     localStorage.removeItem('admin_session');
     setIsAdminAuthenticated(false);
   };
 
-  const value = {
-    isAdminAuthenticated,
-    adminLogin,
-    adminLogout,
-    loading
-  };
-
-  console.log('AdminAuth: Provider state:', { isAdminAuthenticated, loading });
-
   return (
-    <AdminAuthContext.Provider value={value}>
+    <AdminAuthContext.Provider value={{
+      isAdminAuthenticated,
+      adminLogin,
+      adminLogout,
+      loading
+    }}>
       {children}
     </AdminAuthContext.Provider>
   );
