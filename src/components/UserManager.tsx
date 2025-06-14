@@ -20,22 +20,37 @@ interface UserProfile {
 const UserManager = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       console.log('Fetching user profiles...');
       
-      const { data, error } = await supabase
+      // First, let's check if we can access the profiles table
+      const { data, error, count } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
+
+      console.log('User fetch result:', { 
+        data: data?.length, 
+        error: error?.message, 
+        count 
+      });
 
       if (error) {
         console.error('Error fetching users:', error);
+        setError(`Failed to fetch users: ${error.message}`);
+        
+        // If RLS is blocking, try to get current user info for debugging
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log('Current user for debugging:', user?.email);
+        
         toast({
           title: "Error",
-          description: "Failed to fetch user data",
+          description: `Failed to fetch user data: ${error.message}`,
           variant: "destructive"
         });
         return;
@@ -43,8 +58,14 @@ const UserManager = () => {
 
       console.log('Fetched users:', data);
       setUsers(data || []);
+      
+      if (!data || data.length === 0) {
+        console.log('No users found in profiles table');
+      }
+      
     } catch (error) {
       console.error('Unexpected error:', error);
+      setError('An unexpected error occurred while fetching users');
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -61,6 +82,8 @@ const UserManager = () => {
     }
 
     try {
+      console.log('Deleting user:', userId);
+      
       // First delete user's orders
       const { error: ordersError } = await supabase
         .from('orders')
@@ -133,6 +156,19 @@ const UserManager = () => {
         </Button>
       </div>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{error}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -150,6 +186,7 @@ const UserManager = () => {
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p>No users registered yet</p>
+              <p className="text-sm mt-2">Users will appear here after they sign up</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
