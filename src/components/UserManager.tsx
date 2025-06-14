@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2 } from 'lucide-react';
+import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,26 +28,47 @@ const UserManager = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('UserManager: Fetching users...');
+      console.log('UserManager: Starting to fetch users...');
+      console.log('UserManager: Current session:', { hasSession: !!session, hasUser: !!user });
       
+      // Test Supabase connection first
+      const { data: testData, error: testError } = await supabase
+        .from('profiles')
+        .select('count', { count: 'exact', head: true });
+
+      if (testError) {
+        console.error('UserManager: Supabase connection test failed:', testError);
+        setError(`Connection failed: ${testError.message}`);
+        toast({
+          title: "Connection Error",
+          description: `Failed to connect to database: ${testError.message}`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('UserManager: Supabase connection test successful, total rows:', testData);
+
+      // Fetch all users from profiles table
       const { data, error, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      console.log('UserManager: Query result:', { 
+      console.log('UserManager: Query executed:', { 
         dataLength: data?.length, 
         totalCount: count,
         hasError: !!error,
-        errorMessage: error?.message
+        errorMessage: error?.message,
+        firstUser: data?.[0]
       });
 
       if (error) {
-        console.error('UserManager: Database error:', error);
+        console.error('UserManager: Database query error:', error);
         setError(`Database error: ${error.message}`);
         toast({
           title: "Database Error",
-          description: error.message,
+          description: `Failed to fetch users: ${error.message}`,
           variant: "destructive"
         });
         return;
@@ -56,16 +77,21 @@ const UserManager = () => {
       console.log('UserManager: Successfully fetched users:', data?.length || 0);
       setUsers(data || []);
       
-      if (!data || data.length === 0) {
-        console.log('UserManager: No users found');
+      if (data && data.length > 0) {
+        toast({
+          title: "Users Loaded",
+          description: `Successfully loaded ${data.length} users`,
+        });
+      } else {
+        console.log('UserManager: No users found in database');
       }
       
     } catch (error) {
-      console.error('UserManager: Unexpected error:', error);
+      console.error('UserManager: Unexpected error during fetch:', error);
       setError('An unexpected error occurred while fetching users');
       toast({
         title: "Unexpected Error",
-        description: "Failed to load user data",
+        description: "Failed to load user data. Please check your connection.",
         variant: "destructive"
       });
     } finally {
@@ -74,14 +100,14 @@ const UserManager = () => {
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"?`)) {
+    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This action cannot be undone.`)) {
       return;
     }
 
     try {
-      console.log('UserManager: Deleting user:', userId);
+      console.log('UserManager: Deleting user:', { userId, userName });
       
-      // Delete user's orders first
+      // Delete user's orders first (if any)
       const { error: ordersError } = await supabase
         .from('orders')
         .delete()
@@ -89,6 +115,7 @@ const UserManager = () => {
 
       if (ordersError) {
         console.error('UserManager: Error deleting user orders:', ordersError);
+        // Continue anyway, as user might not have orders
       }
 
       // Delete the user profile
@@ -98,6 +125,7 @@ const UserManager = () => {
         .eq('id', userId);
 
       if (profileError) {
+        console.error('UserManager: Error deleting user profile:', profileError);
         throw profileError;
       }
 
@@ -106,11 +134,12 @@ const UserManager = () => {
         description: `User "${userName || 'Unknown User'}" has been deleted successfully.`
       });
 
+      // Refresh the users list
       fetchUsers();
     } catch (error) {
       console.error('UserManager: Error deleting user:', error);
       toast({
-        title: "Error",
+        title: "Delete Failed",
         description: "Failed to delete the user. Please try again.",
         variant: "destructive"
       });
@@ -118,18 +147,23 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    console.log('UserManager: Component mounted, starting fetch');
+    console.log('UserManager: Component mounted, fetching users...');
     fetchUsers();
   }, []);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      console.error('UserManager: Error formatting date:', error);
+      return 'Invalid date';
+    }
   };
 
   return (
@@ -155,11 +189,15 @@ const UserManager = () => {
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <div className="flex">
-            <div className="ml-3">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 mr-3" />
+            <div>
               <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
+                <p className="mt-2 text-xs">
+                  Make sure your Supabase connection is properly configured and the profiles table exists.
+                </p>
               </div>
             </div>
           </div>
@@ -183,7 +221,19 @@ const UserManager = () => {
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p className="text-lg font-medium">No users found</p>
-              <p className="text-sm mt-2">Users will appear here after they sign up</p>
+              <p className="text-sm mt-2">
+                {error ? 'Check the error message above' : 'Users will appear here after they sign up'}
+              </p>
+              {!error && (
+                <Button 
+                  variant="outline" 
+                  onClick={fetchUsers} 
+                  className="mt-4"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Retry Loading
+                </Button>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -250,7 +300,7 @@ const UserManager = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteUser(user.id, user.full_name || user.email || 'Unknown User')}
-                          className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                           Delete
