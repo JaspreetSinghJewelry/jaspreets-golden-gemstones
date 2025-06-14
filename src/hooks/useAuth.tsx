@@ -15,18 +15,8 @@ interface AuthContextType {
   login: (phoneNumber: string, name: string) => void;
 }
 
-// Create context with a default value to prevent undefined errors
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
-  isAuthenticated: false,
-  signUp: async () => ({ error: null }),
-  signIn: async () => ({ error: null }),
-  signOut: async () => {},
-  loading: true,
-  isSessionValid: () => false,
-  login: () => {}
-});
+// Create context with undefined to properly handle provider checks
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -195,5 +185,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
   return context;
 };
