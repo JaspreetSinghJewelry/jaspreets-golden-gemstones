@@ -88,9 +88,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'All fields are required' } };
       }
 
-      // Clear any existing session first
-      await supabase.auth.signOut();
-
       const { data, error } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
@@ -127,13 +124,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       setLoading(true);
 
-      // Clear any existing session first
-      console.log('Auth: Clearing existing session...');
-      await supabase.auth.signOut();
-
-      // Add a small delay to ensure session is cleared
-      await new Promise(resolve => setTimeout(resolve, 100));
-
       console.log('Auth: Attempting sign in...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
@@ -143,19 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) {
         console.error('Auth: Signin error:', error);
         setLoading(false);
-        
-        // Provide more specific error messages
-        if (error.message?.includes('Invalid login credentials')) {
-          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
-        } else if (error.message?.includes('Email not confirmed')) {
-          return { error: { message: 'Please verify your email before signing in. Check your inbox for a verification email.' } };
-        } else if (error.message?.includes('Too many requests')) {
-          return { error: { message: 'Too many attempts. Please wait a moment and try again.' } };
-        } else if (error.message?.includes('signup_disabled')) {
-          return { error: { message: 'New user registration is currently disabled.' } };
-        }
-        
-        return { error: { message: error.message || 'Sign in failed. Please try again.' } };
+        return { error: { message: error.message } };
       }
 
       if (!data?.user || !data?.session) {
