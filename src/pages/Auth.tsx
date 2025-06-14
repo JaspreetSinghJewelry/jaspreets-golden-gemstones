@@ -18,74 +18,42 @@ const Auth = () => {
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp, isAuthenticated } = useAuth();
+  const { signIn, signUp, isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !loading) {
+      console.log('Auth: User authenticated, redirecting...');
       navigate('/');
     }
-  }, [isAuthenticated, navigate]);
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  };
-
-  const validateInputs = () => {
-    if (!email.trim()) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (!validateEmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (!password || password.length < 6) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 6 characters long.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (mode === 'signup') {
-      if (!fullName.trim()) {
-        toast({
-          title: "Name Required",
-          description: "Please enter your full name.",
-          variant: "destructive"
-        });
-        return false;
-      }
-
-      if (!phone.trim()) {
-        toast({
-          title: "Phone Required",
-          description: "Please enter your phone number.",
-          variant: "destructive"
-        });
-        return false;
-      }
-    }
-
-    return true;
-  };
+  }, [isAuthenticated, loading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateInputs()) {
+    if (!email.trim() || !password) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your email and password",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (mode === 'signup' && (!fullName.trim() || !phone.trim())) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -93,36 +61,41 @@ const Auth = () => {
 
     try {
       if (mode === 'signin') {
+        console.log('Auth: Attempting sign in...');
         const { error } = await signIn(email, password);
+        
         if (error) {
-          console.error('Sign in error:', error);
+          console.error('Auth: Sign in failed:', error);
           toast({
             title: "Sign In Failed",
-            description: error.message || "Please check your credentials and try again.",
+            description: error.message,
             variant: "destructive"
           });
         } else {
+          console.log('Auth: Sign in successful');
           toast({
-            title: "Welcome back!",
-            description: "Successfully signed in.",
+            title: "Success!",
+            description: "You have been signed in successfully",
           });
-          navigate('/');
+          // Navigation will be handled by useEffect
         }
       } else {
+        console.log('Auth: Attempting sign up...');
         const { error } = await signUp(email, password, fullName, phone);
+        
         if (error) {
-          console.error('Sign up error:', error);
+          console.error('Auth: Sign up failed:', error);
           toast({
             title: "Sign Up Failed", 
-            description: error.message || "Failed to create account. Please try again.",
+            description: error.message,
             variant: "destructive"
           });
         } else {
+          console.log('Auth: Sign up successful');
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account before signing in.",
+            description: "Please check your email to verify your account",
           });
-          // Switch to signin mode after successful signup
           setMode('signin');
           setPassword('');
           setFullName('');
@@ -130,7 +103,7 @@ const Auth = () => {
         }
       }
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error('Auth: Unexpected error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
@@ -143,12 +116,20 @@ const Auth = () => {
 
   const toggleMode = () => {
     setMode(mode === 'signin' ? 'signup' : 'signin');
-    // Clear form when switching modes
     setEmail('');
     setPassword('');
     setFullName('');
     setPhone('');
   };
+
+  // Show loading if auth is still initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">

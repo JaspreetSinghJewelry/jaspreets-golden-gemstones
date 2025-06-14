@@ -21,67 +21,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    console.log('AuthProvider: Setting up authentication...');
+
     let mounted = true;
-    console.log('AuthProvider: Initializing auth state');
 
-    const initializeAuth = async () => {
-      try {
-        console.log('AuthProvider: Checking for existing session...');
-        
-        // Get initial session
-        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
-        console.log('AuthProvider: Initial session check:', { 
-          hasSession: !!initialSession, 
-          userEmail: initialSession?.user?.email,
-          error: error?.message 
-        });
-        
-        if (mounted && !error) {
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          console.log('AuthProvider: Initial session set successfully');
-        }
-        
-      } catch (error) {
-        console.error('AuthProvider: Error getting initial session:', error);
-      } finally {
-        if (mounted) {
-          setLoading(false);
-          setInitialized(true);
-          console.log('AuthProvider: Initialization complete');
-        }
-      }
-    };
-
-    // Set up auth state listener
-    console.log('AuthProvider: Setting up auth state listener...');
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('AuthProvider: Auth state changed:', { 
-          event, 
-          hasSession: !!session, 
-          userEmail: session?.user?.email,
-          timestamp: new Date().toISOString()
-        });
+      async (event, session) => {
+        console.log('AuthProvider: Auth state change:', { event, hasSession: !!session });
+        
+        if (!mounted) return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('AuthProvider: Error getting session:', error);
+        }
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
-          if (initialized) {
-            setLoading(false);
-          }
+          setLoading(false);
+          console.log('AuthProvider: Initial session loaded:', { hasSession: !!session });
+        }
+      } catch (error) {
+        console.error('AuthProvider: Session fetch error:', error);
+        if (mounted) {
+          setLoading(false);
         }
       }
-    );
+    };
 
-    // Initialize auth
-    initializeAuth();
+    getInitialSession();
 
     return () => {
-      console.log('AuthProvider: Cleaning up...');
       mounted = false;
       subscription.unsubscribe();
     };
@@ -89,28 +73,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
-      console.log('AuthProvider: Attempting signup for:', email);
+      console.log('AuthProvider: Attempting signup...');
       
-      const cleanEmail = email.trim().toLowerCase();
-      
-      if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-        return { error: { message: 'Please enter a valid email address' } };
-      }
-
-      if (password.length < 6) {
-        return { error: { message: 'Password must be at least 6 characters long' } };
-      }
-
-      if (!fullName.trim()) {
-        return { error: { message: 'Full name is required' } };
-      }
-
-      if (!phone.trim()) {
-        return { error: { message: 'Phone number is required' } };
+      if (!email || !password || !fullName || !phone) {
+        return { error: { message: 'All fields are required' } };
       }
 
       const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
@@ -121,126 +91,103 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       });
       
-      console.log('AuthProvider: Signup response:', { 
-        hasUser: !!data?.user, 
-        hasSession: !!data?.session,
-        error: error?.message 
-      });
-      
       if (error) {
         console.error('AuthProvider: Signup error:', error);
-        if (error.message?.includes('User already registered')) {
-          return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
-        }
-        return { error: { message: error.message || 'Failed to create account' } };
+        return { error: { message: error.message } };
       }
 
+      console.log('AuthProvider: Signup successful');
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signup unexpected error:', err);
-      return { error: { message: 'An unexpected error occurred. Please try again.' } };
+      console.error('AuthProvider: Signup exception:', err);
+      return { error: { message: 'An unexpected error occurred during signup' } };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('AuthProvider: Attempting signin for:', email);
+      console.log('AuthProvider: Attempting signin...');
       
-      const cleanEmail = email.trim().toLowerCase();
-      
-      if (!cleanEmail || !password) {
-        return { error: { message: 'Please enter both email and password' } };
+      if (!email || !password) {
+        return { error: { message: 'Email and password are required' } };
       }
 
       setLoading(true);
-      console.log('AuthProvider: Calling Supabase signInWithPassword...');
 
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
+        email: email.trim().toLowerCase(),
         password
-      });
-      
-      console.log('AuthProvider: Signin response:', { 
-        hasUser: !!data?.user, 
-        hasSession: !!data?.session,
-        userEmail: data?.user?.email,
-        accessToken: data?.session?.access_token ? 'present' : 'missing',
-        error: error?.message 
       });
       
       if (error) {
         console.error('AuthProvider: Signin error:', error);
         setLoading(false);
         
-        // More specific error handling
-        if (error.message?.includes('Invalid login credentials') || error.message?.includes('Invalid email or password')) {
-          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
+        let errorMessage = 'Sign in failed';
+        if (error.message?.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password';
+        } else if (error.message?.includes('Email not confirmed')) {
+          errorMessage = 'Please verify your email before signing in';
+        } else if (error.message?.includes('Too many requests')) {
+          errorMessage = 'Too many attempts. Please wait and try again';
         }
-        if (error.message?.includes('Email not confirmed')) {
-          return { error: { message: 'Please check your email and confirm your account before signing in.' } };
-        }
-        if (error.message?.includes('Too many requests')) {
-          return { error: { message: 'Too many sign-in attempts. Please wait a moment and try again.' } };
-        }
-        return { error: { message: error.message || 'Sign in failed' } };
+        
+        return { error: { message: errorMessage } };
       }
 
       if (!data?.user || !data?.session) {
-        console.error('AuthProvider: Missing user or session data:', { hasUser: !!data?.user, hasSession: !!data?.session });
         setLoading(false);
-        return { error: { message: 'Authentication failed. Please try again.' } };
+        return { error: { message: 'Authentication failed' } };
       }
 
-      console.log('AuthProvider: Sign in successful, waiting for auth state change...');
-      // Session will be set by the auth state change listener
+      console.log('AuthProvider: Signin successful');
+      // Don't set loading to false here - let the auth state change handle it
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signin unexpected error:', err);
+      console.error('AuthProvider: Signin exception:', err);
       setLoading(false);
-      return { error: { message: 'An unexpected error occurred. Please try again.' } };
+      return { error: { message: 'An unexpected error occurred during sign in' } };
     }
   };
 
   const signOut = async () => {
     try {
-      console.log('AuthProvider: Attempting signout');
+      console.log('AuthProvider: Signing out...');
       setLoading(true);
+      
       const { error } = await supabase.auth.signOut();
+      
       if (error) {
         console.error('AuthProvider: Signout error:', error);
-      } else {
-        console.log('AuthProvider: Signout successful');
       }
-      localStorage.removeItem('cartItems');
-      // Clear state immediately
+      
+      // Clear local state
       setSession(null);
       setUser(null);
       setLoading(false);
+      
+      // Clear cart
+      localStorage.removeItem('cartItems');
+      
+      console.log('AuthProvider: Signout complete');
     } catch (err) {
-      console.error('AuthProvider: Signout unexpected error:', err);
+      console.error('AuthProvider: Signout exception:', err);
       setLoading(false);
     }
   };
 
   const isSessionValid = () => {
-    const valid = !!session && !!user && !loading;
-    console.log('AuthProvider: Session validity check:', { 
-      hasSession: !!session, 
-      hasUser: !!user, 
-      isLoading: loading, 
-      isValid: valid 
-    });
-    return valid;
+    return !!session && !!user && !loading;
   };
 
   const login = (phoneNumber: string, name: string) => {
-    console.log('AuthProvider: Phone login attempted:', phoneNumber, name);
+    console.log('AuthProvider: Phone login not implemented');
   };
 
-  const contextValue = {
+  const value = {
     user,
     session,
-    isAuthenticated: !!user && !!session && !loading,
+    isAuthenticated: !!user && !!session,
     signUp,
     signIn,
     signOut,
@@ -249,17 +196,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login
   };
 
-  console.log('AuthProvider: Current state:', {
+  console.log('AuthProvider: Render state:', {
     hasUser: !!user,
     hasSession: !!session,
-    isAuthenticated: !!user && !!session && !loading,
-    loading,
-    initialized,
-    sessionAccessToken: session?.access_token ? 'present' : 'missing'
+    isAuthenticated: !!user && !!session,
+    loading
   });
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -268,19 +213,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    console.error('useAuth must be used within an AuthProvider');
-    // Return a safe fallback instead of throwing
-    return {
-      user: null,
-      session: null,
-      isAuthenticated: false,
-      signUp: async () => ({ error: { message: 'Auth not initialized' } }),
-      signIn: async () => ({ error: { message: 'Auth not initialized' } }),
-      signOut: async () => {},
-      loading: true,
-      isSessionValid: () => false,
-      login: () => {}
-    };
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

@@ -28,62 +28,26 @@ const UserManager = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('UserManager: Starting user fetch...');
+      console.log('UserManager: Fetching users...');
       
-      // Wait a bit for auth to be ready
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check authentication state
-      if (!isAuthenticated || !session || !user) {
-        console.error('UserManager: No authenticated session found');
-        setError('You must be logged in to view user data');
-        setLoading(false);
-        return;
-      }
-
-      console.log('UserManager: Authenticated as:', user.email, 'Session valid:', !!session.access_token);
-      
-      // Try to fetch profiles with detailed logging
-      console.log('UserManager: Fetching profiles from database...');
       const { data, error, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      console.log('UserManager: Database query result:', { 
+      console.log('UserManager: Query result:', { 
         dataLength: data?.length, 
         totalCount: count,
         hasError: !!error,
-        errorMessage: error?.message,
-        errorDetails: error?.details,
-        errorCode: error?.code,
-        sampleData: data?.slice(0, 1)
+        errorMessage: error?.message
       });
 
       if (error) {
-        console.error('UserManager: Database error:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-        
-        let errorMessage = 'Failed to fetch user data';
-        
-        if (error.code === 'PGRST116') {
-          errorMessage = 'The profiles table does not exist or is not accessible';
-        } else if (error.message?.includes('permission') || error.message?.includes('policy')) {
-          errorMessage = 'Access denied: Insufficient permissions to view user data';
-        } else if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
-          errorMessage = 'Database table not found. Please check the database setup.';
-        } else {
-          errorMessage = `Database error: ${error.message}`;
-        }
-        
-        setError(errorMessage);
+        console.error('UserManager: Database error:', error);
+        setError(`Database error: ${error.message}`);
         toast({
           title: "Database Error",
-          description: errorMessage,
+          description: error.message,
           variant: "destructive"
         });
         return;
@@ -93,22 +57,15 @@ const UserManager = () => {
       setUsers(data || []);
       
       if (!data || data.length === 0) {
-        console.log('UserManager: No users found in profiles table');
-        toast({
-          title: "No Users Found",
-          description: "No user registrations found in the database.",
-          variant: "default"
-        });
-      } else {
-        console.log('UserManager: Users loaded successfully:', data.map(u => ({ id: u.id.slice(0, 8), email: u.email })));
+        console.log('UserManager: No users found');
       }
       
     } catch (error) {
-      console.error('UserManager: Unexpected error during fetch:', error);
+      console.error('UserManager: Unexpected error:', error);
       setError('An unexpected error occurred while fetching users');
       toast({
         title: "Unexpected Error",
-        description: "An unexpected error occurred while loading user data",
+        description: "Failed to load user data",
         variant: "destructive"
       });
     } finally {
@@ -117,14 +74,14 @@ const UserManager = () => {
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This action cannot be undone and will also delete all their orders.`)) {
+    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"?`)) {
       return;
     }
 
     try {
       console.log('UserManager: Deleting user:', userId);
       
-      // First delete user's orders
+      // Delete user's orders first
       const { error: ordersError } = await supabase
         .from('orders')
         .delete()
@@ -134,7 +91,7 @@ const UserManager = () => {
         console.error('UserManager: Error deleting user orders:', ordersError);
       }
 
-      // Then delete the user profile
+      // Delete the user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -146,10 +103,9 @@ const UserManager = () => {
 
       toast({
         title: "User Deleted",
-        description: `User "${userName || 'Unknown User'}" and all their data has been deleted successfully.`
+        description: `User "${userName || 'Unknown User'}" has been deleted successfully.`
       });
 
-      // Refresh the users list
       fetchUsers();
     } catch (error) {
       console.error('UserManager: Error deleting user:', error);
@@ -162,26 +118,9 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    console.log('UserManager: Component mounted, auth state:', { 
-      isAuthenticated, 
-      hasSession: !!session, 
-      hasUser: !!user 
-    });
-    
-    // Add a delay to allow auth to properly initialize
-    const timer = setTimeout(() => {
-      if (isAuthenticated && session && user) {
-        console.log('UserManager: Auth ready, fetching users');
-        fetchUsers();
-      } else {
-        console.log('UserManager: Auth not ready yet');
-        setLoading(false);
-        setError('Authentication required to view user data');
-      }
-    }, 2000); // 2 second delay
-
-    return () => clearTimeout(timer);
-  }, [isAuthenticated, session, user]);
+    console.log('UserManager: Component mounted, starting fetch');
+    fetchUsers();
+  }, []);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -192,34 +131,6 @@ const UserManager = () => {
       minute: '2-digit'
     });
   };
-
-  // Show authentication message if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Users className="h-6 w-6 text-red-600" />
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">User Management</h2>
-              <p className="text-gray-600">View and manage user registrations</p>
-            </div>
-          </div>
-        </div>
-        <Card>
-          <CardContent className="p-8">
-            <div className="text-center">
-              <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-              <p className="text-lg font-medium">Authentication Required</p>
-              <p className="text-sm mt-2 text-gray-600">
-                Please sign in to access user management features.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -233,7 +144,7 @@ const UserManager = () => {
         </div>
         <Button 
           onClick={fetchUsers}
-          disabled={loading || !isAuthenticated}
+          disabled={loading}
           variant="outline"
           className="flex items-center gap-2"
         >
@@ -249,15 +160,6 @@ const UserManager = () => {
               <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-xs font-medium">Troubleshooting Information</summary>
-                  <div className="mt-2 text-xs space-y-1">
-                    <p>• Check that you are logged in as an admin</p>
-                    <p>• Verify that the profiles table exists in the database</p>
-                    <p>• Ensure Row Level Security policies allow admin access</p>
-                    <p>• Check browser console for detailed error messages</p>
-                  </div>
-                </details>
               </div>
             </div>
           </div>
@@ -281,12 +183,7 @@ const UserManager = () => {
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p className="text-lg font-medium">No users found</p>
-              <p className="text-sm mt-2">Users will appear here after they sign up and verify their accounts</p>
-              {error && (
-                <p className="text-sm mt-2 text-red-600">
-                  There may be a database configuration issue. Check the error message above.
-                </p>
-              )}
+              <p className="text-sm mt-2">Users will appear here after they sign up</p>
             </div>
           ) : (
             <div className="overflow-x-auto">

@@ -5,12 +5,10 @@ import type { Database } from './types'
 const SUPABASE_URL = 'https://bxscivdpwersyohpaamn.supabase.co'
 const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc'
 
-// Debug logging for environment detection
-console.log('Supabase Client: Initializing...', {
+console.log('Supabase Client: Initializing with proper auth config...', {
   url: SUPABASE_URL,
   hasKey: !!SUPABASE_PUBLISHABLE_KEY,
-  environment: typeof window !== 'undefined' ? 'browser' : 'server',
-  origin: typeof window !== 'undefined' ? window.location?.origin : 'server-side'
+  environment: typeof window !== 'undefined' ? 'browser' : 'server'
 });
 
 export const supabase = createClient<Database>(
@@ -23,7 +21,7 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      debug: true
+      debug: false // Reduced debug logging
     },
     global: {
       headers: {
@@ -42,16 +40,19 @@ export const supabase = createClient<Database>(
   }
 )
 
-// Enhanced connection testing
+// Test connection only once on initialization
+let connectionTested = false;
+
 const testConnection = async () => {
+  if (connectionTested) return;
+  connectionTested = true;
+  
   try {
     console.log('Supabase Client: Testing connection...');
     const { data, error } = await supabase.auth.getSession();
-    console.log('Supabase Client: Connection test result:', {
+    console.log('Supabase Client: Initial session check:', {
       hasSession: !!data?.session,
-      userEmail: data?.session?.user?.email,
-      error: error?.message,
-      timestamp: new Date().toISOString()
+      error: error?.message
     });
   } catch (err) {
     console.error('Supabase Client: Connection test failed:', err);
@@ -63,14 +64,11 @@ if (typeof window !== 'undefined') {
   testConnection();
 }
 
-// Enhanced auth state change logging
+// Auth state monitoring
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Supabase Client: Auth state change:', {
+  console.log('Supabase Auth Event:', {
     event,
     hasSession: !!session,
-    userEmail: session?.user?.email,
-    accessToken: session?.access_token ? 'present' : 'missing',
-    expiresAt: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'none',
-    timestamp: new Date().toISOString()
+    userEmail: session?.user?.email
   });
 });
