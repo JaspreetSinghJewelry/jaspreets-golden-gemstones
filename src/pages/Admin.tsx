@@ -5,11 +5,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
-import ImageManager from '@/components/ImageManager';
-import ProductManager from '@/components/ProductManager';
-import BulkProductUpload from '@/components/BulkProductUpload';
-import OrdersManager from '@/components/OrdersManager';
-import UserManager from '@/components/UserManager';
+
+// Temporary placeholder components to avoid 404 errors
+const ImageManager = () => (
+  <div className="p-4">
+    <h3 className="text-lg font-semibold mb-2">Image Manager</h3>
+    <p className="text-gray-600">Image management functionality will be implemented here.</p>
+  </div>
+);
+
+const ProductManager = () => (
+  <div className="p-4">
+    <h3 className="text-lg font-semibold mb-2">Product Manager</h3>
+    <p className="text-gray-600">Product management functionality will be implemented here.</p>
+  </div>
+);
+
+const BulkProductUpload = () => (
+  <div className="p-4">
+    <h3 className="text-lg font-semibold mb-2">Bulk Product Upload</h3>
+    <p className="text-gray-600">Bulk upload functionality will be implemented here.</p>
+  </div>
+);
+
+const OrdersManager = () => (
+  <div className="p-4">
+    <h3 className="text-lg font-semibold mb-2">Orders Manager</h3>
+    <p className="text-gray-600">Orders management functionality will be implemented here.</p>
+  </div>
+);
+
+const UserManager = () => (
+  <div className="p-4">
+    <h3 className="text-lg font-semibold mb-2">User Manager</h3>
+    <p className="text-gray-600">User management functionality will be implemented here.</p>
+  </div>
+);
 
 const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
