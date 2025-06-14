@@ -21,31 +21,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     console.log('AuthProvider: Initializing auth state');
 
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('AuthProvider: Auth state changed:', { 
-          event, 
-          hasSession: !!session, 
-          userEmail: session?.user?.email 
-        });
-        
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      }
-    );
-
-    // Then get initial session
     const initializeAuth = async () => {
       try {
+        // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         console.log('AuthProvider: Initial session check:', { 
           hasSession: !!initialSession, 
@@ -60,15 +44,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         if (mounted) {
           setLoading(false);
+          setInitialized(true);
         }
       } catch (error) {
         console.error('AuthProvider: Error getting initial session:', error);
         if (mounted) {
           setLoading(false);
+          setInitialized(true);
         }
       }
     };
 
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('AuthProvider: Auth state changed:', { 
+          event, 
+          hasSession: !!session, 
+          userEmail: session?.user?.email 
+        });
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (initialized) {
+            setLoading(false);
+          }
+        }
+      }
+    );
+
+    // Initialize auth
     initializeAuth();
 
     return () => {
@@ -226,7 +232,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     hasUser: !!user,
     hasSession: !!session,
     isAuthenticated: !!user && !!session && !loading,
-    loading
+    loading,
+    initialized
   });
 
   return (
@@ -239,7 +246,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Instead of throwing an error immediately, provide a fallback
+    console.error('useAuth must be used within an AuthProvider');
+    return {
+      user: null,
+      session: null,
+      isAuthenticated: false,
+      signUp: async () => ({ error: { message: 'Auth not initialized' } }),
+      signIn: async () => ({ error: { message: 'Auth not initialized' } }),
+      signOut: async () => {},
+      loading: true,
+      isSessionValid: () => false,
+      login: () => {}
+    };
   }
   return context;
 };
