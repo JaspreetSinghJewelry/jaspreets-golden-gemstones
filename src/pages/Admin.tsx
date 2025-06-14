@@ -15,21 +15,26 @@ const Admin = () => {
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
+  console.log('Admin: Component rendered', { isAdminAuthenticated, loading });
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg font-medium text-gray-600">Loading admin panel...</div>
       </div>
     );
   }
 
   if (!isAdminAuthenticated) {
+    console.log('Admin: User not authenticated, showing login');
     return <AdminLogin />;
   }
 
+  console.log('Admin: User authenticated, showing admin panel');
+
   return (
-    <div className="admin-panel">
-      <header className="admin-header">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -50,8 +55,8 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="admin-content">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Tab Navigation */}
           <div className="mb-6">
             <div className="border-b border-gray-200">
