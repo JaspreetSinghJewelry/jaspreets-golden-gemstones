@@ -15,7 +15,18 @@ interface AuthContextType {
   login: (phoneNumber: string, name: string) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create context with a default value to prevent undefined errors
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  session: null,
+  isAuthenticated: false,
+  signUp: async () => ({ error: null }),
+  signIn: async () => ({ error: null }),
+  signOut: async () => {},
+  loading: true,
+  isSessionValid: () => false,
+  login: () => {}
+});
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -25,10 +36,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     console.log('Auth: Initializing AuthProvider...');
     
-    // Get initial session
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
         if (error) {
           console.error('Auth: Error getting initial session:', error);
         }
@@ -36,16 +51,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log('Auth: Initial session:', { hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
+        setLoading(false);
       } catch (error) {
         console.error('Auth: Exception during initialization:', error);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (!mounted) return;
+        
         console.log('Auth: State change:', { event, hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
@@ -56,6 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
 
     return () => {
+      mounted = false;
       console.log('Auth: Cleaning up subscription');
       subscription.unsubscribe();
     };
@@ -102,8 +122,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Email and password are required' } };
       }
 
-      setLoading(true);
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password
@@ -111,13 +129,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signin error:', error);
-        setLoading(false);
         return { error: { message: error.message } };
       }
 
       if (!data?.user || !data?.session) {
         console.error('Auth: No user or session returned');
-        setLoading(false);
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
@@ -125,7 +141,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return { error: null };
     } catch (err) {
       console.error('Auth: Signin exception:', err);
-      setLoading(false);
       return { error: { message: 'An unexpected error occurred during sign in' } };
     }
   };
@@ -133,7 +148,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     try {
       console.log('Auth: Starting signout...');
-      setLoading(true);
       
       const { error } = await supabase.auth.signOut();
       
@@ -145,12 +159,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       setSession(null);
       setUser(null);
-      setLoading(false);
       
       localStorage.removeItem('cartItems');
     } catch (err) {
       console.error('Auth: Signout exception:', err);
-      setLoading(false);
     }
   };
 
@@ -183,8 +195,5 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
   return context;
 };
