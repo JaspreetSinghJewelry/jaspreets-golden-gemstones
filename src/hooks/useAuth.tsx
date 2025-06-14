@@ -36,7 +36,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
+        
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
@@ -107,22 +110,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signup error:', error);
-        
-        // Handle specific error cases
-        if (error.message.includes('User already registered')) {
-          return { error: { message: 'An account with this email already exists. Please sign in instead.' } };
-        }
-        
         return { error: { message: error.message } };
       }
 
       console.log('Auth: Signup successful:', data);
-      
-      // Check if email confirmation is required
-      if (data.user && !data.session) {
-        return { error: { message: 'Please check your email and click the confirmation link to activate your account.' } };
-      }
-      
       return { error: null };
     } catch (err) {
       console.error('Auth: Signup exception:', err);
@@ -136,10 +127,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (!email?.trim() || !password) {
         return { error: { message: 'Email and password are required' } };
-      }
-
-      if (password.length < 6) {
-        return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
       // Clean email before sending
@@ -158,10 +145,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         } else if (error.message.includes('Email not confirmed')) {
           return { error: { message: 'Please check your email and click the confirmation link before signing in.' } };
-        } else if (error.message.includes('Too many requests')) {
-          return { error: { message: 'Too many sign-in attempts. Please wait a moment and try again.' } };
-        } else if (error.message.includes('signup_disabled')) {
-          return { error: { message: 'Sign ups are currently disabled. Please contact support.' } };
         }
         
         return { error: { message: error.message } };

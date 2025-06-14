@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -29,6 +28,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [pendingConfirmation, setPendingConfirmation] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp, isAuthenticated } = useAuth();
 
@@ -90,11 +90,20 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       if (activeTab === 'signin') {
         const { error } = await signIn(email.trim(), password);
         if (error) {
-          toast({
-            title: "Sign In Failed",
-            description: error.message,
-            variant: "destructive"
-          });
+          if (error.message.includes('confirmation')) {
+            toast({
+              title: "Email Not Confirmed",
+              description: "Please check your email and click the confirmation link before signing in.",
+              variant: "destructive"
+            });
+            setPendingConfirmation(true);
+          } else {
+            toast({
+              title: "Sign In Failed",
+              description: error.message,
+              variant: "destructive"
+            });
+          }
         } else {
           toast({
             title: "Welcome back!",
@@ -105,20 +114,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       } else {
         const { error } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
         if (error) {
-          if (error.message.includes('already exists')) {
+          if (error.message.includes('already exists') || error.message.includes('already registered')) {
             toast({
               title: "Account Already Exists",
               description: "An account with this email already exists. Please sign in instead.",
               variant: "destructive"
-            });
-            setActiveTab('signin');
-            setPassword('');
-            setFullName('');
-            setPhone('');
-          } else if (error.message.includes('confirmation link')) {
-            toast({
-              title: "Check Your Email",
-              description: error.message,
             });
             setActiveTab('signin');
             setPassword('');
@@ -134,8 +134,9 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         } else {
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account."
+            description: "Please check your email and click the confirmation link to activate your account."
           });
+          setPendingConfirmation(true);
           setActiveTab('signin');
           setPassword('');
           setFullName('');
@@ -229,16 +230,20 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               </Button>
 
               {/* Email confirmation help */}
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <div className="flex items-start">
-                  <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5 mr-2" />
-                  <div>
-                    <p className="text-xs text-blue-700">
-                      New user? Please check your email and click the confirmation link after signing up.
-                    </p>
+              {(pendingConfirmation || activeTab === 'signin') && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="flex items-start">
+                    <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5 mr-2" />
+                    <div>
+                      <p className="text-xs text-blue-700">
+                        {pendingConfirmation 
+                          ? "Please check your email and click the confirmation link to activate your account."
+                          : "New user? Please check your email and click the confirmation link after signing up."}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </form>
           </TabsContent>
 

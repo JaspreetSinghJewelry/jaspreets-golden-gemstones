@@ -19,6 +19,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [pendingConfirmation, setPendingConfirmation] = useState(false);
   const navigate = useNavigate();
   const { signIn, signUp, isAuthenticated, loading } = useAuth();
 
@@ -86,11 +87,21 @@ const Auth = () => {
         
         if (error) {
           console.error('Auth Page: Signin failed:', error);
-          toast({
-            title: "Sign In Failed",
-            description: error.message,
-            variant: "destructive"
-          });
+          
+          if (error.message.includes('confirmation')) {
+            toast({
+              title: "Email Not Confirmed",
+              description: "Please check your email and click the confirmation link before signing in.",
+              variant: "destructive"
+            });
+            setPendingConfirmation(true);
+          } else {
+            toast({
+              title: "Sign In Failed",
+              description: error.message,
+              variant: "destructive"
+            });
+          }
         } else {
           console.log('Auth Page: Signin successful');
           toast({
@@ -105,23 +116,12 @@ const Auth = () => {
         if (error) {
           console.error('Auth Page: Signup failed:', error);
           
-          // Handle specific signup errors
-          if (error.message.includes('already exists')) {
+          if (error.message.includes('already exists') || error.message.includes('already registered')) {
             toast({
               title: "Account Already Exists",
               description: "An account with this email already exists. Please sign in instead.",
               variant: "destructive"
             });
-            setMode('signin');
-            setPassword('');
-            setFullName('');
-            setPhone('');
-          } else if (error.message.includes('confirmation link')) {
-            toast({
-              title: "Check Your Email",
-              description: error.message,
-            });
-            // Show a success-like message for email confirmation
             setMode('signin');
             setPassword('');
             setFullName('');
@@ -137,8 +137,9 @@ const Auth = () => {
           console.log('Auth Page: Signup successful');
           toast({
             title: "Account Created!",
-            description: "Please check your email to verify your account before signing in",
+            description: "Please check your email and click the confirmation link to activate your account.",
           });
+          setPendingConfirmation(true);
           setMode('signin');
           setPassword('');
           setFullName('');
@@ -164,6 +165,7 @@ const Auth = () => {
     setFullName('');
     setPhone('');
     setFormErrors({});
+    setPendingConfirmation(false);
   };
 
   if (loading) {
@@ -345,14 +347,14 @@ const Auth = () => {
             </div>
 
             {/* Email confirmation help */}
-            {mode === 'signin' && (
+            {(mode === 'signin' || pendingConfirmation) && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <div className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
                   <div>
                     <h3 className="text-sm font-medium text-blue-800">Email Confirmation Required</h3>
                     <div className="mt-1 text-sm text-blue-700">
-                      <p>If you just signed up, please check your email and click the confirmation link before signing in.</p>
+                      <p>Please check your email and click the confirmation link before signing in.</p>
                     </div>
                   </div>
                 </div>
