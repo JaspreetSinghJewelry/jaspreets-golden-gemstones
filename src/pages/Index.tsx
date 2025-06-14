@@ -16,7 +16,6 @@ const Index = () => {
   const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    // Only show login popup if auth is loaded and user is not authenticated
     if (!loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
@@ -26,7 +25,6 @@ const Index = () => {
     }
   }, [isAuthenticated, loading]);
 
-  // Show loading spinner while auth is initializing
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
