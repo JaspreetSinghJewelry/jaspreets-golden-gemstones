@@ -25,7 +25,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     console.log('Auth: Initializing AuthProvider...');
     
-    // Get initial session
+    // Set up auth state listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth: State change:', { event, hasSession: !!session });
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // Then get initial session
     const getInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -43,16 +53,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLoading(false);
       }
     };
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('Auth: State change:', { event, hasSession: !!session });
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
 
     getInitialSession();
 
@@ -117,7 +117,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signin error:', error);
-        return { error: { message: error.message } };
+        
+        // Handle different types of authentication errors
+        if (error.message.includes('Email not confirmed')) {
+          // For users created before we disabled confirmations
+          return { error: { message: 'Your account was created when email confirmation was required. Please contact support or create a new account.' } };
+        } else if (error.message.includes('Invalid login credentials')) {
+          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
+        } else {
+          return { error: { message: error.message } };
+        }
       }
 
       console.log('Auth: Signin successful:', { userId: data.user?.id });
