@@ -3,27 +3,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1200, initial-scale=0.3, maximum-scale=1.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     
-    <title>Jaspreet Singh Jewelry - Premium Diamond & Gold Jewelry</title>
-    <meta name="description" content="Discover exquisite diamond and gold jewelry at Jaspreet Singh Jewelry. Premium collection of rings, necklaces, earrings, and bracelets." />
+    <title>Jaspreet Singh Jewelry</title>
+    <meta name="description" content="Premium Jewelry Collection by Jaspreet Singh" />
     <meta name="author" content="Jaspreet Singh Jewelry" />
 
-    <meta property="og:title" content="Jaspreet Singh Jewelry - Premium Diamond & Gold Jewelry" />
-    <meta property="og:description" content="Discover exquisite diamond and gold jewelry at Jaspreet Singh Jewelry. Premium collection of rings, necklaces, earrings, and bracelets." />
+    <meta property="og:title" content="Jaspreet Singh Jewelry" />
+    <meta property="og:description" content="Premium Jewelry Collection" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://jaspreetsinghjewelry.com/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" />
     <meta property="og:url" content="https://jaspreetsinghjewelry.com" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Jaspreet Singh Jewelry" />
-    <meta name="twitter:description" content="Discover exquisite diamond and gold jewelry" />
-    <meta name="twitter:image" content="https://jaspreetsinghjewelry.com/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" />
     
     <!-- iOS Safari specific meta tags -->
     <meta name="apple-mobile-web-app-title" content="Jaspreet Singh Jewelry" />
@@ -32,27 +29,24 @@
     <!-- Android Chrome specific meta tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="Jaspreet Singh Jewelry" />
-
+    
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" />
-    <link rel="apple-touch-icon" href="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" />
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/main.tsx" as="script" />
   </head>
 
   <body>
     <div id="root"></div>
-    <script>
-      // GitHub Pages SPA redirect handler
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-            l.pathname.slice(0, -1) + decoded + l.hash
-          );
-        }
-      }(window.location))
-    </script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Fallback for users with JavaScript disabled -->
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>This website requires JavaScript to function properly. Please enable JavaScript in your browser.</p>
+      </div>
+    </noscript>
   </body>
 </html>

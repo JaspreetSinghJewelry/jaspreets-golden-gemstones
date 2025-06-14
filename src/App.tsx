@@ -41,17 +41,7 @@ import GemstoneGuide from "./pages/GemstoneGuide";
 import GiftingGuide from "./pages/GiftingGuide";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-// Get the base path for GitHub Pages
-const basename = import.meta.env.PROD ? '/jaspreets-golden-gemstones' : '';
+const queryClient = new QueryClient();
 
 function App() {
   return (
@@ -63,7 +53,7 @@ function App() {
               <WishlistProvider>
                 <Toaster />
                 <Sonner />
-                <BrowserRouter basename={basename}>
+                <BrowserRouter>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/products" element={<Products />} />
