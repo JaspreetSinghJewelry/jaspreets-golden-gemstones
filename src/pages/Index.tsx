@@ -13,7 +13,22 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const { isAuthenticated, loading } = useAuth();
+  
+  // Add error boundary for auth hook
+  let authData;
+  try {
+    authData = useAuth();
+  } catch (error) {
+    console.error('Auth context error:', error);
+    // Return loading state if auth context is not available
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  const { isAuthenticated, loading } = authData;
 
   useEffect(() => {
     // Only show login popup if auth is loaded and user is not authenticated

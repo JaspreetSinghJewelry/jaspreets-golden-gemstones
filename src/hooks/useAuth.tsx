@@ -23,58 +23,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    console.log('Auth: Setting up auth state listener...');
+    console.log('Auth: Initializing AuthProvider...');
+    
+    // Get initial session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Auth: Error getting initial session:', error);
+        }
+        
+        console.log('Auth: Initial session:', { hasSession: !!session, hasUser: !!session?.user });
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Auth: Exception during initialization:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth: State change event:', { event, hasSession: !!session, hasUser: !!session?.user });
-        
-        if (!mounted) return;
-
-        if (session?.user) {
-          console.log('Auth: User authenticated:', session.user.email);
-        } else {
-          console.log('Auth: No authenticated user');
-        }
-
+      (event, session) => {
+        console.log('Auth: State change:', { event, hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
     );
 
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        console.log('Auth: Getting initial session...');
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Auth: Error getting initial session:', error);
-        } else {
-          console.log('Auth: Initial session retrieved:', { hasSession: !!session, hasUser: !!session?.user });
-        }
-        
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Auth: Exception getting initial session:', error);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    getInitialSession();
+    initializeAuth();
 
     return () => {
-      mounted = false;
-      console.log('Auth: Cleaning up auth listener');
+      console.log('Auth: Cleaning up subscription');
       subscription.unsubscribe();
     };
   }, []);
@@ -84,7 +66,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Auth: Starting signup for:', email);
       
       if (!email || !password || !fullName || !phone) {
-        console.error('Auth: Missing required fields for signup');
         return { error: { message: 'All fields are required' } };
       }
 
@@ -105,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: error.message } };
       }
 
-      console.log('Auth: Signup successful for:', email);
+      console.log('Auth: Signup successful');
       return { error: null };
     } catch (err) {
       console.error('Auth: Signup exception:', err);
@@ -118,13 +99,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Auth: Starting signin for:', email);
       
       if (!email || !password) {
-        console.error('Auth: Missing email or password');
         return { error: { message: 'Email and password are required' } };
       }
 
       setLoading(true);
 
-      console.log('Auth: Attempting sign in...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password
@@ -142,7 +121,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
-      console.log('Auth: Signin successful for:', email);
+      console.log('Auth: Signin successful');
       return { error: null };
     } catch (err) {
       console.error('Auth: Signin exception:', err);
@@ -168,7 +147,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setLoading(false);
       
-      // Clear local storage
       localStorage.removeItem('cartItems');
     } catch (err) {
       console.error('Auth: Signout exception:', err);
@@ -177,9 +155,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const isSessionValid = () => {
-    const valid = !!session && !!user && !loading;
-    console.log('Auth: Session valid check:', { valid, hasSession: !!session, hasUser: !!user, loading });
-    return valid;
+    return !!session && !!user && !loading;
   };
 
   const login = (phoneNumber: string, name: string) => {
