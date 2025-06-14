@@ -24,25 +24,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     let mounted = true;
-    console.log('AuthProvider: Setting up auth state listener');
+    console.log('AuthProvider: Initializing auth state');
 
-    // Get initial session first
-    const getInitialSession = async () => {
+    const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        console.log('AuthProvider: Initial session check:', { 
-          hasSession: !!session, 
-          userEmail: session?.user?.email,
+        // Get initial session
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        console.log('AuthProvider: Initial session:', { 
+          hasSession: !!initialSession, 
+          userEmail: initialSession?.user?.email,
           error: error?.message 
         });
         
         if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+          setLoading(false);
         }
       } catch (error) {
-        console.error('AuthProvider: Session check error:', error);
-      } finally {
+        console.error('AuthProvider: Error getting initial session:', error);
         if (mounted) {
           setLoading(false);
         }
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('AuthProvider: Auth state changed:', { 
           event, 
           hasSession: !!session, 
@@ -61,14 +61,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
-          if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+          
+          // Only set loading to false on specific events to avoid race conditions
+          if (['SIGNED_IN', 'SIGNED_OUT', 'TOKEN_REFRESHED'].includes(event)) {
             setLoading(false);
           }
         }
       }
     );
 
-    getInitialSession();
+    // Initialize auth state
+    initializeAuth();
 
     return () => {
       mounted = false;
@@ -82,6 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       const cleanEmail = email.trim().toLowerCase();
       
+      // Validation
       if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
         return { error: { message: 'Please enter a valid email address' } };
       }
@@ -126,7 +130,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signup error:', err);
+      console.error('AuthProvider: Signup unexpected error:', err);
       return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
@@ -140,6 +144,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!cleanEmail || !password) {
         return { error: { message: 'Please enter both email and password' } };
       }
+
+      // Set loading state
+      setLoading(true);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -155,6 +162,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('AuthProvider: Signin error:', error);
+        setLoading(false);
+        
         if (error.message?.includes('Invalid login credentials')) {
           return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         }
@@ -165,12 +174,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       if (!data?.user || !data?.session) {
+        setLoading(false);
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
+      // Success will be handled by the auth state change listener
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signin error:', err);
+      console.error('AuthProvider: Signin unexpected error:', err);
+      setLoading(false);
       return { error: { message: 'An unexpected error occurred. Please try again.' } };
     }
   };
@@ -178,18 +190,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     try {
       console.log('AuthProvider: Attempting signout');
+      setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('AuthProvider: Signout error:', error);
       }
       localStorage.removeItem('cartItems');
+      setLoading(false);
     } catch (err) {
-      console.error('AuthProvider: Signout error:', err);
+      console.error('AuthProvider: Signout unexpected error:', err);
+      setLoading(false);
     }
   };
 
   const isSessionValid = () => {
-    return !!session && !!user;
+    return !!session && !!user && !loading;
   };
 
   const login = (phoneNumber: string, name: string) => {
@@ -199,7 +214,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const contextValue = {
     user,
     session,
-    isAuthenticated: !!user && !!session,
+    isAuthenticated: !!user && !!session && !loading,
     signUp,
     signIn,
     signOut,
@@ -211,7 +226,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   console.log('AuthProvider: Rendering with state:', {
     hasUser: !!user,
     hasSession: !!session,
-    isAuthenticated: !!user && !!session,
+    isAuthenticated: !!user && !!session && !loading,
     loading
   });
 

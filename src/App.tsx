@@ -41,7 +41,14 @@ import GemstoneGuide from "./pages/GemstoneGuide";
 import GiftingGuide from "./pages/GiftingGuide";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (

@@ -26,38 +26,64 @@ const UserManager = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('UserManager: Fetching user profiles...');
+      console.log('UserManager: Starting user fetch...');
       
-      // Check current user authentication for debugging
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      console.log('UserManager: Current authenticated user:', currentUser?.email);
+      // Check current auth state
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('UserManager: Current session:', { 
+        hasSession: !!session, 
+        userEmail: session?.user?.email,
+        sessionError: sessionError?.message 
+      });
       
-      // Try to fetch profiles with proper error handling
+      if (!session) {
+        console.error('UserManager: No authenticated session found');
+        setError('You must be logged in to view user data');
+        return;
+      }
+
+      // Try to fetch profiles with detailed logging
+      console.log('UserManager: Fetching profiles from database...');
       const { data, error, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      console.log('UserManager: Fetch result:', { 
-        dataCount: data?.length, 
+      console.log('UserManager: Database query result:', { 
+        dataLength: data?.length, 
         totalCount: count,
-        error: error?.message,
-        sampleData: data?.slice(0, 2)
+        hasError: !!error,
+        errorMessage: error?.message,
+        errorDetails: error?.details,
+        errorCode: error?.code,
+        sampleData: data?.slice(0, 1)
       });
 
       if (error) {
-        console.error('UserManager: Error fetching users:', error);
+        console.error('UserManager: Database error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         
-        // Check if it's an RLS issue
-        if (error.message?.includes('permission') || error.message?.includes('policy')) {
-          setError('Access denied: You may not have permission to view user data. Please check with the administrator.');
+        // More specific error handling
+        let errorMessage = 'Failed to fetch user data';
+        
+        if (error.code === 'PGRST116') {
+          errorMessage = 'The profiles table does not exist or is not accessible';
+        } else if (error.message?.includes('permission') || error.message?.includes('policy')) {
+          errorMessage = 'Access denied: Insufficient permissions to view user data';
+        } else if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+          errorMessage = 'Database table not found. Please check the database setup.';
         } else {
-          setError(`Failed to fetch users: ${error.message}`);
+          errorMessage = `Database error: ${error.message}`;
         }
         
+        setError(errorMessage);
         toast({
-          title: "Error",
-          description: `Failed to fetch user data: ${error.message}`,
+          title: "Database Error",
+          description: errorMessage,
           variant: "destructive"
         });
         return;
@@ -68,19 +94,22 @@ const UserManager = () => {
       
       if (!data || data.length === 0) {
         console.log('UserManager: No users found in profiles table');
+        setError('No user registrations found');
         toast({
           title: "No Users Found",
           description: "No user registrations found in the database.",
           variant: "default"
         });
+      } else {
+        console.log('UserManager: Users loaded successfully:', data.map(u => ({ id: u.id.slice(0, 8), email: u.email })));
       }
       
     } catch (error) {
-      console.error('UserManager: Unexpected error:', error);
+      console.error('UserManager: Unexpected error during fetch:', error);
       setError('An unexpected error occurred while fetching users');
       toast({
-        title: "Error",
-        description: "An unexpected error occurred",
+        title: "Unexpected Error",
+        description: "An unexpected error occurred while loading user data",
         variant: "destructive"
       });
     } finally {
@@ -134,6 +163,7 @@ const UserManager = () => {
   };
 
   useEffect(() => {
+    console.log('UserManager: Component mounted, starting initial fetch');
     fetchUsers();
   }, []);
 
@@ -172,12 +202,18 @@ const UserManager = () => {
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
           <div className="flex">
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Error</h3>
+              <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
-                <p className="mt-2 text-xs">
-                  If this is a permission error, you may need to configure Row Level Security policies for the profiles table.
-                </p>
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs font-medium">Troubleshooting Information</summary>
+                  <div className="mt-2 text-xs space-y-1">
+                    <p>• Check that you are logged in as an admin</p>
+                    <p>• Verify that the profiles table exists in the database</p>
+                    <p>• Ensure Row Level Security policies allow admin access</p>
+                    <p>• Check browser console for detailed error messages</p>
+                  </div>
+                </details>
               </div>
             </div>
           </div>
@@ -200,11 +236,11 @@ const UserManager = () => {
           ) : users.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-              <p>No users registered yet</p>
+              <p className="text-lg font-medium">No users found</p>
               <p className="text-sm mt-2">Users will appear here after they sign up and verify their accounts</p>
               {error && (
                 <p className="text-sm mt-2 text-red-600">
-                  There may be a database configuration issue preventing user data from displaying.
+                  There may be a database configuration issue. Check the error message above.
                 </p>
               )}
             </div>
