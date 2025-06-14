@@ -22,10 +22,14 @@ const Auth = () => {
 
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      console.log('Auth: User authenticated, redirecting...');
       navigate('/');
     }
   }, [isAuthenticated, loading, navigate]);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +38,15 @@ const Auth = () => {
       toast({
         title: "Missing Information",
         description: "Please enter your email and password",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
         variant: "destructive"
       });
       return;
@@ -61,37 +74,30 @@ const Auth = () => {
 
     try {
       if (mode === 'signin') {
-        console.log('Auth: Attempting sign in...');
         const { error } = await signIn(email, password);
         
         if (error) {
-          console.error('Auth: Sign in failed:', error);
           toast({
             title: "Sign In Failed",
             description: error.message,
             variant: "destructive"
           });
         } else {
-          console.log('Auth: Sign in successful');
           toast({
             title: "Success!",
             description: "You have been signed in successfully",
           });
-          // Navigation will be handled by useEffect
         }
       } else {
-        console.log('Auth: Attempting sign up...');
         const { error } = await signUp(email, password, fullName, phone);
         
         if (error) {
-          console.error('Auth: Sign up failed:', error);
           toast({
             title: "Sign Up Failed", 
             description: error.message,
             variant: "destructive"
           });
         } else {
-          console.log('Auth: Sign up successful');
           toast({
             title: "Account Created!",
             description: "Please check your email to verify your account",
@@ -103,7 +109,6 @@ const Auth = () => {
         }
       }
     } catch (error) {
-      console.error('Auth: Unexpected error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
@@ -122,7 +127,6 @@ const Auth = () => {
     setPhone('');
   };
 
-  // Show loading if auth is still initializing
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -218,6 +222,7 @@ const Auth = () => {
                     className="pl-10"
                     required
                     disabled={isLoading}
+                    autoComplete={mode === 'signin' ? 'email' : 'new-email'}
                   />
                 </div>
               </div>
@@ -229,13 +234,14 @@ const Auth = () => {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder={mode === 'signin' ? 'Enter your password' : 'Create a password (min 6 characters)'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
                     required
                     minLength={6}
                     disabled={isLoading}
+                    autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                   />
                 </div>
               </div>

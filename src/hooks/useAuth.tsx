@@ -23,14 +23,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('AuthProvider: Setting up authentication...');
-
     let mounted = true;
 
-    // Set up auth state listener first
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('AuthProvider: Auth state change:', { event, hasSession: !!session });
+        console.log('Auth state change:', { event, hasSession: !!session });
         
         if (!mounted) return;
 
@@ -46,17 +44,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('AuthProvider: Error getting session:', error);
+          console.error('Error getting session:', error);
         }
         
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           setLoading(false);
-          console.log('AuthProvider: Initial session loaded:', { hasSession: !!session });
         }
       } catch (error) {
-        console.error('AuthProvider: Session fetch error:', error);
+        console.error('Session fetch error:', error);
         if (mounted) {
           setLoading(false);
         }
@@ -73,8 +70,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
-      console.log('AuthProvider: Attempting signup...');
-      
       if (!email || !password || !fullName || !phone) {
         return { error: { message: 'All fields are required' } };
       }
@@ -92,27 +87,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (error) {
-        console.error('AuthProvider: Signup error:', error);
+        console.error('Signup error:', error);
         return { error: { message: error.message } };
       }
 
-      console.log('AuthProvider: Signup successful');
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signup exception:', err);
+      console.error('Signup exception:', err);
       return { error: { message: 'An unexpected error occurred during signup' } };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('AuthProvider: Attempting signin...');
-      
       if (!email || !password) {
         return { error: { message: 'Email and password are required' } };
       }
 
       setLoading(true);
+
+      // Clear any existing session first
+      await supabase.auth.signOut();
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
@@ -120,31 +115,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       if (error) {
-        console.error('AuthProvider: Signin error:', error);
+        console.error('Signin error:', error);
         setLoading(false);
         
-        let errorMessage = 'Sign in failed';
         if (error.message?.includes('Invalid login credentials')) {
-          errorMessage = 'Invalid email or password';
+          return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         } else if (error.message?.includes('Email not confirmed')) {
-          errorMessage = 'Please verify your email before signing in';
+          return { error: { message: 'Please verify your email before signing in' } };
         } else if (error.message?.includes('Too many requests')) {
-          errorMessage = 'Too many attempts. Please wait and try again';
+          return { error: { message: 'Too many attempts. Please wait and try again' } };
         }
         
-        return { error: { message: errorMessage } };
+        return { error: { message: error.message || 'Sign in failed. Please try again.' } };
       }
 
       if (!data?.user || !data?.session) {
         setLoading(false);
-        return { error: { message: 'Authentication failed' } };
+        return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
-      console.log('AuthProvider: Signin successful');
-      // Don't set loading to false here - let the auth state change handle it
+      console.log('Signin successful');
       return { error: null };
     } catch (err) {
-      console.error('AuthProvider: Signin exception:', err);
+      console.error('Signin exception:', err);
       setLoading(false);
       return { error: { message: 'An unexpected error occurred during sign in' } };
     }
@@ -152,26 +145,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signOut = async () => {
     try {
-      console.log('AuthProvider: Signing out...');
       setLoading(true);
       
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('AuthProvider: Signout error:', error);
+        console.error('Signout error:', error);
       }
       
-      // Clear local state
       setSession(null);
       setUser(null);
       setLoading(false);
       
-      // Clear cart
       localStorage.removeItem('cartItems');
-      
-      console.log('AuthProvider: Signout complete');
     } catch (err) {
-      console.error('AuthProvider: Signout exception:', err);
+      console.error('Signout exception:', err);
       setLoading(false);
     }
   };
@@ -181,7 +169,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const login = (phoneNumber: string, name: string) => {
-    console.log('AuthProvider: Phone login not implemented');
+    console.log('Phone login not implemented');
   };
 
   const value = {
@@ -195,13 +183,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isSessionValid,
     login
   };
-
-  console.log('AuthProvider: Render state:', {
-    hasUser: !!user,
-    hasSession: !!session,
-    isAuthenticated: !!user && !!session,
-    loading
-  });
 
   return (
     <AuthContext.Provider value={value}>
