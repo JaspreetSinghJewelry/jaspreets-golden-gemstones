@@ -22,7 +22,7 @@ const UserManager = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { session, user } = useAuth();
+  const { session, user, isAuthenticated } = useAuth();
 
   const fetchUsers = async () => {
     try {
@@ -31,13 +31,14 @@ const UserManager = () => {
       console.log('UserManager: Starting user fetch...');
       
       // Check authentication state
-      if (!session || !user) {
+      if (!isAuthenticated || !session || !user) {
         console.error('UserManager: No authenticated session found');
         setError('You must be logged in to view user data');
+        setLoading(false);
         return;
       }
 
-      console.log('UserManager: Authenticated as:', user.email);
+      console.log('UserManager: Authenticated as:', user.email, 'Session valid:', !!session.access_token);
       
       // Try to fetch profiles with detailed logging
       console.log('UserManager: Fetching profiles from database...');
@@ -158,17 +159,22 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    console.log('UserManager: Component mounted');
-    // Wait for auth to be ready
-    if (session && user) {
+    console.log('UserManager: Component mounted, auth state:', { 
+      isAuthenticated, 
+      hasSession: !!session, 
+      hasUser: !!user 
+    });
+    
+    // Only fetch if we have authentication
+    if (isAuthenticated && session && user) {
       console.log('UserManager: Auth ready, fetching users');
       fetchUsers();
-    } else if (!loading) {
-      console.log('UserManager: No auth session, setting error');
-      setError('You must be logged in to view user data');
+    } else {
+      console.log('UserManager: Waiting for authentication...');
       setLoading(false);
+      setError('Authentication required to view user data');
     }
-  }, [session, user]);
+  }, [isAuthenticated, session, user]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -179,6 +185,34 @@ const UserManager = () => {
       minute: '2-digit'
     });
   };
+
+  // Show authentication message if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Users className="h-6 w-6 text-red-600" />
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900">User Management</h2>
+              <p className="text-gray-600">View and manage user registrations</p>
+            </div>
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-8">
+            <div className="text-center">
+              <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <p className="text-lg font-medium">Authentication Required</p>
+              <p className="text-sm mt-2 text-gray-600">
+                Please sign in to access user management features.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -192,7 +226,7 @@ const UserManager = () => {
         </div>
         <Button 
           onClick={fetchUsers}
-          disabled={loading || !session}
+          disabled={loading || !isAuthenticated}
           variant="outline"
           className="flex items-center gap-2"
         >

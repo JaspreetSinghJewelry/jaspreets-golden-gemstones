@@ -29,6 +29,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const initializeAuth = async () => {
       try {
+        console.log('AuthProvider: Checking for existing session...');
+        
         // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
         console.log('AuthProvider: Initial session check:', { 
@@ -40,11 +42,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (mounted && !error) {
           setSession(initialSession);
           setUser(initialSession?.user ?? null);
+          console.log('AuthProvider: Initial session set successfully');
         }
         
         if (mounted) {
           setLoading(false);
           setInitialized(true);
+          console.log('AuthProvider: Initialization complete');
         }
       } catch (error) {
         console.error('AuthProvider: Error getting initial session:', error);
@@ -56,12 +60,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     // Set up auth state listener
+    console.log('AuthProvider: Setting up auth state listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('AuthProvider: Auth state changed:', { 
           event, 
           hasSession: !!session, 
-          userEmail: session?.user?.email 
+          userEmail: session?.user?.email,
+          timestamp: new Date().toISOString()
         });
         
         if (mounted) {
@@ -78,6 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
 
     return () => {
+      console.log('AuthProvider: Cleaning up...');
       mounted = false;
       subscription.unsubscribe();
     };
@@ -149,6 +156,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       setLoading(true);
+      console.log('AuthProvider: Calling Supabase signInWithPassword...');
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -159,6 +167,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         hasUser: !!data?.user, 
         hasSession: !!data?.session,
         userEmail: data?.user?.email,
+        accessToken: data?.session?.access_token ? 'present' : 'missing',
         error: error?.message 
       });
       
@@ -176,10 +185,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       if (!data?.user || !data?.session) {
+        console.error('AuthProvider: Missing user or session data:', { hasUser: !!data?.user, hasSession: !!data?.session });
         setLoading(false);
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
+      console.log('AuthProvider: Sign in successful, waiting for auth state change...');
       // Session will be set by the auth state change listener
       return { error: null };
     } catch (err) {
@@ -196,6 +207,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('AuthProvider: Signout error:', error);
+      } else {
+        console.log('AuthProvider: Signout successful');
       }
       localStorage.removeItem('cartItems');
       // Clear state immediately
@@ -209,7 +222,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const isSessionValid = () => {
-    return !!session && !!user && !loading;
+    const valid = !!session && !!user && !loading;
+    console.log('AuthProvider: Session validity check:', { 
+      hasSession: !!session, 
+      hasUser: !!user, 
+      isLoading: loading, 
+      isValid: valid 
+    });
+    return valid;
   };
 
   const login = (phoneNumber: string, name: string) => {
@@ -233,7 +253,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     hasSession: !!session,
     isAuthenticated: !!user && !!session && !loading,
     loading,
-    initialized
+    initialized,
+    sessionAccessToken: session?.access_token ? 'present' : 'missing'
   });
 
   return (
@@ -246,8 +267,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    // Instead of throwing an error immediately, provide a fallback
-    console.error('useAuth must be used within an AuthProvider');
+    console.error('useAuth must be used within an AuthProvider - this should not happen with the new setup');
+    // Return a safe fallback instead of throwing
     return {
       user: null,
       session: null,
