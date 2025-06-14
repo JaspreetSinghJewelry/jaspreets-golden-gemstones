@@ -51,8 +51,11 @@ const queryClient = new QueryClient({
   },
 });
 
+// Determine the basename for GitHub Pages
+const basename = import.meta.env.PROD ? '/jaspreets-golden-gemstones' : '';
+
 function App() {
-  console.log('App component rendering...');
+  console.log('App component rendering...', { basename, prod: import.meta.env.PROD });
   
   return (
     <QueryClientProvider client={queryClient}>
@@ -63,7 +66,7 @@ function App() {
               <WishlistProvider>
                 <Toaster />
                 <Sonner />
-                <BrowserRouter>
+                <BrowserRouter basename={basename}>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/products" element={<Products />} />
