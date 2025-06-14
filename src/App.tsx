@@ -1,8 +1,8 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/useAuth';
+import { AdminAuthProvider } from '@/hooks/useAdminAuth';
 import { CartProvider } from '@/contexts/CartContext';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import Index from '@/pages/Index';
@@ -51,49 +51,51 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <Router>
-              <div className="App">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/signin" element={<SignIn />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/collections" element={<Collections />} />
-                  <Route path="/about" element={<AboutUs />} />
-                  <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/rings" element={<Rings />} />
-                  <Route path="/necklaces" element={<Necklaces />} />
-                  <Route path="/earrings" element={<Earrings />} />
-                  <Route path="/bracelets" element={<Bracelets />} />
-                  <Route path="/bridal" element={<Bridal />} />
-                  <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/order-success" element={<OrderSuccess />} />
-                  <Route path="/payment-failure" element={<PaymentFailure />} />
-                  <Route path="/order-history" element={<OrderHistory />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/terms" element={<TermsConditions />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/exchange-buyback" element={<ExchangeBuybackPolicy />} />
-                  <Route path="/defective-product" element={<DefectiveProductPolicy />} />
-                  <Route path="/fraud-warning" element={<FraudWarning />} />
-                  <Route path="/jewelry-care" element={<JewelryCareGuide />} />
-                  <Route path="/diamond-guide" element={<DiamondSolitaireGuide />} />
-                  <Route path="/gemstone-guide" element={<GemstoneGuide />} />
-                  <Route path="/certification-guide" element={<CertificationGuide />} />
-                  <Route path="/buying-guide" element={<BuyingPriceGuide />} />
-                  <Route path="/gifting-guide" element={<GiftingGuide />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Toaster />
-              </div>
-            </Router>
-          </WishlistProvider>
-        </CartProvider>
+        <AdminAuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Router>
+                <div className="App">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/collections" element={<Collections />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/rings" element={<Rings />} />
+                    <Route path="/necklaces" element={<Necklaces />} />
+                    <Route path="/earrings" element={<Earrings />} />
+                    <Route path="/bracelets" element={<Bracelets />} />
+                    <Route path="/bridal" element={<Bridal />} />
+                    <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/payment" element={<Payment />} />
+                    <Route path="/order-success" element={<OrderSuccess />} />
+                    <Route path="/payment-failure" element={<PaymentFailure />} />
+                    <Route path="/order-history" element={<OrderHistory />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/terms" element={<TermsConditions />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/exchange-buyback" element={<ExchangeBuybackPolicy />} />
+                    <Route path="/defective-product" element={<DefectiveProductPolicy />} />
+                    <Route path="/fraud-warning" element={<FraudWarning />} />
+                    <Route path="/jewelry-care" element={<JewelryCareGuide />} />
+                    <Route path="/diamond-guide" element={<DiamondSolitaireGuide />} />
+                    <Route path="/gemstone-guide" element={<GemstoneGuide />} />
+                    <Route path="/certification-guide" element={<CertificationGuide />} />
+                    <Route path="/buying-guide" element={<BuyingPriceGuide />} />
+                    <Route path="/gifting-guide" element={<GiftingGuide />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Toaster />
+                </div>
+              </Router>
+            </WishlistProvider>
+          </CartProvider>
+        </AdminAuthProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
