@@ -26,19 +26,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     let mounted = true;
     console.log('AuthProvider: Initializing auth state');
 
+    // Set up auth state listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('AuthProvider: Auth state changed:', { 
+          event, 
+          hasSession: !!session, 
+          userEmail: session?.user?.email 
+        });
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      }
+    );
+
+    // Then get initial session
     const initializeAuth = async () => {
       try {
-        // Get initial session
         const { data: { session: initialSession }, error } = await supabase.auth.getSession();
-        console.log('AuthProvider: Initial session:', { 
+        console.log('AuthProvider: Initial session check:', { 
           hasSession: !!initialSession, 
           userEmail: initialSession?.user?.email,
           error: error?.message 
         });
         
-        if (mounted) {
+        if (mounted && !error) {
           setSession(initialSession);
           setUser(initialSession?.user ?? null);
+        }
+        
+        if (mounted) {
           setLoading(false);
         }
       } catch (error) {
@@ -49,28 +69,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('AuthProvider: Auth state changed:', { 
-          event, 
-          hasSession: !!session, 
-          userEmail: session?.user?.email 
-        });
-        
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          
-          // Only set loading to false on specific events to avoid race conditions
-          if (['SIGNED_IN', 'SIGNED_OUT', 'TOKEN_REFRESHED'].includes(event)) {
-            setLoading(false);
-          }
-        }
-      }
-    );
-
-    // Initialize auth state
     initializeAuth();
 
     return () => {
@@ -85,7 +83,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       const cleanEmail = email.trim().toLowerCase();
       
-      // Validation
       if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
         return { error: { message: 'Please enter a valid email address' } };
       }
@@ -145,7 +142,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Please enter both email and password' } };
       }
 
-      // Set loading state
       setLoading(true);
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -178,7 +174,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
-      // Success will be handled by the auth state change listener
+      // Session will be set by the auth state change listener
       return { error: null };
     } catch (err) {
       console.error('AuthProvider: Signin unexpected error:', err);
@@ -196,6 +192,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.error('AuthProvider: Signout error:', error);
       }
       localStorage.removeItem('cartItems');
+      // Clear state immediately
+      setSession(null);
+      setUser(null);
       setLoading(false);
     } catch (err) {
       console.error('AuthProvider: Signout unexpected error:', err);
@@ -223,7 +222,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login
   };
 
-  console.log('AuthProvider: Rendering with state:', {
+  console.log('AuthProvider: Current state:', {
     hasUser: !!user,
     hasSession: !!session,
     isAuthenticated: !!user && !!session && !loading,

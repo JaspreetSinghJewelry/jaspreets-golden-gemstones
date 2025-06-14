@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserProfile {
   id: string;
@@ -21,6 +22,7 @@ const UserManager = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { session, user } = useAuth();
 
   const fetchUsers = async () => {
     try {
@@ -28,20 +30,15 @@ const UserManager = () => {
       setError(null);
       console.log('UserManager: Starting user fetch...');
       
-      // Check current auth state
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      console.log('UserManager: Current session:', { 
-        hasSession: !!session, 
-        userEmail: session?.user?.email,
-        sessionError: sessionError?.message 
-      });
-      
-      if (!session) {
+      // Check authentication state
+      if (!session || !user) {
         console.error('UserManager: No authenticated session found');
         setError('You must be logged in to view user data');
         return;
       }
 
+      console.log('UserManager: Authenticated as:', user.email);
+      
       // Try to fetch profiles with detailed logging
       console.log('UserManager: Fetching profiles from database...');
       const { data, error, count } = await supabase
@@ -67,7 +64,6 @@ const UserManager = () => {
           code: error.code
         });
         
-        // More specific error handling
         let errorMessage = 'Failed to fetch user data';
         
         if (error.code === 'PGRST116') {
@@ -94,7 +90,6 @@ const UserManager = () => {
       
       if (!data || data.length === 0) {
         console.log('UserManager: No users found in profiles table');
-        setError('No user registrations found');
         toast({
           title: "No Users Found",
           description: "No user registrations found in the database.",
@@ -163,9 +158,17 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    console.log('UserManager: Component mounted, starting initial fetch');
-    fetchUsers();
-  }, []);
+    console.log('UserManager: Component mounted');
+    // Wait for auth to be ready
+    if (session && user) {
+      console.log('UserManager: Auth ready, fetching users');
+      fetchUsers();
+    } else if (!loading) {
+      console.log('UserManager: No auth session, setting error');
+      setError('You must be logged in to view user data');
+      setLoading(false);
+    }
+  }, [session, user]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -189,7 +192,7 @@ const UserManager = () => {
         </div>
         <Button 
           onClick={fetchUsers}
-          disabled={loading}
+          disabled={loading || !session}
           variant="outline"
           className="flex items-center gap-2"
         >
