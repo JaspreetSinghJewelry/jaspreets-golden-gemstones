@@ -47,6 +47,8 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
   console.log('Admin: Component rendered', { isAdminAuthenticated, loading });
+  console.log('Admin: Current URL:', window.location.href);
+  console.log('Admin: Current pathname:', window.location.pathname);
 
   if (loading) {
     return (
