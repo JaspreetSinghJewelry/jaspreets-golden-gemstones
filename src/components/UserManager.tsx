@@ -30,6 +30,9 @@ const UserManager = () => {
       setError(null);
       console.log('UserManager: Starting user fetch...');
       
+      // Wait a bit for auth to be ready
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Check authentication state
       if (!isAuthenticated || !session || !user) {
         console.error('UserManager: No authenticated session found');
@@ -165,15 +168,19 @@ const UserManager = () => {
       hasUser: !!user 
     });
     
-    // Only fetch if we have authentication
-    if (isAuthenticated && session && user) {
-      console.log('UserManager: Auth ready, fetching users');
-      fetchUsers();
-    } else {
-      console.log('UserManager: Waiting for authentication...');
-      setLoading(false);
-      setError('Authentication required to view user data');
-    }
+    // Add a delay to allow auth to properly initialize
+    const timer = setTimeout(() => {
+      if (isAuthenticated && session && user) {
+        console.log('UserManager: Auth ready, fetching users');
+        fetchUsers();
+      } else {
+        console.log('UserManager: Auth not ready yet');
+        setLoading(false);
+        setError('Authentication required to view user data');
+      }
+    }, 2000); // 2 second delay
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated, session, user]);
 
   const formatDate = (dateString: string) => {

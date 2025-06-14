@@ -45,16 +45,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.log('AuthProvider: Initial session set successfully');
         }
         
+      } catch (error) {
+        console.error('AuthProvider: Error getting initial session:', error);
+      } finally {
         if (mounted) {
           setLoading(false);
           setInitialized(true);
           console.log('AuthProvider: Initialization complete');
-        }
-      } catch (error) {
-        console.error('AuthProvider: Error getting initial session:', error);
-        if (mounted) {
-          setLoading(false);
-          setInitialized(true);
         }
       }
     };
@@ -175,11 +172,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.error('AuthProvider: Signin error:', error);
         setLoading(false);
         
-        if (error.message?.includes('Invalid login credentials')) {
+        // More specific error handling
+        if (error.message?.includes('Invalid login credentials') || error.message?.includes('Invalid email or password')) {
           return { error: { message: 'Invalid email or password. Please check your credentials and try again.' } };
         }
         if (error.message?.includes('Email not confirmed')) {
           return { error: { message: 'Please check your email and confirm your account before signing in.' } };
+        }
+        if (error.message?.includes('Too many requests')) {
+          return { error: { message: 'Too many sign-in attempts. Please wait a moment and try again.' } };
         }
         return { error: { message: error.message || 'Sign in failed' } };
       }
@@ -267,7 +268,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    console.error('useAuth must be used within an AuthProvider - this should not happen with the new setup');
+    console.error('useAuth must be used within an AuthProvider');
     // Return a safe fallback instead of throwing
     return {
       user: null,

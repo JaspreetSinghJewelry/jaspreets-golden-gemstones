@@ -22,7 +22,8 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: 'pkce'
+      flowType: 'pkce',
+      debug: true
     },
     global: {
       headers: {
@@ -32,28 +33,44 @@ export const supabase = createClient<Database>(
     },
     db: {
       schema: 'public'
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 2
+      }
     }
   }
 )
 
-// Test connection and log status
-supabase.auth.getSession().then(({ data: { session }, error }) => {
-  console.log('Supabase Client: Initial session check:', {
-    hasSession: !!session,
-    userEmail: session?.user?.email,
-    error: error?.message,
-    timestamp: new Date().toISOString()
-  });
-}).catch((err) => {
-  console.error('Supabase Client: Failed to check initial session:', err);
-});
+// Enhanced connection testing
+const testConnection = async () => {
+  try {
+    console.log('Supabase Client: Testing connection...');
+    const { data, error } = await supabase.auth.getSession();
+    console.log('Supabase Client: Connection test result:', {
+      hasSession: !!data?.session,
+      userEmail: data?.session?.user?.email,
+      error: error?.message,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Supabase Client: Connection test failed:', err);
+  }
+};
 
-// Log auth state changes
+// Test connection on initialization
+if (typeof window !== 'undefined') {
+  testConnection();
+}
+
+// Enhanced auth state change logging
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Supabase Client: Auth state change:', {
     event,
     hasSession: !!session,
     userEmail: session?.user?.email,
+    accessToken: session?.access_token ? 'present' : 'missing',
+    expiresAt: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : 'none',
     timestamp: new Date().toISOString()
   });
 });
