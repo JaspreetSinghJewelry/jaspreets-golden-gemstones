@@ -72,28 +72,22 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Enhanced mobile compatibility with improved zoom handling */
+  /* Enhanced mobile compatibility */
   html {
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* Allow natural zoom on mobile devices */
-    min-width: auto;
-    /* iOS Safari bounce fix */
     position: relative;
     height: 100%;
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
   }
   
   body {
-    /* Allow natural responsive behavior on mobile */
-    min-width: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: auto;
     height: 100vh;
-    /* iOS Safari bounce fix */
     position: relative;
     -webkit-overflow-scrolling: touch;
   }
@@ -105,11 +99,11 @@
   input[type="button"] {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    min-height: 44px; /* iOS recommended minimum touch target */
-    min-width: 44px;
+    min-height: 48px;
+    min-width: 48px;
   }
   
-  /* Android and iOS specific fixes */
+  /* Mobile form inputs */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -117,13 +111,12 @@
   input[type="search"],
   textarea,
   select {
-    font-size: 16px !important; /* Prevents zoom on iOS */
+    font-size: 16px !important;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    border-radius: 4px;
-    /* iOS specific fixes */
-    -webkit-border-radius: 4px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
     background-clip: padding-box;
   }
   
@@ -147,139 +140,159 @@
   }
 }
 
-/* Responsive mobile-first design with improved zoom behavior */
-@media (max-width: 1199px) {
-  /* Allow natural responsive behavior instead of forcing desktop layout */
-  body {
-    min-width: auto !important;
-    overflow-x: auto !important;
-    /* Better scrolling on mobile */
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
-  
-  /* Allow responsive viewport on mobile */
-  html {
-    min-width: auto !important;
-  }
-  
-  /* Make container responsive */
-  .container {
-    min-width: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  
-  /* Responsive grid layouts for mobile */
-  .grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .sm\\:grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  /* Responsive text sizes for better mobile reading */
-  .text-3xl { font-size: 1.5rem !important; }
-  .text-4xl { font-size: 1.875rem !important; }
-  .text-5xl { font-size: 2.25rem !important; }
-  
-  /* Better mobile spacing */
-  .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
-  .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-  
-  /* Responsive margins */
-  .mb-8 { margin-bottom: 1.5rem !important; }
-  .mb-10 { margin-bottom: 2rem !important; }
-  .mb-12 { margin-bottom: 2rem !important; }
-  
-  /* Better mobile gaps */
-  .gap-8 { gap: 1rem !important; }
-  .space-x-6 > * + * { margin-left: 1rem !important; }
-}
-
-/* Tablet specific adjustments */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-}
-
-/* Mobile-specific enhancements */
+/* Mobile-first responsive design */
 @media (max-width: 767px) {
-  /* Ensure proper mobile zoom behavior */
+  /* Clean mobile layout */
   body {
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
     scroll-behavior: smooth !important;
   }
   
+  html {
+    overflow-x: hidden !important;
+  }
+  
+  /* Mobile container spacing */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+  }
+  
+  /* Clean mobile grid layouts */
+  .grid-cols-1,
+  .sm\\:grid-cols-2,
+  .md\\:grid-cols-3,
+  .lg\\:grid-cols-4,
+  .lg\\:grid-cols-5 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  
+  /* Mobile typography - cleaner and more readable */
+  .text-3xl { 
+    font-size: 1.5rem !important; 
+    line-height: 1.3 !important;
+  }
+  .text-4xl { 
+    font-size: 1.75rem !important; 
+    line-height: 1.3 !important;
+  }
+  .text-5xl { 
+    font-size: 2rem !important; 
+    line-height: 1.2 !important;
+  }
+  
+  /* Cleaner mobile spacing */
+  .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-16 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .px-24 { padding-left: 1rem !important; padding-right: 1rem !important; }
+  
+  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+  
+  /* Cleaner mobile margins */
+  .mb-8 { margin-bottom: 1.5rem !important; }
+  .mb-10 { margin-bottom: 2rem !important; }
+  .mb-12 { margin-bottom: 2rem !important; }
+  
+  /* Reduced gaps for cleaner look */
+  .gap-8 { gap: 1rem !important; }
+  .gap-6 { gap: 0.75rem !important; }
+  .space-x-6 > * + * { margin-left: 0.75rem !important; }
+  .space-x-4 > * + * { margin-left: 0.5rem !important; }
+  .space-x-2 > * + * { margin-left: 0.25rem !important; }
+  
   /* Touch-friendly navigation */
   nav button,
   nav a {
-    min-height: 44px !important;
+    min-height: 48px !important;
     padding: 12px 16px !important;
+    font-size: 0.9rem !important;
   }
   
-  /* Better carousel controls for touch */
+  /* Better mobile carousel */
   .carousel button {
+    min-height: 48px !important;
+    min-width: 48px !important;
+  }
+  
+  /* Mobile image containers */
+  .h-64 { height: 10rem !important; }
+  .h-96 { height: 14rem !important; }
+  
+  /* Mobile header adjustments */
+  header {
+    padding: 0.5rem 1rem !important;
+  }
+  
+  /* Mobile button spacing */
+  .space-x-2 button,
+  .space-x-4 button {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  /* Cleaner mobile cards */
+  .card {
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+  }
+  
+  /* Mobile sections */
+  section {
+    padding: 2rem 1rem !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .md\\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+  
+  .lg\\:grid-cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  
+  .lg\\:grid-cols-5 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  
+  .container {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  /* Extra small mobile adjustments */
+  .container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  .text-2xl { font-size: 1.25rem !important; }
+  .text-xl { font-size: 1.125rem !important; }
+  
+  /* Smaller buttons for very small screens */
+  button {
     min-height: 44px !important;
     min-width: 44px !important;
+    font-size: 0.875rem !important;
   }
   
-  /* Responsive image containers */
-  .h-64 { height: 12rem !important; }
-  .h-96 { height: 16rem !important; }
-}
-
-/* Android-specific fixes */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  body {
-    /* Better font rendering on Android */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* iOS-specific fixes */
-@supports (-webkit-touch-callout: none) {
-  body {
-    /* Allow natural iOS zoom behavior */
-    position: relative;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  /* Tighter spacing */
+  .gap-4 { gap: 0.5rem !important; }
+  .space-y-4 > * + * { margin-top: 0.5rem !important; }
   
-  /* iOS Safari address bar fix */
-  html {
-    height: -webkit-fill-available;
-  }
-  
-  body {
-    min-height: -webkit-fill-available;
+  section {
+    padding: 1.5rem 0.75rem !important;
   }
 }
 
@@ -297,25 +310,55 @@
     height: 100dvh;
   }
   
-  /* Responsive layout that adapts to device */
-  .responsive-layout {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
+  /* Mobile-optimized layouts */
+  .mobile-clean {
+    @media (max-width: 767px) {
+      padding: 1rem;
+      margin: 0;
+      width: 100%;
+    }
   }
   
-  /* Responsive grid that maintains proper spacing */
-  .responsive-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
+  .mobile-stack {
+    @media (max-width: 767px) {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
   }
   
-  /* Mobile-friendly touch targets */
+  .mobile-center {
+    @media (max-width: 767px) {
+      text-align: center !important;
+      justify-content: center !important;
+    }
+  }
+  
+  .mobile-hidden {
+    @media (max-width: 767px) {
+      display: none !important;
+    }
+  }
+  
+  .mobile-only {
+    display: none !important;
+    @media (max-width: 767px) {
+      display: block !important;
+    }
+  }
+  
+  /* Touch-friendly elements */
   .touch-target {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 48px;
+    min-width: 48px;
     touch-action: manipulation;
+  }
+  
+  .mobile-button {
+    @media (max-width: 767px) {
+      width: 100% !important;
+      margin: 0.25rem 0 !important;
+      padding: 0.75rem 1rem !important;
+    }
   }
 }
 
@@ -373,23 +416,33 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Image grid for admin panel */
+/* Mobile-optimized image grid */
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
+  padding: 1rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 480px) {
   .image-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .image-grid {
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
+    padding: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .image-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
+    padding: 2rem;
   }
 }
