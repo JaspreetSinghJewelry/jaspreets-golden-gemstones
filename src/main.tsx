@@ -67,22 +67,6 @@ class ErrorBoundary extends React.Component<
             >
               Refresh Page
             </button>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details style={{ marginTop: '20px', textAlign: 'left' }}>
-                <summary style={{ cursor: 'pointer', color: '#6b7280' }}>Error Details</summary>
-                <pre style={{ 
-                  background: '#f3f4f6', 
-                  padding: '10px', 
-                  borderRadius: '4px', 
-                  fontSize: '12px',
-                  overflow: 'auto',
-                  marginTop: '10px'
-                }}>
-                  {this.state.error.toString()}
-                  {this.state.errorInfo}
-                </pre>
-              </details>
-            )}
           </div>
         </div>
       );
@@ -110,9 +94,6 @@ const renderApp = () => {
     }
 
     console.log('Starting app render...');
-    
-    // Clear any existing content
-    rootElement.innerHTML = '';
     
     const root = createRoot(rootElement);
     

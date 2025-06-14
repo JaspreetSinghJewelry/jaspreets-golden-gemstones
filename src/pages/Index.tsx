@@ -15,7 +15,6 @@ import { useAuth } from "@/hooks/useAuth";
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
-  const [renderReady, setRenderReady] = useState(false);
   
   const auth = useAuth();
   const isAuthenticated = auth?.isAuthenticated ?? false;
@@ -27,32 +26,22 @@ const Index = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageReady(true);
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle render readiness
-  useEffect(() => {
-    if (!loading && isPageReady) {
-      const timer = setTimeout(() => {
-        setRenderReady(true);
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, isPageReady]);
-
   // Handle login popup timing
   useEffect(() => {
-    if (renderReady && !loading && !isAuthenticated) {
+    if (isPageReady && !loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, loading, renderReady]);
+  }, [isAuthenticated, loading, isPageReady]);
 
   // Show loading while auth is loading or page isn't ready
-  if (loading || !isPageReady || !renderReady) {
+  if (loading || !isPageReady) {
     return <LoadingSpinner message="Loading Jaspreet Singh Jewelry..." />;
   }
 
