@@ -15,7 +15,6 @@ interface AuthContextType {
   login: (phoneNumber: string, name: string) => void;
 }
 
-// Create context with undefined to properly handle provider checks
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -28,17 +27,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     let mounted = true;
 
+    // Initialize auth state
     const initializeAuth = async () => {
       try {
+        console.log('Auth: Getting initial session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
         if (error) {
           console.error('Auth: Error getting initial session:', error);
+        } else {
+          console.log('Auth: Initial session retrieved:', { hasSession: !!session, hasUser: !!session?.user });
         }
         
-        console.log('Auth: Initial session:', { hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -55,7 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       (event, session) => {
         if (!mounted) return;
         
-        console.log('Auth: State change:', { event, hasSession: !!session, hasUser: !!session?.user });
+        console.log('Auth: Auth state changed:', { event, hasSession: !!session, hasUser: !!session?.user });
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -75,8 +77,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Auth: Starting signup for:', email);
       
+      // Validate inputs
       if (!email || !password || !fullName || !phone) {
+        console.error('Auth: Missing required fields');
         return { error: { message: 'All fields are required' } };
+      }
+
+      if (password.length < 6) {
+        console.error('Auth: Password too short');
+        return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
       const { data, error } = await supabase.auth.signUp({
@@ -96,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: error.message } };
       }
 
-      console.log('Auth: Signup successful');
+      console.log('Auth: Signup successful:', data);
       return { error: null };
     } catch (err) {
       console.error('Auth: Signup exception:', err);
@@ -108,8 +117,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log('Auth: Starting signin for:', email);
       
+      // Validate inputs
       if (!email || !password) {
+        console.error('Auth: Missing email or password');
         return { error: { message: 'Email and password are required' } };
+      }
+
+      if (password.length < 6) {
+        console.error('Auth: Password too short');
+        return { error: { message: 'Password must be at least 6 characters long' } };
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -119,15 +135,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (error) {
         console.error('Auth: Signin error:', error);
-        return { error: { message: error.message } };
+        let errorMessage = error.message;
+        
+        // Provide more user-friendly error messages
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+        }
+        
+        return { error: { message: errorMessage } };
       }
 
       if (!data?.user || !data?.session) {
-        console.error('Auth: No user or session returned');
+        console.error('Auth: No user or session returned from signin');
         return { error: { message: 'Authentication failed. Please try again.' } };
       }
 
-      console.log('Auth: Signin successful');
+      console.log('Auth: Signin successful:', { userId: data.user.id, sessionId: data.session.access_token.substring(0, 10) + '...' });
       return { error: null };
     } catch (err) {
       console.error('Auth: Signin exception:', err);
@@ -150,6 +175,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSession(null);
       setUser(null);
       
+      // Clear any stored data
       localStorage.removeItem('cartItems');
     } catch (err) {
       console.error('Auth: Signout exception:', err);
@@ -161,7 +187,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const login = (phoneNumber: string, name: string) => {
-    console.log('Auth: Phone login not implemented');
+    console.log('Auth: Phone login not implemented - redirecting to email auth');
+    // This is a placeholder for phone-based login
+    // For now, users should use email authentication
   };
 
   const value = {

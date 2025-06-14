@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { Mail, Lock, User, Phone, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +28,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const navigate = useNavigate();
   const { signIn, signUp, isAuthenticated } = useAuth();
 
@@ -37,28 +38,49 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     }
   }, [isAuthenticated, onClose]);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {};
+
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!password) {
+      errors.password = 'Password is required';
+    } else if (password.length < 6) {
+      errors.password = 'Password must be at least 6 characters long';
+    }
+
+    if (activeTab === 'signup') {
+      if (!fullName.trim()) {
+        errors.fullName = 'Full name is required';
+      }
+
+      if (!phone.trim()) {
+        errors.phone = 'Phone number is required';
+      }
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.trim() || !password || password.length < 6) {
-      toast({
-        title: "Invalid Input",
-        description: "Please check your email and password",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (activeTab === 'signup' && (!fullName.trim() || !phone.trim())) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
+    if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
+    setFormErrors({});
 
     try {
       if (activeTab === 'signin') {
@@ -66,7 +88,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         if (error) {
           toast({
             title: "Sign In Failed",
-            description: error.message || "Please check your credentials",
+            description: error.message,
             variant: "destructive"
           });
         } else {
@@ -81,7 +103,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         if (error) {
           toast({
             title: "Sign Up Failed", 
-            description: error.message || "Failed to create account",
+            description: error.message,
             variant: "destructive"
           });
         } else {
@@ -139,10 +161,15 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -156,10 +183,15 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.password ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
+                  {formErrors.password && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.password}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -185,10 +217,15 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your full name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.fullName ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
+                  {formErrors.fullName && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.fullName}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -202,10 +239,15 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.phone ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
+                  {formErrors.phone && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -219,10 +261,15 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -233,14 +280,19 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="Create a password (min 6 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.password ? 'border-red-500' : ''}`}
                     minLength={6}
                     disabled={isLoading}
                   />
+                  {formErrors.password && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.password}
+                    </p>
+                  )}
                 </div>
               </div>
 

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FancyText } from '@/components/ui/fancy-text';
-import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +18,7 @@ const Auth = () => {
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const navigate = useNavigate();
   const { signIn, signUp, isAuthenticated, loading } = useAuth();
 
@@ -35,72 +36,34 @@ const Auth = () => {
   };
 
   const validateForm = () => {
-    if (!email.trim()) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address",
-        variant: "destructive"
-      });
-      return false;
-    }
+    const errors: {[key: string]: string} = {};
 
-    if (!validateEmail(email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address",
-        variant: "destructive"
-      });
-      return false;
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      errors.email = 'Please enter a valid email address';
     }
 
     if (!password) {
-      toast({
-        title: "Password Required",
-        description: "Please enter your password",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    if (password.length < 6) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 6 characters long",
-        variant: "destructive"
-      });
-      return false;
+      errors.password = 'Password is required';
+    } else if (password.length < 6) {
+      errors.password = 'Password must be at least 6 characters long';
     }
 
     if (mode === 'signup') {
       if (!fullName.trim()) {
-        toast({
-          title: "Name Required",
-          description: "Please enter your full name",
-          variant: "destructive"
-        });
-        return false;
+        errors.fullName = 'Full name is required';
       }
 
       if (!phone.trim()) {
-        toast({
-          title: "Phone Required",
-          description: "Please enter your phone number",
-          variant: "destructive"
-        });
-        return false;
-      }
-
-      if (phone.trim().length < 10) {
-        toast({
-          title: "Invalid Phone",
-          description: "Please enter a valid phone number",
-          variant: "destructive"
-        });
-        return false;
+        errors.phone = 'Phone number is required';
+      } else if (phone.trim().length < 10) {
+        errors.phone = 'Please enter a valid phone number';
       }
     }
 
-    return true;
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,6 +74,7 @@ const Auth = () => {
     }
 
     setIsLoading(true);
+    setFormErrors({});
     console.log(`Auth Page: Starting ${mode} process for:`, email);
 
     try {
@@ -131,7 +95,6 @@ const Auth = () => {
             title: "Welcome Back!",
             description: "You have been signed in successfully",
           });
-          // Navigation will happen automatically via useEffect
         }
       } else {
         console.log('Auth Page: Attempting signup...');
@@ -150,7 +113,6 @@ const Auth = () => {
             title: "Account Created!",
             description: "Please check your email to verify your account before signing in",
           });
-          // Switch to signin mode and clear password
           setMode('signin');
           setPassword('');
           setFullName('');
@@ -175,6 +137,7 @@ const Auth = () => {
     setPassword('');
     setFullName('');
     setPhone('');
+    setFormErrors({});
   };
 
   if (loading) {
@@ -234,10 +197,15 @@ const Auth = () => {
                         placeholder="Enter your full name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="pl-10"
-                        required
+                        className={`pl-10 ${formErrors.fullName ? 'border-red-500' : ''}`}
                         disabled={isLoading}
                       />
+                      {formErrors.fullName && (
+                        <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {formErrors.fullName}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -250,10 +218,15 @@ const Auth = () => {
                         placeholder="Enter your phone number"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="pl-10"
-                        required
+                        className={`pl-10 ${formErrors.phone ? 'border-red-500' : ''}`}
                         disabled={isLoading}
                       />
+                      {formErrors.phone && (
+                        <p className="text-red-500 text-sm mt-1 flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          {formErrors.phone}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </>
@@ -269,11 +242,16 @@ const Auth = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
+                    className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                     autoComplete={mode === 'signin' ? 'email' : 'new-email'}
                   />
+                  {formErrors.email && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
               
@@ -287,9 +265,7 @@ const Auth = () => {
                     placeholder={mode === 'signin' ? 'Enter your password' : 'Create a password (min 6 characters)'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
-                    required
-                    minLength={6}
+                    className={`pl-10 pr-10 ${formErrors.password ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                     autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
                   />
@@ -305,6 +281,12 @@ const Auth = () => {
                       <Eye className="h-4 w-4 text-gray-400" />
                     )}
                   </button>
+                  {formErrors.password && (
+                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      {formErrors.password}
+                    </p>
+                  )}
                 </div>
               </div>
 
