@@ -9,41 +9,22 @@ import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [isPageReady, setIsPageReady] = useState(false);
-  
-  const auth = useAuth();
-  const isAuthenticated = auth?.isAuthenticated ?? false;
-  const loading = auth?.loading ?? true;
-  
-  console.log('Index page rendering...', { isAuthenticated, loading, auth: !!auth });
+  const { isAuthenticated, loading } = useAuth();
 
-  // Initialize page readiness
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsPageReady(true);
-    }, 200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Handle login popup timing
-  useEffect(() => {
-    if (isPageReady && !loading && !isAuthenticated) {
+    // Show login popup after 3 seconds if user is not authenticated
+    if (!loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
-      }, 5000);
+      }, 3000);
+
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, loading, isPageReady]);
-
-  // Show loading while auth is loading or page isn't ready
-  if (loading || !isPageReady) {
-    return <LoadingSpinner message="Loading Jaspreet Singh Jewelry..." />;
-  }
+  }, [isAuthenticated, loading]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -58,12 +39,10 @@ const Index = () => {
       </div>
       <Footer />
       
-      {showLoginPopup && (
-        <LoginPopup 
-          isOpen={showLoginPopup} 
-          onClose={() => setShowLoginPopup(false)}
-        />
-      )}
+      <LoginPopup 
+        isOpen={showLoginPopup} 
+        onClose={() => setShowLoginPopup(false)}
+      />
     </div>
   );
 };

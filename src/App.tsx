@@ -4,10 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CartProvider } from "@/contexts/CartContext";
-import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AdminAuthProvider } from "@/hooks/useAdminAuth";
+import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import Auth from "./pages/Auth";
@@ -41,22 +41,9 @@ import GemstoneGuide from "./pages/GemstoneGuide";
 import GiftingGuide from "./pages/GiftingGuide";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,
-    },
-  },
-});
-
-// Determine the basename for GitHub Pages
-const basename = import.meta.env.PROD ? '/jaspreets-golden-gemstones' : '';
+const queryClient = new QueryClient();
 
 function App() {
-  console.log('App component rendering...', { basename, prod: import.meta.env.PROD });
-  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -66,7 +53,7 @@ function App() {
               <WishlistProvider>
                 <Toaster />
                 <Sonner />
-                <BrowserRouter basename={basename}>
+                <BrowserRouter>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/products" element={<Products />} />

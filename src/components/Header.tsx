@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,26 +11,27 @@ import {
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
+import { useAuth } from '@/hooks/useAuth';
 import SearchModal from './SearchModal';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
-  
-  // Safe access to context values with fallbacks
-  const cart = useCart();
-  const wishlist = useWishlist();
-  const auth = useAuth();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
-
-  const cartCount = cart?.cartCount || 0;
-  const wishlistCount = wishlist?.wishlistCount || 0;
-  const isAuthenticated = auth?.isAuthenticated || false;
+ 
+  const navItems = [
+    { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Lab Grown Diamonds', path: '/lab-grown-diamonds' },
+    { name: 'Contact Us', path: '/contact' },
+  ];
 
   const collectionItems = [
     { name: 'Rings', path: '/rings' },
@@ -57,10 +58,6 @@ const Header = () => {
           src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
           alt="Jaspreet Singh Jewelry" 
           className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto"
-          onError={(e) => {
-            console.error('Logo failed to load');
-            e.currentTarget.style.display = 'none';
-          }}
         />
       </div>
 
