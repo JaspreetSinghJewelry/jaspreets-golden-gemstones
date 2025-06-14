@@ -15,35 +15,44 @@ import { useAuth } from "@/hooks/useAuth";
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
+  const [renderReady, setRenderReady] = useState(false);
   
-  // Use optional chaining and default values to prevent errors
   const auth = useAuth();
-  const isAuthenticated = auth?.isAuthenticated || false;
-  const loading = auth?.loading !== false; // Default to loading if undefined
+  const isAuthenticated = auth?.isAuthenticated ?? false;
+  const loading = auth?.loading ?? true;
   
-  console.log('Index page rendering...', { isAuthenticated, loading, auth });
+  console.log('Index page rendering...', { isAuthenticated, loading, auth: !!auth });
 
+  // Initialize page readiness
   useEffect(() => {
-    // Set page as ready after a short delay to ensure all components are loaded
     const timer = setTimeout(() => {
       setIsPageReady(true);
     }, 100);
-
     return () => clearTimeout(timer);
   }, []);
 
+  // Handle render readiness
   useEffect(() => {
-    if (!loading && !isAuthenticated && isPageReady) {
+    if (!loading && isPageReady) {
+      const timer = setTimeout(() => {
+        setRenderReady(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, isPageReady]);
+
+  // Handle login popup timing
+  useEffect(() => {
+    if (renderReady && !loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 5000);
-
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, loading, isPageReady]);
+  }, [isAuthenticated, loading, renderReady]);
 
-  // Show loading spinner while auth is loading or page isn't ready
-  if (loading || !isPageReady) {
+  // Show loading while auth is loading or page isn't ready
+  if (loading || !isPageReady || !renderReady) {
     return <LoadingSpinner message="Loading Jaspreet Singh Jewelry..." />;
   }
 
@@ -60,10 +69,12 @@ const Index = () => {
       </div>
       <Footer />
       
-      <LoginPopup 
-        isOpen={showLoginPopup} 
-        onClose={() => setShowLoginPopup(false)}
-      />
+      {showLoginPopup && (
+        <LoginPopup 
+          isOpen={showLoginPopup} 
+          onClose={() => setShowLoginPopup(false)}
+        />
+      )}
     </div>
   );
 };
