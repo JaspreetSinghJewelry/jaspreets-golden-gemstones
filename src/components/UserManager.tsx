@@ -26,27 +26,34 @@ const UserManager = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching user profiles...');
+      console.log('UserManager: Fetching user profiles...');
       
-      // First, let's check if we can access the profiles table
+      // Check current user authentication for debugging
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      console.log('UserManager: Current authenticated user:', currentUser?.email);
+      
+      // Try to fetch profiles with proper error handling
       const { data, error, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      console.log('User fetch result:', { 
-        data: data?.length, 
-        error: error?.message, 
-        count 
+      console.log('UserManager: Fetch result:', { 
+        dataCount: data?.length, 
+        totalCount: count,
+        error: error?.message,
+        sampleData: data?.slice(0, 2)
       });
 
       if (error) {
-        console.error('Error fetching users:', error);
-        setError(`Failed to fetch users: ${error.message}`);
+        console.error('UserManager: Error fetching users:', error);
         
-        // If RLS is blocking, try to get current user info for debugging
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log('Current user for debugging:', user?.email);
+        // Check if it's an RLS issue
+        if (error.message?.includes('permission') || error.message?.includes('policy')) {
+          setError('Access denied: You may not have permission to view user data. Please check with the administrator.');
+        } else {
+          setError(`Failed to fetch users: ${error.message}`);
+        }
         
         toast({
           title: "Error",
@@ -56,15 +63,20 @@ const UserManager = () => {
         return;
       }
 
-      console.log('Fetched users:', data);
+      console.log('UserManager: Successfully fetched users:', data?.length || 0);
       setUsers(data || []);
       
       if (!data || data.length === 0) {
-        console.log('No users found in profiles table');
+        console.log('UserManager: No users found in profiles table');
+        toast({
+          title: "No Users Found",
+          description: "No user registrations found in the database.",
+          variant: "default"
+        });
       }
       
     } catch (error) {
-      console.error('Unexpected error:', error);
+      console.error('UserManager: Unexpected error:', error);
       setError('An unexpected error occurred while fetching users');
       toast({
         title: "Error",
@@ -82,7 +94,7 @@ const UserManager = () => {
     }
 
     try {
-      console.log('Deleting user:', userId);
+      console.log('UserManager: Deleting user:', userId);
       
       // First delete user's orders
       const { error: ordersError } = await supabase
@@ -91,7 +103,7 @@ const UserManager = () => {
         .eq('user_id', userId);
 
       if (ordersError) {
-        console.error('Error deleting user orders:', ordersError);
+        console.error('UserManager: Error deleting user orders:', ordersError);
       }
 
       // Then delete the user profile
@@ -112,7 +124,7 @@ const UserManager = () => {
       // Refresh the users list
       fetchUsers();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error('UserManager: Error deleting user:', error);
       toast({
         title: "Error",
         description: "Failed to delete the user. Please try again.",
@@ -163,6 +175,9 @@ const UserManager = () => {
               <h3 className="text-sm font-medium text-red-800">Error</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
+                <p className="mt-2 text-xs">
+                  If this is a permission error, you may need to configure Row Level Security policies for the profiles table.
+                </p>
               </div>
             </div>
           </div>
@@ -186,7 +201,12 @@ const UserManager = () => {
             <div className="text-center py-8 text-gray-500">
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p>No users registered yet</p>
-              <p className="text-sm mt-2">Users will appear here after they sign up</p>
+              <p className="text-sm mt-2">Users will appear here after they sign up and verify their accounts</p>
+              {error && (
+                <p className="text-sm mt-2 text-red-600">
+                  There may be a database configuration issue preventing user data from displaying.
+                </p>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
