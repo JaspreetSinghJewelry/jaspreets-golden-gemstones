@@ -1,4 +1,3 @@
-
 import React from "react";
 
 type RootErrorBoundaryProps = {
@@ -14,9 +13,11 @@ export class RootErrorBoundary extends React.Component<RootErrorBoundaryProps, R
   constructor(props: RootErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
+    console.log("[DEBUG] RootErrorBoundary: constructor called");
   }
 
   static getDerivedStateFromError(error: any) {
+    console.log("[DEBUG] RootErrorBoundary: getDerivedStateFromError fired", error);
     return { hasError: true, error };
   }
 
@@ -27,6 +28,7 @@ export class RootErrorBoundary extends React.Component<RootErrorBoundaryProps, R
   }
 
   render() {
+    console.log("[DEBUG] RootErrorBoundary: render", this.state.hasError, this.state.error);
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-white">
