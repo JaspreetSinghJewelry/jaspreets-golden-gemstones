@@ -223,9 +223,12 @@ const UserManager = () => {
         </div>
       )}
 
-      {/* Add more console debugging at top */}
+      {/* ENHANCED DEBUGGING */}
       <pre className="text-xs bg-gray-100 p-2 rounded max-w-full overflow-x-auto mt-0 text-gray-600">
-        Total profiles loaded: {users.length}
+        {`Total profiles loaded: ${users.length}
+User IDs (from profiles table):\n${users.map(u => u.id).join('\n')}
+Emails loaded:\n${users.map(u => u.email).join('\n')}
+`}
       </pre>
 
       {error && (
