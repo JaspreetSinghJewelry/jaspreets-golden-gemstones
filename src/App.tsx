@@ -60,17 +60,7 @@ function App() {
               <WishlistProvider>
                 <Router>
                   <div className="App">
-                    {/*
-                      Diagnostic box to confirm mounting.
-                      Remove after issue is fixed.
-                    */}
-                    <div style={{
-                      position: "fixed",
-                      top: 0, left: 0, zIndex: 99999, background: "#fff6", fontSize: 12, color: "#900",
-                      padding: "6px 12px", borderRadius: 0, pointerEvents: "none"
-                    }}>
-                      [DEBUG] App mounted at {window.location.pathname}
-                    </div>
+                    {/* Removed diagnostic debug box */}
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
