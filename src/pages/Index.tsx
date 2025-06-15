@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from "@/components/Header";
 import ProductCarousel from "@/components/ProductCarousel";
@@ -10,16 +11,12 @@ import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
 import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
-import { useLocation } from "react-router-dom";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
   const [loadingTime, setLoadingTime] = useState(0);
   const [hardError, setHardError] = useState<string | null>(null);
-  const location = window.location;
-  const rawPath = location.pathname;
-  const badAdminPath = rawPath === "/admin";
 
   useEffect(() => {
     console.log("[DEBUG - Index.tsx] isAuthenticated:", isAuthenticated, "loading:", loading);
@@ -51,22 +48,6 @@ const Index = () => {
       if (interval) clearInterval(interval);
     };
   }, [loading, loadingTime]);
-
-  if (badAdminPath && !window.location.hash.includes("#/admin")) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-        <div className="p-6 border border-red-400 rounded bg-red-50 text-center">
-          <h2 className="font-bold text-red-700 mb-2">Static Hosting Routing Notice</h2>
-          <div className="mb-4">You are on <span className="font-mono">/admin</span> which may show a 404 error on static hosts.<br />
-          Please use <span className="font-mono">/#/admin</span> to access the admin panel.<br />  
-          <span className="block mt-2">
-            <a href="/#/admin" className="text-blue-700 underline font-semibold">Go to Admin Panel</a>
-          </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (hardError) {
     return (
@@ -139,7 +120,6 @@ const Index = () => {
             onClose={() => setShowLoginPopup(false)}
           />
         </SectionErrorBoundary>
-        {/* REMOVED: Floating admin panel button */}
       </div>
     );
   } catch (e: any) {
