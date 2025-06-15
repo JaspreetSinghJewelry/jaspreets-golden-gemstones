@@ -489,3 +489,107 @@
     gap: 2rem;
   }
 }
+
+// --- Add MOBILE & CARD UI to better match the reference screenshot ---
+@layer components {
+  /* Link style for nav bar in mobile */
+  .mobile-nav-link {
+    @apply px-4 py-2 rounded-full font-semibold text-neutral-900 bg-neutral-100 active:bg-neutral-200 transition text-sm m-0;
+    min-width: 44px;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+  .mobile-nav-link:active, .mobile-nav-link:focus {
+    @apply bg-neutral-200;
+  }
+  .mobile-nav-shop-btn {
+    @apply bg-[#222] text-white font-bold rounded-full px-5 py-2;
+  }
+}
+
+/* Featured Collection section */
+.featured-collection-section {
+  margin-top: 78px;
+  @apply px-2 pb-5 pt-3;
+}
+
+.featured-collection-title {
+  @apply text-2xl font-semibold text-center mb-2;
+}
+
+/* Card for featured collection */
+.featured-collection-card {
+  @apply rounded-xl shadow-md overflow-hidden relative w-full bg-white;
+  min-height: 180px;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.featured-collection-img {
+  @apply w-full object-cover block;
+  min-height: 180px;
+  border-radius: 1rem;
+}
+
+/* Overlay text area */
+.featured-collection-overlay {
+  @apply absolute left-6 bottom-4 text-white text-lg font-medium drop-shadow-xl;
+  z-index: 2;
+}
+
+.featured-collection-caption {
+  @apply absolute left-6 bottom-0 text-white font-semibold drop-shadow-lg;
+  font-size: 1rem;
+}
+
+/* Explore Collections section */
+.explore-collections-section {
+  @apply mt-2 px-2 pb-8;
+}
+
+.explore-collections-title {
+  @apply text-2xl font-semibold text-center mb-3;
+}
+
+.collections-card-grid {
+  @apply grid grid-cols-2 gap-4;
+}
+
+@media (min-width: 410px) {
+  .collections-card-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+.collections-card {
+  @apply rounded-xl bg-white shadow-md flex flex-col items-center justify-between p-2 transition-all;
+  min-height: 175px;
+  cursor: pointer;
+  border: 1px solid #ececec;
+}
+
+.collections-card img {
+  @apply w-full max-h-[90px] object-cover mb-2 rounded-lg;
+}
+
+.collections-card-title {
+  @apply font-semibold text-lg text-center;
+}
+.collections-card-desc {
+  @apply text-gray-700 text-xs text-center px-1 pb-2;
+}
+
+@media (min-width: 600px) {
+  .featured-collection-section {
+    margin-top: 92px;
+  }
+}
+
+/* Responsive tweak for main container */
+@media (max-width: 767px) {
+  .main-mobile-container {
+    @apply px-1;
+    max-width: 100vw;
+    overflow-x: hidden !important;
+  }
+}
