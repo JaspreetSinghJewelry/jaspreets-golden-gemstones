@@ -42,66 +42,159 @@ const Header = () => {
   };
 
   return (
-    <header className="flex flex-col gap-2 px-3 sm:px-5 md:px-10 lg:px-24 py-2 shadow-sm sticky top-0 z-50 bg-[#001c39]">
-      {/* Top Row: Logo and Actions */}
-      <div className="flex items-center justify-between">
+    <header className="px-2 sm:px-4 py-2 sticky top-0 z-50 w-full bg-white shadow-sm border-b">
+      {/* Header Row: Logo, Nav, Actions */}
+      <div className="flex items-center justify-between w-full">
         {/* Logo */}
-        <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-          <img 
-            src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png" 
-            alt="Jaspreet Singh Jewelry" 
-            className="h-12 sm:h-16 md:h-20 lg:h-24 w-auto"
+        <div
+          className="flex items-center cursor-pointer min-w-[80px] sm:min-w-[100px]"
+          onClick={() => navigate('/')}
+        >
+          <img
+            src="/lovable-uploads/deffbc69-707d-4995-91d2-a22c4a999179.png"
+            alt="Jaspreet Singh Jewelry"
+            className="h-10 sm:h-12 lg:h-16 w-auto"
           />
         </div>
-        
-        {/* Header Actions (right side) */}
-        <div className="flex items-center space-x-1 md:space-x-4">
-          <Button 
+
+        {/* Navigation - always centered, all links visible regardless of screen size */}
+        <nav
+          className="
+            flex-1
+            flex
+            justify-center
+            items-center
+            gap-1 sm:gap-4
+            text-xs sm:text-sm
+            font-medium
+            select-none
+          "
+        >
+          <button
+            className="px-2 sm:px-3 py-1 rounded transition-colors hover:bg-neutral-100"
+            style={{ color: '#001c39' }}
+            onClick={() => navigate('/')}
+          >
+            Home
+          </button>
+          <button
+            className="px-2 sm:px-3 py-1 rounded transition-colors hover:bg-neutral-100"
+            style={{ color: '#001c39' }}
+            onClick={() => navigate('/about')}
+          >
+            About Us
+          </button>
+          {/* Collections Dropdown - show on all screen sizes as dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="flex items-center px-2 sm:px-3 py-1 rounded transition-colors hover:bg-neutral-100"
+                style={{ color: '#001c39' }}
+              >
+                Collections
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-white border shadow-lg z-[99]">
+              {collectionItems.map((item) => (
+                <DropdownMenuItem
+                  key={item.name}
+                  onClick={() => navigate(item.path)}
+                  className="cursor-pointer hover:bg-gray-100"
+                >
+                  {item.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button
+            className="px-2 sm:px-3 py-1 rounded transition-colors hover:bg-neutral-100"
+            style={{ color: '#001c39' }}
+            onClick={() => navigate('/lab-grown-diamonds')}
+          >
+            Lab Grown Diamonds
+          </button>
+          <button
+            className="px-2 sm:px-3 py-1 rounded transition-colors hover:bg-neutral-100"
+            style={{ color: '#001c39' }}
+            onClick={() => navigate('/contact')}
+          >
+            Contact Us
+          </button>
+          {/* Shop Now */}
+          <Button
+            className="rounded-full font-bold transition-colors px-4 py-1 ml-2"
+            style={{
+              backgroundColor: '#131313',
+              color: 'white',
+              boxShadow: '0 1px 5px 0 rgba(0,0,0,0.02)'
+            }}
+            onClick={() => navigate('/products')}
+          >
+            Shop Now
+          </Button>
+        </nav>
+
+        {/* Header Actions (Right) */}
+        <div className="flex items-center space-x-1 sm:space-x-2 min-w-[90px] justify-end ml-2">
+          <Button
             ref={searchButtonRef}
-            variant="ghost" 
-            size="icon" 
-            className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10"
-            style={{ color: '#C8A157' }}
+            variant="ghost"
+            size="icon"
+            className="hover:bg-gray-100 h-8 w-8"
+            style={{ color: '#001c39' }}
             onClick={() => setIsSearchOpen(true)}
           >
-            <Search className="h-4 w-4 md:h-5 md:w-5" />
+            <Search className="h-5 w-5" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="hover:bg-white/10 relative h-8 w-8 md:h-10 md:w-10"
-            style={{ color: '#C8A157' }}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-gray-100 relative h-8 w-8"
+            style={{ color: '#001c39' }}
             onClick={handleWishlistClick}
           >
-            <Heart className="h-4 w-4 md:h-5 md:w-5" />
+            <Heart className="h-5 w-5" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+              <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold"
+                style={{ backgroundColor: '#C8A157' }}>
                 {wishlistCount}
               </span>
             )}
           </Button>
           {isAuthenticated ? (
             <AccountMenu>
-              <Button variant="ghost" size="icon" className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10" style={{ color: '#C8A157' }}>
-                <User className="h-4 w-4 md:h-5 md:w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-gray-100 h-8 w-8"
+                style={{ color: '#001c39' }}
+              >
+                <User className="h-5 w-5" />
               </Button>
             </AccountMenu>
           ) : (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="hover:bg-white/10 h-8 w-8 md:h-10 md:w-10"
-              style={{ color: '#C8A157' }}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-gray-100 h-8 w-8"
+              style={{ color: '#001c39' }}
               onClick={handleUserAction}
             >
-              <User className="h-4 w-4 md:h-5 md:w-5" />
+              <User className="h-5 w-5" />
             </Button>
           )}
           <CartDrawer>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 relative h-8 w-8 md:h-10 md:w-10" style={{ color: '#C8A157' }}>
-              <ShoppingBag className="h-4 w-4 md:h-5 md:w-5" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-gray-100 relative h-8 w-8"
+              style={{ color: '#001c39' }}
+            >
+              <ShoppingBag className="h-5 w-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+                <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold"
+                  style={{ backgroundColor: '#C8A157' }}>
                   {cartCount}
                 </span>
               )}
@@ -109,155 +202,14 @@ const Header = () => {
           </CartDrawer>
         </div>
       </div>
-
-      {/* Navigation Bar - DESKTOP */}
-      <nav className="hidden lg:flex items-center justify-center space-x-6 text-sm">
-        <button onClick={() => navigate('/')} className="transition-colors" style={{ color: '#C8A157' }}>
-          Home
-        </button>
-        <button onClick={() => navigate('/about')} className="transition-colors" style={{ color: '#C8A157' }}>
-          About Us
-        </button>
-        {/* Collections Dropdown */}
-        <div 
-          className="relative"
-          onMouseEnter={() => setIsCollectionsHovered(true)}
-          onMouseLeave={() => setIsCollectionsHovered(false)}
-        >
-          <button 
-            className="transition-colors flex items-center group" 
-            style={{ color: '#C8A157' }}
-          >
-            Collections
-            <ChevronDown className={`h-4 w-4 ml-1 transition-transform duration-300 ${isCollectionsHovered ? 'rotate-180' : ''}`} />
-          </button>
-          <div className={`absolute top-full left-0 mt-2 w-48 bg-white border shadow-lg rounded-md z-50 transition-all duration-300 transform ${
-            isCollectionsHovered 
-              ? 'opacity-100 translate-y-0 visible' 
-              : 'opacity-0 -translate-y-2 invisible'
-          }`}>
-            {collectionItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => navigate(item.path)}
-                className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-black transition-colors first:rounded-t-md last:rounded-b-md"
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-        </div>
-        <button onClick={() => navigate('/lab-grown-diamonds')} className="transition-colors" style={{ color: '#C8A157' }}>
-          Lab Grown Diamonds
-        </button>
-        <button onClick={() => navigate('/contact')} className="transition-colors" style={{ color: '#C8A157' }}>
-          Contact Us
-        </button>
-        <Button
-          className="text-white px-2 py-1 md:px-4 md:py-2 rounded-full hover:opacity-80 text-xs md:text-sm"
-          style={{ backgroundColor: '#C8A157' }}
-          onClick={() => navigate('/products')}
-        >
-          Shop Now
-        </Button>
-      </nav>
-
-      {/* MOBILE Navigation Bar */}
-      <nav
-        className="
-          flex
-          lg:hidden
-          w-full
-          overflow-x-auto
-          whitespace-nowrap
-          scrollbar-thin
-          bg-white
-          rounded-lg
-          shadow
-          mt-1
-          border
-          items-center
-          px-2 py-1
-          relative
-          z-40
-        "
-        style={{
-          WebkitOverflowScrolling: "touch",
-        }}
-      >
-        <button
-          onClick={() => navigate('/')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
-          style={{ color: '#001c39', background: 'transparent' }}
-        >
-          Home
-        </button>
-        <button
-          onClick={() => navigate('/about')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
-          style={{ color: '#001c39', background: 'transparent' }}
-        >
-          About Us
-        </button>
-        {/* Mobile Collections Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="transition-colors flex items-center whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full" style={{ color: '#001c39', background: "transparent" }}>
-              Collections
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white border shadow-lg z-50">
-            {collectionItems.map((item) => (
-              <DropdownMenuItem
-                key={item.name}
-                onClick={() => navigate(item.path)}
-                className="cursor-pointer hover:bg-gray-100"
-              >
-                {item.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <button
-          onClick={() => navigate('/lab-grown-diamonds')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
-          style={{ color: '#001c39', background: 'transparent' }}
-        >
-          Lab Grown Diamonds
-        </button>
-        <button
-          onClick={() => navigate('/contact')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
-          style={{ color: '#001c39', background: 'transparent' }}
-        >
-          Contact Us
-        </button>
-        <Button
-          className="
-            text-white
-            px-4 py-2
-            rounded-full
-            hover:opacity-80
-            text-xs
-            whitespace-nowrap
-            mx-1
-            font-bold
-            shadow
-          "
-          style={{ backgroundColor: '#C8A157', color: '#fff', border: "none" }}
-          onClick={() => navigate('/products')}
-        >
-          Shop Now
-        </Button>
-      </nav>
-
-      <SearchModal 
-        isOpen={isSearchOpen} 
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         triggerRef={searchButtonRef}
       />
     </header>
   );
 };
+
 export default Header;
