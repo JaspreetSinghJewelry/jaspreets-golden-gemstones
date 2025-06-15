@@ -10,6 +10,7 @@ import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
+import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -17,7 +18,6 @@ const Index = () => {
   const [loadingTime, setLoadingTime] = useState(0);
   const [hardError, setHardError] = useState<string | null>(null);
 
-  // Debug: log loading and auth state changes
   useEffect(() => {
     console.log("[DEBUG - Index.tsx] isAuthenticated:", isAuthenticated, "loading:", loading);
   }, [isAuthenticated, loading]);
@@ -27,20 +27,16 @@ const Index = () => {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 3000);
-
       return () => clearTimeout(timer);
     }
   }, [isAuthenticated, loading]);
 
-  // Debug: Hard error/fallback in case "loading" never resolves (increased timeout for debounce)
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     if (loading) {
       interval = setInterval(() => {
         setLoadingTime((t) => t + 1);
       }, 1000);
-
-      // After 8 seconds, show error with extra visibility
       if (loadingTime > 8) {
         setHardError("Still loading after 8 seconds. Something may be wrong with authentication, data fetching, or code. Check browser console (F12) for errors.");
       }
@@ -53,7 +49,6 @@ const Index = () => {
     };
   }, [loading, loadingTime]);
 
-  // 1. Top-level boundary for state errors
   if (hardError) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
@@ -90,26 +85,44 @@ const Index = () => {
 
   try {
     console.log("[Index.tsx] Rendering main site content");
+
     return (
       <div className="min-h-screen bg-white">
-        <Header />
-        <ProductCarousel />
-        <Categories />
-        <LabGrownDiamonds />
-        <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
+        <SectionErrorBoundary label="Header">
+          <Header />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="ProductCarousel">
+          <ProductCarousel />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="Categories">
+          <Categories />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="LabGrownDiamonds">
+          <LabGrownDiamonds />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="UploadedImages">
+          <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
+        </SectionErrorBoundary>
         <div className="grid lg:grid-cols-2 gap-0">
-          <InstagramGallery />
-          <LabGrownInstagramGallery />
+          <SectionErrorBoundary label="InstagramGallery">
+            <InstagramGallery />
+          </SectionErrorBoundary>
+          <SectionErrorBoundary label="LabGrownInstagramGallery">
+            <LabGrownInstagramGallery />
+          </SectionErrorBoundary>
         </div>
-        <Footer />
-        <LoginPopup
-          isOpen={showLoginPopup}
-          onClose={() => setShowLoginPopup(false)}
-        />
+        <SectionErrorBoundary label="Footer">
+          <Footer />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="LoginPopup">
+          <LoginPopup
+            isOpen={showLoginPopup}
+            onClose={() => setShowLoginPopup(false)}
+          />
+        </SectionErrorBoundary>
       </div>
     );
   } catch (e: any) {
-    // log the error as much as possible in the browser
     console.error("[Index.tsx Render Error]", e);
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
