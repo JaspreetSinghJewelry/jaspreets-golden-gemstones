@@ -24,78 +24,57 @@ const UserManager = () => {
   const { session, user, isAuthenticated } = useAuth();
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
 
-  // Save fetchUsers out so it doesn't get redefined on each render
   const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      console.log('UserManager: Starting to fetch users...');
-      console.log('UserManager: Current session:', { hasSession: !!session, hasUser: !!user });
-      
-      // Test Supabase connection first
-      const { data: testData, error: testError } = await supabase
-        .from('profiles')
-        .select('count', { count: 'exact', head: true });
+      console.log('[UserManager] Fetching users from `profiles` table');
 
-      if (testError) {
-        console.error('UserManager: Supabase connection test failed:', testError);
-        setError(`Connection failed: ${testError.message}`);
-        toast({
-          title: "Connection Error",
-          description: `Failed to connect to database: ${testError.message}`,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('UserManager: Supabase connection test successful, total rows:', testData);
-
-      // Fetch all users from profiles table
+      // Attempt to fetch all users from 'profiles' in one go without any intermediate testing query.
       const { data, error, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      console.log('UserManager: Query executed:', { 
-        dataLength: data?.length, 
-        totalCount: count,
-        hasError: !!error,
-        errorMessage: error?.message,
-        firstUser: data?.[0]
-      });
-
       if (error) {
-        console.error('UserManager: Database query error:', error);
         setError(`Database error: ${error.message}`);
+        console.error('[UserManager] Supabase error fetching profiles:', error);
         toast({
           title: "Database Error",
           description: `Failed to fetch users: ${error.message}`,
           variant: "destructive"
         });
+        setUsers([]);
+        setLastFetch(new Date());
         return;
       }
 
-      console.log('UserManager: Successfully fetched users:', data?.length || 0);
-      setUsers(data || []);
+      if (!data) {
+        setError('No data received from Supabase');
+        setUsers([]);
+        setLastFetch(new Date());
+        return;
+      }
+
+      console.log(`[UserManager] Profiles fetched: ${data.length} users`);
+      setUsers(data);
       setLastFetch(new Date());
-      
-      if (data && data.length > 0) {
+      if (data.length > 0) {
         toast({
           title: "Users Loaded",
           description: `Successfully loaded ${data.length} users`,
         });
-      } else {
-        console.log('UserManager: No users found in database');
       }
-      
     } catch (error) {
-      console.error('UserManager: Unexpected error during fetch:', error);
-      setError('An unexpected error occurred while fetching users');
+      console.error('[UserManager] Unexpected error:', error);
+      setError('Unexpected error occurred while fetching users');
       toast({
         title: "Unexpected Error",
-        description: "Failed to load user data. Please check your connection.",
+        description: "Failed to load user data.",
         variant: "destructive"
       });
+      setUsers([]);
+      setLastFetch(new Date());
     } finally {
       setLoading(false);
     }
