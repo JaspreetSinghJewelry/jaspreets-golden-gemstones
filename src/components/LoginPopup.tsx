@@ -162,8 +162,8 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-md w-[95vw] max-w-[95vw] p-2 sm:p-6 rounded-lg"
-        style={{ maxWidth: '95vw', width: '95vw', minWidth: 0 }} // For mobile dialogs!
+        className="sm:max-w-xs w-[92vw] max-w-[380px] sm:p-4 p-2 rounded-lg"
+        style={{ maxWidth: '380px', width: '92vw', minWidth: 0, padding: '0.5rem 1rem' }} // Tighter max-width & padding for all screens
       >
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl">Welcome to Jaspreet Singh Jewelry</DialogTitle>

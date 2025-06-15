@@ -24,6 +24,13 @@ const UserManager = () => {
   const { session, user, isAuthenticated } = useAuth();
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
 
+  // Add: Manual sync explanation for admin in debug
+  const handleManualProfileSync = () => {
+    alert(
+      `Manual Sync Required:\n\nIt looks like users in your admin are not in sync with your Supabase Auth users.\n\nTo resolve: Run the profiles backfill SQL migration again in the Supabase SQL Editor. If you need the SQL, contact your developer or run the one previously added via Lovable AI.\n\nAfter running, refresh this page.`
+    );
+  };
+
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
@@ -172,6 +179,9 @@ const UserManager = () => {
     }
   };
 
+  // Add: Show warning if users.length < 3 (assuming you expect at least 3)
+  const showSyncWarning = users.length < 3;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -192,9 +202,31 @@ const UserManager = () => {
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          {/* Removed Sync Users Button */}
+          <Button
+            variant="secondary"
+            onClick={handleManualProfileSync}
+            className="flex items-center gap-2"
+          >
+            <AlertCircle className="h-4 w-4" />
+            Manual Profile Sync
+          </Button>
         </div>
       </div>
+
+      {/* Sync warning */}
+      {showSyncWarning && (
+        <div className="p-2 bg-yellow-50 border border-yellow-200 rounded-md mb-2 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <span className="text-sm text-yellow-800">
+            User profiles appear incomplete. Run the backfill SQL on Supabase to sync all Auth users.
+          </span>
+        </div>
+      )}
+
+      {/* Add more console debugging at top */}
+      <pre className="text-xs bg-gray-100 p-2 rounded max-w-full overflow-x-auto mt-0 text-gray-600">
+        Total profiles loaded: {users.length}
+      </pre>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
