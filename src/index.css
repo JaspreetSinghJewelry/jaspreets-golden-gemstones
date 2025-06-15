@@ -176,19 +176,19 @@
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
   
-  .sm\\:grid-cols-2 {
+  .sm\:grid-cols-2 {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
   
-  .md\\:grid-cols-3 {
+  .md\:grid-cols-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   
-  .lg\\:grid-cols-4 {
+  .lg\:grid-cols-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   
-  .lg\\:grid-cols-5 {
+  .lg\:grid-cols-5 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   
@@ -215,15 +215,15 @@
 
 /* Tablet specific adjustments */
 @media (min-width: 768px) and (max-width: 1199px) {
-  .md\\:grid-cols-3 {
+  .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
-  .lg\\:grid-cols-4 {
+  .lg\:grid-cols-4 {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
-  .lg\\:grid-cols-5 {
+  .lg\:grid-cols-5 {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
@@ -490,7 +490,7 @@
   }
 }
 
-// --- Add MOBILE & CARD UI to better match the reference screenshot ---
+/* --- Add MOBILE & CARD UI to better match the reference screenshot --- */
 @layer components {
   /* Link style for nav bar in mobile */
   .mobile-nav-link {
