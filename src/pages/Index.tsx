@@ -139,16 +139,7 @@ const Index = () => {
             onClose={() => setShowLoginPopup(false)}
           />
         </SectionErrorBoundary>
-        <div className="fixed bottom-5 right-5 z-40">
-          <a
-            href="/#/admin"
-            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded shadow text-xs font-semibold"
-            style={{ boxShadow: "0 2px 8px rgba(200, 16, 16, 0.03)" }}
-            title="Admin Panel"
-          >
-            Go to Admin Panel
-          </a>
-        </div>
+        {/* REMOVED: Floating admin panel button */}
       </div>
     );
   } catch (e: any) {
