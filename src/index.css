@@ -146,91 +146,11 @@
   }
 }
 
-/* Responsive mobile-first design with improved zoom behavior */
-@media (max-width: 1199px) {
-  /* Allow natural responsive behavior instead of forcing desktop layout */
-  body {
-    min-width: auto !important;
-    overflow-x: auto !important;
-    /* Better scrolling on mobile */
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
-  
-  /* Allow responsive viewport on mobile */
-  html {
-    min-width: auto !important;
-  }
-  
-  /* Make container responsive */
-  .container {
-    min-width: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  
-  /* Responsive grid layouts for mobile */
-  .grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .sm\\:grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  /* Responsive text sizes for better mobile reading */
-  .text-3xl { font-size: 1.5rem !important; }
-  .text-4xl { font-size: 1.875rem !important; }
-  .text-5xl { font-size: 2.25rem !important; }
-  
-  /* Better mobile spacing */
-  .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
-  .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
-  
-  /* Responsive margins */
-  .mb-8 { margin-bottom: 1.5rem !important; }
-  .mb-10 { margin-bottom: 2rem !important; }
-  .mb-12 { margin-bottom: 2rem !important; }
-  
-  /* Better mobile gaps */
-  .gap-8 { gap: 1rem !important; }
-  .space-x-6 > * + * { margin-left: 1rem !important; }
-}
-
-/* Tablet specific adjustments */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-}
+/* Remove mobile-specific horizontal scrolling for grids and cards,
+   revert to a stacked/vertical layout for mobile and tablet */
 
 /* Mobile-specific enhancements */
 @media (max-width: 767px) {
-  /* Ensure main containers never overflow horizontally */
   html, body, .container, .responsive-layout {
     width: 100vw !important;
     min-width: 0 !important;
@@ -238,173 +158,75 @@
     overflow-x: hidden !important;
   }
 
-  /* Eliminate unnecessary horizontal scroll for all children */
-  body > * {
+  /* Remove horizontal scrolling helpers for cards/grids/tables */
+  .responsive-grid,
+  .image-grid,
+  .grid,
+  .admin-content,
+  .horizontal-scroll,
+  .table-responsive {
+    overflow-x: visible !important;
+    -webkit-overflow-scrolling: auto !important;
     max-width: 100vw !important;
-    box-sizing: border-box;
   }
 
-  /* Touch-friendly navigation enhancements */
-  nav button,
-  nav a {
-    font-size: 1.07rem !important;
-    min-height: 46px !important;
-    min-width: 44px !important;
-    padding: 12px 16px !important;
-    border-radius: 20px !important;
-    margin: 0 2px !important;
-    line-height: 1.2 !important;
-    background: #fff;
-    color: #001c39;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.03);
-    border: none;
-    transition: background 0.1s;
-  }
-  nav button:active, nav button:focus, nav a:active, nav a:focus {
-    background: #f5eee5;
-    color: #c8a157;
-  }
-
-  /* Improve all button and input tap targets */
-  button, [role="button"], input[type="submit"], input[type="button"] {
-    font-size: 1.06rem !important;
-    min-height: 46px !important;
-    min-width: 44px !important;
-    padding: 12px 14px !important;
-    border-radius: 22px !important;
-    margin: 3px 0 !important;
-  }
-
-  /* Inputs & selects: better visibility and focus on mobile */
-  input[type="text"], input[type="email"], input[type="password"], input[type="number"],
-  input[type="search"], textarea, select {
-    font-size: 17px !important;
-    padding: 13px 10px !important;
-    min-height: 42px !important;
-    border-radius: 11px !important;
-  }
-
-  /* Main grid containers: single column on mobile */
+  /* Responsive: stack grids on mobile */
   .responsive-grid,
   .image-grid,
   .grid,
   .admin-content {
-    grid-template-columns: 1fr !important;
-    gap: 0.95rem !important;
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 1.2rem !important;
     padding-left: 4px !important;
     padding-right: 4px !important;
   }
 
-  /* Headings and titles: smaller font, more concise spacing */
-  .text-3xl, .text-4xl, .text-5xl {
-    font-size: 1.15rem !important;
-    line-height: 1.12 !important;
-    margin-bottom: 0.85rem !important;
-  }
-
-  /* Card images: ensure full width, rounded for mobiles */
-  .featured-collection-img,
-  .collections-card img,
-  .product-card img {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 120px;
-    object-fit: cover !important;
-    border-radius: 0.8rem !important;
-  }
-
-  /* Remove box-shadow for lighter UI on mobile cards */
-  .featured-collection-card,
+  /* Make sure cards and modals use full width but no horizontal scroll */
+  .product-card,
   .collections-card,
-  .product-card {
-    box-shadow: 0 0.5px 5px rgba(0,0,0,0.04) !important;
-    border-radius: 1.1rem !important;
-    margin-bottom: 1rem !important;
-    padding: 7px 4px !important;
-  }
-
-  /* Footer: less vertical space */
-  footer {
-    text-align: center !important;
-    padding: 0.9rem 0 !important;
-    font-size: 0.97rem !important;
-  }
-
-  /* Modals/dropdowns: full screen on mobile */
-  .modal, .popover, .dropdown-menu {
-    max-width: 100vw !important;
+  .featured-collection-card,
+  .modal,
+  .popover,
+  .dropdown-menu
+   {
+    width: 100% !important;
     min-width: 0 !important;
-    width: 100vw !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: 0 !important;
-    border-radius: 0 !important;
-  }
-
-  /* Ensure dropdown menus are visible and have proper z-index */
-  .dropdown-menu {
-    z-index: 1100 !important;
-    background: #fff !important;
-  }
-
-  /* Safe area padding for notch/iOS */
-  .safe-area-inset {
-    padding-top: env(safe-area-inset-top, 8px);
-    padding-bottom: env(safe-area-inset-bottom, 8px);
-    padding-left: env(safe-area-inset-left, 0);
-    padding-right: env(safe-area-inset-right, 0);
-  }
-
-  /* Table horizontal scrolling helper class */
-  .table-responsive {
-    width: 100vw !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
     max-width: 100vw !important;
-    padding-bottom: 8px;
+    border-radius: 0.7rem !important;
+    overflow-x: visible !important;
+    margin-bottom: 1.2rem !important;
+    padding: 10px 5px !important;
   }
-  table {
+
+  /* Headings: smaller font, tight spacing */
+  .text-3xl, .text-4xl, .text-5xl {
+    font-size: 1.10rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Inputs and buttons full width/touch-friendly */
+  .modal button, .modal input, .modal select,
+  .popover button, .popover input, .popover select {
     width: 100%;
-    min-width: 600px;
-    display: block !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
+    font-size: 1.08rem !important;
   }
 
-  /* Carousel/slider horizontal scroll (helper) */
-  .horizontal-scroll {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    gap: 0.75rem !important;
-    padding-bottom: 6px;
-    max-width: 100vw !important;
-  }
-  .horizontal-scroll > * {
-    flex: 0 0 auto !important;
-    min-width: 170px !important;
-    margin-right: 1rem !important;
-  }
-
-  /* Keep modals, drawers, dropdowns full screen with high z-index */
-  .modal, .popover, .dropdown-menu {
-    left: 0 !important;
-    right: 0 !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
-    min-width: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    z-index: 1600 !important;
+  /* Tabs/navigation: stack vertically */
+  nav,
+  .tab-navigation {
+    flex-direction: column !important;
+    align-items: stretch !important;
   }
 }
 
-@media (min-width:768px) and (max-width:1199px) {
-  /* Tablet: 2 column grid, slightly smaller images */
+/* Tablet specific: stacked cards, less scroll */
+@media (min-width: 768px) and (max-width: 1199px) {
   .responsive-grid,
   .image-grid,
-  .grid {
+  .grid,
+  .admin-content {
     grid-template-columns: 1fr 1fr !important;
     gap: 1.2rem !important;
     min-width: 0 !important;
@@ -412,44 +234,27 @@
     max-width: 100vw !important;
     padding-left: 12px !important;
     padding-right: 12px !important;
-  }
-  .product-card,
-  .collections-card,
-  .featured-collection-card {
-    width: 95vw !important;
-    min-width: 44vw !important;
-    max-width: 100vw !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    overflow-x: hidden !important;
   }
 }
 
-/* Always show .table-responsive scrollbars if needed */
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 2px;
-}
-.table-responsive table {
-  min-width: 500px;
-  white-space: nowrap;
-}
-
-/* Utility: horizontal-scroll for horizontally scrolling card groups/carousels */
+/* Remove .horizontal-scroll utility entirely from desktop too */
 .horizontal-scroll {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: visible !important;
+  -webkit-overflow-scrolling: auto !important;
   gap: 1rem;
   width: 100vw;
   max-width: 100vw;
 }
-.horizontal-scroll > * {
-  flex: 0 0 auto;
-  min-width: 180px;
-  margin-right: 0.75rem;
+
+/* Remove .table-responsive horizontal scroll for all screens */
+.table-responsive, .table-responsive table {
+  overflow-x: visible !important;
+  -webkit-overflow-scrolling: auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  padding-bottom: 0 !important;
 }
 
 ::-webkit-scrollbar {

@@ -161,24 +161,27 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent 
+        className="sm:max-w-md w-[95vw] max-w-[95vw] p-2 sm:p-6 rounded-lg"
+        style={{ maxWidth: '95vw', width: '95vw', minWidth: 0 }} // For mobile dialogs!
+      >
         <DialogHeader>
-          <DialogTitle>Welcome to Jaspreet Singh Jewelry</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">Welcome to Jaspreet Singh Jewelry</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">
             Sign in to access exclusive collections and features
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="signin" className="text-xs sm:text-base py-2 sm:py-3">Sign In</TabsTrigger>
+            <TabsTrigger value="signup" className="text-xs sm:text-base py-2 sm:py-3">Sign Up</TabsTrigger>
           </TabsList>
 
           <TabsContent value="signin">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="signin-email">Email</Label>
+                <Label htmlFor="signin-email" className="text-xs sm:text-sm">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -187,11 +190,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.email ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   {formErrors.email && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.email}
                     </p>
@@ -200,7 +203,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               </div>
               
               <div>
-                <Label htmlFor="signin-password">Password</Label>
+                <Label htmlFor="signin-password" className="text-xs sm:text-sm">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -209,11 +212,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`pl-10 ${formErrors.password ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.password ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   {formErrors.password && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.password}
                     </p>
@@ -224,14 +227,13 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black hover:bg-gray-800"
+                className="w-full bg-black hover:bg-gray-800 text-xs sm:text-base py-3"
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
 
-              {/* Email confirmation help */}
               {(pendingConfirmation || activeTab === 'signin') && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <div className="mt-4 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-md">
                   <div className="flex items-start">
                     <CheckCircle className="h-4 w-4 text-blue-400 mt-0.5 mr-2" />
                     <div>
@@ -250,7 +252,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           <TabsContent value="signup">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="signup-name">Full Name</Label>
+                <Label htmlFor="signup-name" className="text-xs sm:text-sm">Full Name</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -259,11 +261,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your full name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className={`pl-10 ${formErrors.fullName ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.fullName ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   {formErrors.fullName && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.fullName}
                     </p>
@@ -272,7 +274,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <Label htmlFor="signup-phone">Phone</Label>
+                <Label htmlFor="signup-phone" className="text-xs sm:text-sm">Phone</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -281,11 +283,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className={`pl-10 ${formErrors.phone ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.phone ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   {formErrors.phone && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.phone}
                     </p>
@@ -294,7 +296,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div>
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email" className="text-xs sm:text-sm">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -303,11 +305,11 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.email ? 'border-red-500' : ''}`}
                     disabled={isLoading}
                   />
                   {formErrors.email && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.email}
                     </p>
@@ -316,7 +318,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               </div>
               
               <div>
-                <Label htmlFor="signup-password">Password</Label>
+                <Label htmlFor="signup-password" className="text-xs sm:text-sm">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -325,12 +327,12 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                     placeholder="Create a password (min 6 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`pl-10 ${formErrors.password ? 'border-red-500' : ''}`}
+                    className={`pl-10 text-sm sm:text-base ${formErrors.password ? 'border-red-500' : ''}`}
                     minLength={6}
                     disabled={isLoading}
                   />
                   {formErrors.password && (
-                    <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <p className="text-red-500 text-xs mt-1 flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {formErrors.password}
                     </p>
@@ -341,7 +343,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-black hover:bg-gray-800"
+                className="w-full bg-black hover:bg-gray-800 text-xs sm:text-base py-3"
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
@@ -350,7 +352,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         </Tabs>
 
         <div className="text-center pt-4">
-          <Button variant="ghost" onClick={goToAuthPage} className="text-sm">
+          <Button variant="ghost" onClick={goToAuthPage} className="text-xs sm:text-sm">
             Need more options? Go to full sign in page
           </Button>
         </div>
