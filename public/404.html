@@ -4,34 +4,22 @@
   <head>
     <meta charset="utf-8">
     <title>Jaspreet Singh Jewelry</title>
-    <meta http-equiv="refresh" content="0;url=/" />
     <script type="text/javascript">
-      // -- GitHub Pages SPA 404 redirect hack --
-      // If a user loads a direct deep route like /admin, 
-      // this JS rewrites the URL to root with encoded path as query param, so the SPA can handle.
-      (function() {
-        var l = window.location;
-        var pathname = l.pathname;
-        // Exclude /, /index.html, and already handled paths
-        if (pathname !== "/" && pathname !== "/index.html" && !pathname.startsWith("/?/")) {
-          l.replace(
-            l.protocol + "//" + l.host + "/?/" + pathname.slice(1) +
-            (l.search ? "&" + l.search.slice(1) : "") +
-            l.hash
-          );
-        }
-      })();
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      var pathSegmentsToKeep = 0;
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + 
+        '/?/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash
+      );
     </script>
-    <style>
-      body { background: #fff; color: #c00; font-family: sans-serif; }
-      .center { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; }
-      h1 { font-size: 2em; }
-    </style>
   </head>
   <body>
-    <div class="center">
-      <h1>404</h1>
-      <p>Redirecting back to the app...</p>
-    </div>
   </body>
 </html>
