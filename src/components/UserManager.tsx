@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2, AlertCircle } from 'lucide-react';
+import { Users, RefreshCw, Images, Calendar, Mail, Phone, User, Trash2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,67 +22,28 @@ const UserManager = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { session, user, isAuthenticated } = useAuth();
-  const [lastFetch, setLastFetch] = useState<Date | null>(null);
-
-  // Add: Manual sync explanation for admin in debug
-  const handleManualProfileSync = () => {
-    alert(
-      `Manual Sync Required:\n\nIt looks like users in your admin are not in sync with your Supabase Auth users.\n\nTo resolve: Run the profiles backfill SQL migration again in the Supabase SQL Editor. If you need the SQL, contact your developer or run the one previously added via Lovable AI.\n\nAfter running, refresh this page.`
-    );
-  };
 
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log('[UserManager] Fetching users from `profiles` table');
-
-      // Attempt to fetch all users from 'profiles' in one go without any intermediate testing query.
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('*', { count: 'exact' })
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
         setError(`Database error: ${error.message}`);
-        console.error('[UserManager] Supabase error fetching profiles:', error);
-        toast({
-          title: "Database Error",
-          description: `Failed to fetch users: ${error.message}`,
-          variant: "destructive"
-        });
         setUsers([]);
-        setLastFetch(new Date());
-        return;
-      }
-
-      if (!data) {
+      } else if (!data) {
         setError('No data received from Supabase');
         setUsers([]);
-        setLastFetch(new Date());
-        return;
-      }
-
-      console.log(`[UserManager] Profiles fetched: ${data.length} users`);
-      setUsers(data);
-      setLastFetch(new Date());
-      if (data.length > 0) {
-        toast({
-          title: "Users Loaded",
-          description: `Successfully loaded ${data.length} users`,
-        });
+      } else {
+        setUsers(data);
       }
     } catch (error) {
-      console.error('[UserManager] Unexpected error:', error);
       setError('Unexpected error occurred while fetching users');
-      toast({
-        title: "Unexpected Error",
-        description: "Failed to load user data.",
-        variant: "destructive"
-      });
       setUsers([]);
-      setLastFetch(new Date());
     } finally {
       setLoading(false);
     }
@@ -91,41 +53,26 @@ const UserManager = () => {
     if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This action cannot be undone.`)) {
       return;
     }
-
     try {
-      console.log('UserManager: Deleting user:', { userId, userName });
-      
-      // Delete user's orders first (if any)
-      const { error: ordersError } = await supabase
-        .from('orders')
-        .delete()
-        .eq('user_id', userId);
-
-      if (ordersError) {
-        console.error('UserManager: Error deleting user orders:', ordersError);
-        // Continue anyway, as user might not have orders
-      }
-
-      // Delete the user profile
+      await supabase.from('orders').delete().eq('user_id', userId);
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
         .eq('id', userId);
-
       if (profileError) {
-        console.error('UserManager: Error deleting user profile:', profileError);
-        throw profileError;
+        toast({
+          title: "Delete Failed",
+          description: "Failed to delete the user. Please try again.",
+          variant: "destructive"
+        });
+        return;
       }
-
       toast({
         title: "User Deleted",
-        description: `User "${userName || 'Unknown User'}" has been deleted successfully.`
+        description: `User "${userName || 'Unknown User'}" has been deleted.`
       });
-
-      // Refresh the users list
       fetchUsers();
     } catch (error) {
-      console.error('UserManager: Error deleting user:', error);
       toast({
         title: "Delete Failed",
         description: "Failed to delete the user. Please try again.",
@@ -137,7 +84,6 @@ const UserManager = () => {
   useEffect(() => {
     fetchUsers();
 
-    // Real-time: fetch on any change in 'profiles'
     const channel = supabase
       .channel('public:profiles-changes')
       .on(
@@ -147,20 +93,13 @@ const UserManager = () => {
           schema: 'public',
           table: 'profiles'
         },
-        (payload) => {
-          fetchUsers();
-        }
+        (_payload) => fetchUsers()
       )
       .subscribe();
 
-    // Polling as backup: fetch every 10 seconds
-    const pollInterval = setInterval(() => {
-      fetchUsers();
-    }, 10000); // 10 seconds
+    const pollInterval = setInterval(() => fetchUsers(), 10000);
 
-    // === New: Listen for signup and force fetch ===
-    const handleUserSignedUp = (event: any) => {
-      console.log('[UserManager] User signed up event received:', event.detail);
+    const handleUserSignedUp = (_event: any) => {
       fetchUsers();
     };
     window.addEventListener('user-signed-up', handleUserSignedUp);
@@ -174,21 +113,17 @@ const UserManager = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      return new Date(dateString).toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
       });
-    } catch (error) {
-      console.error('UserManager: Error formatting date:', error);
+    } catch (_error) {
       return 'Invalid date';
     }
   };
-
-  // Add: Show warning if users.length < 3 (assuming you expect at least 3)
-  const showSyncWarning = users.length < 3;
 
   return (
     <div className="space-y-6">
@@ -200,44 +135,16 @@ const UserManager = () => {
             <p className="text-gray-600">View and manage user registrations</p>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Button 
-            onClick={fetchUsers}
-            disabled={loading}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleManualProfileSync}
-            className="flex items-center gap-2"
-          >
-            <AlertCircle className="h-4 w-4" />
-            Manual Profile Sync
-          </Button>
-        </div>
+        <Button
+          onClick={fetchUsers}
+          disabled={loading}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
       </div>
-
-      {/* Sync warning */}
-      {showSyncWarning && (
-        <div className="p-2 bg-yellow-50 border border-yellow-200 rounded-md mb-2 flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 text-yellow-600" />
-          <span className="text-sm text-yellow-800">
-            User profiles appear incomplete. Run the backfill SQL on Supabase to sync all Auth users.
-          </span>
-        </div>
-      )}
-
-      {/* ENHANCED DEBUGGING */}
-      <pre className="text-xs bg-gray-100 p-2 rounded max-w-full overflow-x-auto mt-0 text-gray-600">
-        {`Total profiles loaded: ${users.length}
-User IDs (from profiles table):\n${users.map(u => u.id).join('\n')}
-Emails loaded:\n${users.map(u => u.email).join('\n')}
-`}
-      </pre>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
@@ -247,9 +154,6 @@ Emails loaded:\n${users.map(u => u.email).join('\n')}
               <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
-                <p className="mt-2 text-xs">
-                  Make sure your Supabase connection is properly configured and the profiles table exists.
-                </p>
               </div>
             </div>
           </div>
@@ -276,26 +180,18 @@ Emails loaded:\n${users.map(u => u.email).join('\n')}
               <p className="text-sm mt-2">
                 {error ? 'Check the error message above' : 'Users will appear here after they sign up'}
               </p>
-              {!error && (
-                <Button 
-                  variant="outline" 
-                  onClick={fetchUsers} 
-                  className="mt-4"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Retry Loading
-                </Button>
-              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Contact Info</TableHead>
-                    <TableHead>Registration Date</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>UID</TableHead>
+                    <TableHead>Display Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Providers</TableHead>
+                    <TableHead>Created At</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -303,49 +199,30 @@ Emails loaded:\n${users.map(u => u.email).join('\n')}
                   {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                            <User className="h-4 w-4 text-red-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {user.full_name || 'No name provided'}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              ID: {user.id.slice(0, 8)}...
-                            </div>
-                          </div>
-                        </div>
+                        <div className="font-mono text-xs text-gray-800">{user.id}</div>
                       </TableCell>
                       <TableCell>
-                        <div className="space-y-1">
-                          {user.email && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Mail className="h-3 w-3 text-gray-400" />
-                              <span>{user.email}</span>
-                            </div>
-                          )}
-                          {user.phone && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Phone className="h-3 w-3 text-gray-400" />
-                              <span>{user.phone}</span>
-                            </div>
-                          )}
-                          {!user.email && !user.phone && (
-                            <span className="text-sm text-gray-400">No contact info</span>
-                          )}
-                        </div>
+                        {user.full_name || "N/A"}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="h-3 w-3" />
-                          {formatDate(user.created_at)}
-                        </div>
+                        {user.email ?? <span className="text-gray-400">N/A</span>}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className="bg-green-100 text-green-700">
-                          Active
-                        </Badge>
+                        {user.phone ?? <span className="text-gray-400">N/A</span>}
+                      </TableCell>
+                      <TableCell>
+                        {user.email ? (
+                          <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
+                            Email
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
+                            Unknown
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {formatDate(user.created_at)}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -366,9 +243,6 @@ Emails loaded:\n${users.map(u => u.email).join('\n')}
           )}
         </CardContent>
       </Card>
-      <div className="text-xs text-gray-400 text-right pb-2">
-        Last user fetch at: {lastFetch ? lastFetch.toLocaleTimeString() : "Never"}
-      </div>
     </div>
   );
 };
