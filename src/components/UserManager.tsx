@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +23,7 @@ const UserManager = () => {
   const [error, setError] = useState<string | null>(null);
   const { session, user, isAuthenticated } = useAuth();
 
+  // Save fetchUsers out so it doesn't get redefined on each render
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -149,7 +149,29 @@ const UserManager = () => {
   useEffect(() => {
     console.log('UserManager: Component mounted, fetching users...');
     fetchUsers();
-  }, []);
+
+    // --- Realtime Subscription ---
+    const channel = supabase
+      .channel('public:profiles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        (payload) => {
+          // For any insert, update, or delete on profiles, refetch user list to stay up to date
+          console.log('UserManager: Realtime change detected on profiles table:', payload);
+          fetchUsers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []); // Only once on mount
 
   const formatDate = (dateString: string) => {
     try {
