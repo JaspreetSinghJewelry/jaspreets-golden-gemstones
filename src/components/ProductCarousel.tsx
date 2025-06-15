@@ -14,9 +14,9 @@ const ProductCarousel = () => {
   const products = [
     {
       id: 1,
-      name: 'Diamond Solitaire Ring',
+      name: 'Gemstone Statement Earrings',
       image: '/lovable-uploads/6906fdcc-2913-4e7a-9f80-ea8a32a9d009.png',
-      price: '₹45,999'
+      price: '₹68,999'
     },
     {
       id: 2,
@@ -32,9 +32,9 @@ const ProductCarousel = () => {
     },
     {
       id: 4,
-      name: 'Gemstone Statement Earrings',
+      name: 'Diamond Solitaire Ring',
       image: '/lovable-uploads/93d8089d-ea97-407c-bcef-9175a04024b9.png',
-      price: '₹68,999'
+      price: '₹45,999'
     }
   ];
 
@@ -43,42 +43,44 @@ const ProductCarousel = () => {
 
     const interval = setInterval(() => {
       api.scrollNext();
-    }, 2000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [api]);
 
   return (
-    <section className="px-4 sm:px-6 py-8 sm:py-12 md:py-16 bg-white">
-      <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8 md:mb-10 text-black">Featured Collection</h3>
-      <div className="max-w-4xl mx-auto">
+    <section className="px-4 py-8 bg-white">
+      <h3 className="text-2xl font-semibold text-center mb-8 text-black">Featured Collection</h3>
+      <div className="max-w-full mx-auto">
         <Carousel 
           setApi={setApi}
           className="w-full"
           opts={{
-            align: "start",
+            align: "center",
             loop: true,
           }}
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-4">
             {products.map((product) => (
-              <CarouselItem key={product.id}>
-                <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden rounded-xl mx-2">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6">
-                    <h4 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2">{product.name}</h4>
-                    <p className="text-base sm:text-lg text-white">{product.price}</p>
+              <CarouselItem key={product.id} className="pl-4">
+                <div className="relative w-full">
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-lg">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-4">
+                      <h4 className="text-lg font-semibold text-white mb-1">{product.name}</h4>
+                      <p className="text-base text-white font-medium">{product.price}</p>
+                    </div>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden sm:flex" />
-          <CarouselNext className="hidden sm:flex" />
+          <CarouselPrevious className="hidden sm:flex -left-4" />
+          <CarouselNext className="hidden sm:flex -right-4" />
         </Carousel>
       </div>
     </section>

@@ -4,16 +4,19 @@ import Header from "@/components/Header";
 import ProductCarousel from "@/components/ProductCarousel";
 import UploadedImages from "@/components/UploadedImages";
 import Categories from "@/components/Categories";
+import MobileCategories from "@/components/MobileCategories";
 import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -37,13 +40,20 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <Header />
       <ProductCarousel />
-      <Categories />
+      
+      {/* Show MobileCategories on mobile, Categories on desktop */}
+      {isMobile ? <MobileCategories /> : <Categories />}
+      
       <LabGrownDiamonds />
       <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
-      <div className="grid lg:grid-cols-2 gap-0">
-        <InstagramGallery />
-        <LabGrownInstagramGallery />
-      </div>
+      
+      {!isMobile && (
+        <div className="grid lg:grid-cols-2 gap-0">
+          <InstagramGallery />
+          <LabGrownInstagramGallery />
+        </div>
+      )}
+      
       <Footer />
       
       <LoginPopup 
