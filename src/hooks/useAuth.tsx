@@ -22,43 +22,44 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Auth: Initializing AuthProvider...');
-    
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('Auth: State change:', { event, hasSession: !!session });
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    // Then get initial session
-    const getInitialSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Auth: Error getting session:', error);
-        } else {
-          console.log('Auth: Initial session:', { hasSession: !!session });
+    console.log('[AuthProvider] Mounting');
+    try {
+      // Set up auth state listener first
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          console.log('[AuthProvider] State change:', { event, hasSession: !!session });
           setSession(session);
           setUser(session?.user ?? null);
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Auth: Exception getting session:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    getInitialSession();
+      // Then get initial session
+      const getInitialSession = async () => {
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (error) {
+            console.error('[AuthProvider] Error getting session:', error);
+          } else {
+            setSession(session);
+            setUser(session?.user ?? null);
+          }
+        } catch (err) {
+          console.error('[AuthProvider] Exception getting session:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getInitialSession();
 
-    return () => {
-      console.log('Auth: Cleaning up subscription');
-      subscription.unsubscribe();
-    };
+      return () => {
+        console.log('[AuthProvider] Cleaning up subscription');
+        subscription.unsubscribe();
+      };
+    } catch (err) {
+      console.error('[AuthProvider] Initialization error:', err);
+      setLoading(false);
+    }
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
@@ -178,17 +179,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  try {
+    return (
+      <AuthContext.Provider value={value}>
+        {children}
+      </AuthContext.Provider>
+    );
+  } catch (err) {
+    console.error('[AuthProvider] Fatal error in provider:', err);
+    return (
+      <div className="p-8 bg-red-100 text-red-800">
+        AuthProvider encountered a fatal error. See console for details.
+      </div>
+    );
+  }
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  try {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+      throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+  } catch (err) {
+    console.error('[useAuth] Hook usage error:', err);
+    throw err;
   }
-  return context;
 };

@@ -59,7 +59,7 @@ function App() {
   // Catch React runtime errors at the root
   return (
     <RootErrorBoundary>
-      {/* Removed <React.StrictMode> from here */}
+      {/* No React.StrictMode here */}
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AdminAuthProvider>
@@ -67,6 +67,8 @@ function App() {
               <WishlistProvider>
                 <Router>
                   <div className="App">
+                    {/* NEW: Add debug marker for app loaded */}
+                    <div style={{ display: "none" }} id="app-loaded-debug">App Rendered</div>
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
