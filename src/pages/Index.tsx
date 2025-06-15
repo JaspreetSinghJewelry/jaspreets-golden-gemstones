@@ -14,6 +14,13 @@ import { useAuth } from "@/hooks/useAuth";
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const [loadingTime, setLoadingTime] = useState(0);
+  const [hardError, setHardError] = useState<string | null>(null);
+
+  // Debug: log loading and auth state changes
+  useEffect(() => {
+    console.log("[DEBUG - Index.tsx] isAuthenticated:", isAuthenticated, "loading:", loading);
+  }, [isAuthenticated, loading]);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -25,33 +32,91 @@ const Index = () => {
     }
   }, [isAuthenticated, loading]);
 
-  if (loading) {
+  // Debug: Hard error/fallback in case "loading" never resolves
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    if (loading) {
+      interval = setInterval(() => {
+        setLoadingTime((t) => t + 1);
+      }, 1000);
+
+      if (loadingTime > 5) {
+        setHardError("Still loading after 5 seconds. There may be an issue with authentication or data fetching. Check console for errors.");
+      }
+    } else {
+      setLoadingTime(0);
+      setHardError(null);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [loading, loadingTime]);
+
+  // Catch and display any top-level errors
+  if (hardError) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="p-6 border border-red-300 rounded bg-red-50">
+          <h2 className="font-bold text-red-700 mb-2">Debug Error</h2>
+          <pre className="text-xs text-red-900">{hardError}</pre>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 border rounded text-red-700 hover:bg-red-100"
+        >Reload</button>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <ProductCarousel />
-      <Categories />
-      <LabGrownDiamonds />
-      <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
-      <div className="grid lg:grid-cols-2 gap-0">
-        <InstagramGallery />
-        <LabGrownInstagramGallery />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mb-4"></div>
+        <span className="text-gray-600 font-semibold">Loading site data...</span>
+        {loadingTime > 2 && (
+          <div className="mt-4 text-xs text-red-400 animate-pulse">
+            If you see this message for more than a few seconds, check your authentication and Supabase setup!
+          </div>
+        )}
       </div>
-      <Footer />
-      
-      <LoginPopup 
-        isOpen={showLoginPopup} 
-        onClose={() => setShowLoginPopup(false)}
-      />
-    </div>
-  );
+    );
+  }
+
+  // Fallback crashed render
+  try {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <ProductCarousel />
+        <Categories />
+        <LabGrownDiamonds />
+        <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
+        <div className="grid lg:grid-cols-2 gap-0">
+          <InstagramGallery />
+          <LabGrownInstagramGallery />
+        </div>
+        <Footer />
+        <LoginPopup
+          isOpen={showLoginPopup}
+          onClose={() => setShowLoginPopup(false)}
+        />
+      </div>
+    );
+  } catch (e: any) {
+    console.error("[Index.tsx Render Error]", e);
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="p-6 border border-red-300 rounded bg-red-50">
+          <h2 className="font-bold text-red-700 mb-2">Fatal Error Rendering Index</h2>
+          <pre className="text-xs text-red-900">{e?.toString?.() || "Unknown error"}</pre>
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 border rounded text-red-700 hover:bg-red-100"
+        >Reload</button>
+      </div>
+    );
+  }
 };
 
 export default Index;
