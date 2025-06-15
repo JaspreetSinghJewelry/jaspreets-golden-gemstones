@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -111,8 +110,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Navigation Bar */}
-      {/* Desktop Navigation */}
+      {/* Navigation Bar - DESKTOP */}
       <nav className="hidden lg:flex items-center justify-center space-x-6 text-sm">
         <button onClick={() => navigate('/')} className="transition-colors" style={{ color: '#C8A157' }}>
           Home
@@ -164,26 +162,47 @@ const Header = () => {
         </Button>
       </nav>
 
-      {/* Mobile Navigation - Always Visible in Header */}
-      <nav className="flex lg:hidden items-center w-full overflow-x-auto space-x-2 scrollbar-thin" style={{ WebkitOverflowScrolling: "touch" }}>
+      {/* MOBILE Navigation Bar */}
+      <nav
+        className="
+          flex
+          lg:hidden
+          w-full
+          overflow-x-auto
+          whitespace-nowrap
+          scrollbar-thin
+          bg-white
+          rounded-lg
+          shadow
+          mt-1
+          border
+          items-center
+          px-2 py-1
+          relative
+          z-40
+        "
+        style={{
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
         <button
           onClick={() => navigate('/')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 rounded-full"
-          style={{ color: '#C8A157', background: 'transparent' }}
+          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
+          style={{ color: '#001c39', background: 'transparent' }}
         >
           Home
         </button>
         <button
           onClick={() => navigate('/about')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 rounded-full"
-          style={{ color: '#C8A157', background: 'transparent' }}
+          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
+          style={{ color: '#001c39', background: 'transparent' }}
         >
           About Us
         </button>
         {/* Mobile Collections Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="transition-colors flex items-center whitespace-nowrap text-xs font-medium px-3 py-2 rounded-full" style={{ color: '#C8A157', background: 'transparent' }}>
+            <button className="transition-colors flex items-center whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full" style={{ color: '#001c39', background: "transparent" }}>
               Collections
               <ChevronDown className="h-4 w-4 ml-1" />
             </button>
@@ -202,21 +221,31 @@ const Header = () => {
         </DropdownMenu>
         <button
           onClick={() => navigate('/lab-grown-diamonds')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 rounded-full"
-          style={{ color: '#C8A157', background: 'transparent' }}
+          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
+          style={{ color: '#001c39', background: 'transparent' }}
         >
           Lab Grown Diamonds
         </button>
         <button
           onClick={() => navigate('/contact')}
-          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 rounded-full"
-          style={{ color: '#C8A157', background: 'transparent' }}
+          className="transition-colors whitespace-nowrap text-xs font-medium px-3 py-2 mx-1 rounded-full"
+          style={{ color: '#001c39', background: 'transparent' }}
         >
           Contact Us
         </button>
         <Button
-          className="text-white px-3 py-2 rounded-full hover:opacity-80 text-xs whitespace-nowrap"
-          style={{ backgroundColor: '#C8A157' }}
+          className="
+            text-white
+            px-4 py-2
+            rounded-full
+            hover:opacity-80
+            text-xs
+            whitespace-nowrap
+            mx-1
+            font-bold
+            shadow
+          "
+          style={{ backgroundColor: '#C8A157', color: '#fff', border: "none" }}
           onClick={() => navigate('/products')}
         >
           Shop Now
