@@ -32,7 +32,7 @@ const Index = () => {
     }
   }, [isAuthenticated, loading]);
 
-  // Debug: Hard error/fallback in case "loading" never resolves
+  // Debug: Hard error/fallback in case "loading" never resolves (increased timeout for debounce)
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     if (loading) {
@@ -40,8 +40,9 @@ const Index = () => {
         setLoadingTime((t) => t + 1);
       }, 1000);
 
-      if (loadingTime > 5) {
-        setHardError("Still loading after 5 seconds. There may be an issue with authentication or data fetching. Check console for errors.");
+      // After 8 seconds, show error with extra visibility
+      if (loadingTime > 8) {
+        setHardError("Still loading after 8 seconds. Something may be wrong with authentication, data fetching, or code. Check browser console (F12) for errors.");
       }
     } else {
       setLoadingTime(0);
@@ -59,6 +60,11 @@ const Index = () => {
         <div className="p-6 border border-red-300 rounded bg-red-50">
           <h2 className="font-bold text-red-700 mb-2">Debug Error</h2>
           <pre className="text-xs text-red-900">{hardError}</pre>
+          <div className="mt-3">
+            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+              Please check your browser console for more info!
+            </span>
+          </div>
         </div>
         <button
           onClick={() => window.location.reload()}
@@ -82,7 +88,7 @@ const Index = () => {
     );
   }
 
-  // Fallback crashed render
+  // Final fallback to prevent blank screen if rendering fails
   try {
     return (
       <div className="min-h-screen bg-white">
@@ -109,6 +115,11 @@ const Index = () => {
         <div className="p-6 border border-red-300 rounded bg-red-50">
           <h2 className="font-bold text-red-700 mb-2">Fatal Error Rendering Index</h2>
           <pre className="text-xs text-red-900">{e?.toString?.() || "Unknown error"}</pre>
+          <div className="mt-3">
+            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+              Please check your browser console for more info!
+            </span>
+          </div>
         </div>
         <button
           onClick={() => window.location.reload()}
