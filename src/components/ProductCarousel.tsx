@@ -49,8 +49,8 @@ const ProductCarousel = () => {
   }, [api]);
 
   return (
-    <section className="px-4 md:px-6 py-8 md:py-16 bg-white">
-      <h3 className="text-2xl md:text-3xl font-semibold text-center mb-8 md:mb-10 text-black">Featured Collection</h3>
+    <section className="px-4 sm:px-6 py-8 sm:py-12 md:py-16 bg-white">
+      <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8 md:mb-10 text-black">Featured Collection</h3>
       <div className="max-w-4xl mx-auto">
         <Carousel 
           setApi={setApi}
@@ -63,22 +63,22 @@ const ProductCarousel = () => {
           <CarouselContent>
             {products.map((product) => (
               <CarouselItem key={product.id}>
-                <div className="relative h-64 md:h-96 overflow-hidden rounded-xl mx-2">
+                <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden rounded-xl mx-2">
                   <img 
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 md:p-6">
-                    <h4 className="text-lg md:text-xl font-bold text-white mb-2">{product.name}</h4>
-                    <p className="text-base md:text-lg text-white">{product.price}</p>
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6">
+                    <h4 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2">{product.name}</h4>
+                    <p className="text-base sm:text-lg text-white">{product.price}</p>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
+          <CarouselPrevious className="hidden sm:flex" />
+          <CarouselNext className="hidden sm:flex" />
         </Carousel>
       </div>
     </section>
