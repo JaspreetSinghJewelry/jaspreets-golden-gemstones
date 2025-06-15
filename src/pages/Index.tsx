@@ -53,7 +53,7 @@ const Index = () => {
     };
   }, [loading, loadingTime]);
 
-  // Catch and display any top-level errors
+  // 1. Top-level boundary for state errors
   if (hardError) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
@@ -88,8 +88,8 @@ const Index = () => {
     );
   }
 
-  // Final fallback to prevent blank screen if rendering fails
   try {
+    console.log("[Index.tsx] Rendering main site content");
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -109,6 +109,7 @@ const Index = () => {
       </div>
     );
   } catch (e: any) {
+    // log the error as much as possible in the browser
     console.error("[Index.tsx Render Error]", e);
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center">
