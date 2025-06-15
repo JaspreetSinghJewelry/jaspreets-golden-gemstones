@@ -4,9 +4,14 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
+// Detect GitHub Pages environment by checking REPO_NAME
+const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1] ?? ""; // fallback to empty string
+
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/' : '/',
+  // Use repo-based base for GitHub Pages; use '/' for development
+  base: mode === "production"
+    ? (repoName ? `/${repoName}/` : "/")
+    : "/",
   server: {
     host: "::",
     port: 8080,
