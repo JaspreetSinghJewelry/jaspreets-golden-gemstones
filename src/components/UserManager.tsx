@@ -158,9 +158,17 @@ const UserManager = () => {
       fetchUsers();
     }, 10000); // 10 seconds
 
+    // === New: Listen for signup and force fetch ===
+    const handleUserSignedUp = (event: any) => {
+      console.log('[UserManager] User signed up event received:', event.detail);
+      fetchUsers();
+    };
+    window.addEventListener('user-signed-up', handleUserSignedUp);
+
     return () => {
       supabase.removeChannel(channel);
       clearInterval(pollInterval);
+      window.removeEventListener('user-signed-up', handleUserSignedUp);
     };
   }, []);
 

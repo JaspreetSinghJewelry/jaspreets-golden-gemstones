@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signUp = async (email: string, password: string, fullName: string, phone: string) => {
     try {
       console.log('Auth: Starting signup for:', email);
-      
+
       if (!email?.trim() || !password || !fullName?.trim() || !phone?.trim()) {
         return { error: { message: 'All fields are required' } };
       }
@@ -75,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       const cleanEmail = email.trim().toLowerCase();
-      
+
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
@@ -83,14 +82,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           data: {
             full_name: fullName.trim(),
             phone: phone.trim()
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
-      
+
       if (error) {
         console.error('Auth: Signup error:', error);
         return { error: { message: error.message } };
       }
+
+      // ---- ADDITION: Fire event so admin panel can reload immediately ----
+      window.dispatchEvent(new CustomEvent('user-signed-up', { detail: { email: cleanEmail } }));
 
       console.log('Auth: Signup successful:', data);
       return { error: null };
