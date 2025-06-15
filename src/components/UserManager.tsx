@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,6 +22,7 @@ const UserManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { session, user, isAuthenticated } = useAuth();
+  const [lastFetch, setLastFetch] = useState<Date | null>(null);
 
   // Save fetchUsers out so it doesn't get redefined on each render
   const fetchUsers = async () => {
@@ -76,6 +77,7 @@ const UserManager = () => {
 
       console.log('UserManager: Successfully fetched users:', data?.length || 0);
       setUsers(data || []);
+      setLastFetch(new Date());
       
       if (data && data.length > 0) {
         toast({
@@ -147,10 +149,9 @@ const UserManager = () => {
   };
 
   useEffect(() => {
-    console.log('UserManager: Component mounted, fetching users...');
     fetchUsers();
 
-    // --- Realtime Subscription ---
+    // Real-time: fetch on any change in 'profiles'
     const channel = supabase
       .channel('public:profiles-changes')
       .on(
@@ -161,17 +162,21 @@ const UserManager = () => {
           table: 'profiles'
         },
         (payload) => {
-          // For any insert, update, or delete on profiles, refetch user list to stay up to date
-          console.log('UserManager: Realtime change detected on profiles table:', payload);
           fetchUsers();
         }
       )
       .subscribe();
 
+    // Polling as backup: fetch every 10 seconds
+    const pollInterval = setInterval(() => {
+      fetchUsers();
+    }, 10000); // 10 seconds
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(pollInterval);
     };
-  }, []); // Only once on mount
+  }, []);
 
   const formatDate = (dateString: string) => {
     try {
@@ -403,6 +408,9 @@ const UserManager = () => {
           )}
         </CardContent>
       </Card>
+      <div className="text-xs text-gray-400 text-right pb-2">
+        Last user fetch at: {lastFetch ? lastFetch.toLocaleTimeString() : "Never"}
+      </div>
     </div>
   );
 };
