@@ -72,28 +72,22 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Enhanced mobile compatibility with improved zoom handling */
+  /* Mobile-first responsive design */
   html {
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* Allow natural zoom on mobile devices */
-    min-width: auto;
-    /* iOS Safari bounce fix */
     position: relative;
     height: 100%;
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
   }
   
   body {
-    /* Allow natural responsive behavior on mobile */
-    min-width: auto;
-    overflow-x: auto;
-    overflow-y: auto;
+    min-width: 320px;
+    overflow-x: hidden;
     height: 100vh;
-    /* iOS Safari bounce fix */
     position: relative;
     -webkit-overflow-scrolling: touch;
   }
@@ -105,11 +99,11 @@
   input[type="button"] {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    min-height: 44px; /* iOS recommended minimum touch target */
+    min-height: 44px;
     min-width: 44px;
   }
   
-  /* Android and iOS specific fixes */
+  /* Mobile input fixes */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -117,28 +111,25 @@
   input[type="search"],
   textarea,
   select {
-    font-size: 16px !important; /* Prevents zoom on iOS */
+    font-size: 16px !important;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     border-radius: 4px;
-    /* iOS specific fixes */
     -webkit-border-radius: 4px;
     background-clip: padding-box;
   }
   
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
   
-  /* Better focus visibility */
   *:focus-visible {
     outline: 2px solid theme('colors.blue.500');
     outline-offset: 2px;
   }
   
-  /* iOS Safari status bar fix */
+  /* iOS Safari safe area support */
   @supports (padding-top: env(safe-area-inset-top)) {
     body {
       padding-top: env(safe-area-inset-top);
@@ -147,179 +138,72 @@
   }
 }
 
-/* Responsive mobile-first design with improved zoom behavior */
-@media (max-width: 1199px) {
-  /* Allow natural responsive behavior instead of forcing desktop layout */
-  body {
-    min-width: auto !important;
-    overflow-x: auto !important;
-    /* Better scrolling on mobile */
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
-  
-  /* Allow responsive viewport on mobile */
-  html {
-    min-width: auto !important;
-  }
-  
-  /* Make container responsive */
+/* Enhanced mobile responsiveness */
+@media (max-width: 767px) {
+  /* Mobile-optimized containers */
   .container {
-    min-width: auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
+    max-width: 100% !important;
   }
   
-  /* Responsive grid layouts for mobile */
-  .grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
+  /* Mobile typography */
+  .text-3xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+  .text-4xl { font-size: 1.875rem !important; line-height: 2.25rem !important; }
+  .text-5xl { font-size: 2.25rem !important; line-height: 2.5rem !important; }
   
-  .sm\\:grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-  }
-  
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  
-  /* Responsive text sizes for better mobile reading */
-  .text-3xl { font-size: 1.5rem !important; }
-  .text-4xl { font-size: 1.875rem !important; }
-  .text-5xl { font-size: 2.25rem !important; }
-  
-  /* Better mobile spacing */
-  .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  /* Mobile spacing */
+  .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
   .px-6 { padding-left: 1rem !important; padding-right: 1rem !important; }
   .px-8 { padding-left: 1rem !important; padding-right: 1rem !important; }
-  .py-16 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  .py-16 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
   
-  /* Responsive margins */
+  /* Mobile margins */
   .mb-8 { margin-bottom: 1.5rem !important; }
   .mb-10 { margin-bottom: 2rem !important; }
   .mb-12 { margin-bottom: 2rem !important; }
   
-  /* Better mobile gaps */
+  /* Mobile grid layouts */
+  .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  
+  /* Mobile gap adjustments */
   .gap-8 { gap: 1rem !important; }
-  .space-x-6 > * + * { margin-left: 1rem !important; }
-}
-
-/* Tablet specific adjustments */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .md\\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-4 {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  
-  .lg\\:grid-cols-5 {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-}
-
-/* Mobile-specific enhancements */
-@media (max-width: 767px) {
-  /* Ensure proper mobile zoom behavior */
-  body {
-    -webkit-overflow-scrolling: touch !important;
-    scroll-behavior: smooth !important;
-  }
+  .gap-6 { gap: 0.75rem !important; }
   
   /* Touch-friendly navigation */
   nav button,
   nav a {
     min-height: 44px !important;
     padding: 12px 16px !important;
+    font-size: 16px !important;
   }
   
-  /* Better carousel controls for touch */
+  /* Better carousel for mobile */
   .carousel button {
     min-height: 44px !important;
     min-width: 44px !important;
   }
   
-  /* Responsive image containers */
+  /* Mobile image heights */
   .h-64 { height: 12rem !important; }
   .h-96 { height: 16rem !important; }
+  
+  /* Mobile card adjustments */
+  .space-y-4 > * + * { margin-top: 0.75rem !important; }
+  .space-y-6 > * + * { margin-top: 1rem !important; }
 }
 
-/* Android-specific fixes */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  body {
-    /* Better font rendering on Android */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .grid-cols-4 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .grid-cols-5 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
 }
 
-/* iOS-specific fixes */
-@supports (-webkit-touch-callout: none) {
-  body {
-    /* Allow natural iOS zoom behavior */
-    position: relative;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* iOS Safari address bar fix */
-  html {
-    height: -webkit-fill-available;
-  }
-  
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
-
-/* Utility classes for responsive design */
-@layer utilities {
-  .safe-area-inset {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-  
-  .full-viewport {
-    height: 100vh;
-    height: 100dvh;
-  }
-  
-  /* Responsive layout that adapts to device */
-  .responsive-layout {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-  }
-  
-  /* Responsive grid that maintains proper spacing */
-  .responsive-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-  
-  /* Mobile-friendly touch targets */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-    touch-action: manipulation;
-  }
-}
-
-/* Admin panel specific styles */
+/* Admin panel styles */
 .admin-panel {
   min-height: 100vh;
   background-color: #f9fafb;
@@ -391,5 +275,51 @@
   .image-grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
+  }
+}
+
+/* Utility classes for responsive design */
+@layer utilities {
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .full-viewport {
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .responsive-layout {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Clean mobile layout utilities */
+  .mobile-clean {
+    @apply px-4 py-3;
+  }
+  
+  .mobile-section {
+    @apply px-4 py-8;
+  }
+  
+  .mobile-card {
+    @apply p-4 rounded-lg shadow-sm;
   }
 }
