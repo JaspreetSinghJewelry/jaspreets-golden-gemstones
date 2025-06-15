@@ -12,12 +12,14 @@ import OrdersManager from '@/components/OrdersManager';
 import UserManager from '@/components/UserManager';
 import { SectionErrorBoundary } from '@/components/SectionErrorBoundary';
 
-const Admin = () => {
-  console.log("[DEBUG] Admin panel is mounting"); // Debug log for admin page render
+const AdminBody = () => {
+  // Added debug for mounting
+  console.log("[DEBUG] Admin panel is mounting");
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
   if (loading) {
+    console.log("[DEBUG] Admin page loading...");
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -51,7 +53,6 @@ const Admin = () => {
           </div>
         </div>
       </header>
-
       <main className="admin-content">
         <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6">
           {/* Tab Navigation */}
@@ -65,6 +66,7 @@ const Admin = () => {
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
+                  data-testid="tab-products"
                 >
                   <Package className="h-4 w-4 inline mr-2" />
                   Product Manager
@@ -76,6 +78,7 @@ const Admin = () => {
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
+                  data-testid="tab-bulk-upload"
                 >
                   <Upload className="h-4 w-4 inline mr-2" />
                   Bulk Product Upload
@@ -87,6 +90,7 @@ const Admin = () => {
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
+                  data-testid="tab-orders"
                 >
                   <ShoppingBag className="h-4 w-4 inline mr-2" />
                   Orders Management
@@ -98,6 +102,7 @@ const Admin = () => {
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
+                  data-testid="tab-users"
                 >
                   <Users className="h-4 w-4 inline mr-2" />
                   User Management
@@ -109,6 +114,7 @@ const Admin = () => {
                       ? 'border-red-500 text-red-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
+                  data-testid="tab-images"
                 >
                   <Images className="h-4 w-4 inline mr-2" />
                   Image Manager (Legacy)
@@ -116,7 +122,6 @@ const Admin = () => {
               </nav>
             </div>
           </div>
-
           {/* Tab Content */}
           <Card className="shadow rounded-md text-xs sm:text-base">
             <CardHeader>
@@ -188,5 +193,14 @@ const Admin = () => {
     </div>
   );
 };
-export default Admin;
 
+const Admin = () => {
+  // Top-level boundary for hard crashes
+  return (
+    <SectionErrorBoundary label="Admin Panel">
+      <AdminBody />
+    </SectionErrorBoundary>
+  );
+};
+
+export default Admin;
