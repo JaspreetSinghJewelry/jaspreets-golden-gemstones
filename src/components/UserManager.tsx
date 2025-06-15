@@ -39,6 +39,7 @@ const UserManager = () => {
         setError('No data received from Supabase');
         setUsers([]);
       } else {
+        console.log("[UserManager] Users fetched from Supabase:", data);
         setUsers(data);
       }
     } catch (error) {
@@ -196,47 +197,50 @@ const UserManager = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="font-mono text-xs text-gray-800">{user.id}</div>
-                      </TableCell>
-                      <TableCell>
-                        {user.full_name || "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        {user.email ?? <span className="text-gray-400">N/A</span>}
-                      </TableCell>
-                      <TableCell>
-                        {user.phone ?? <span className="text-gray-400">N/A</span>}
-                      </TableCell>
-                      <TableCell>
-                        {user.email ? (
-                          <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
-                            Email
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
-                            Unknown
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(user.created_at)}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id, user.full_name || user.email || 'Unknown User')}
-                          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {users.map((user, idx) => {
+                    console.log("[UserManager] Rendering user row:", user);
+                    return (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div className="font-mono text-xs text-gray-800">{user.id}</div>
+                        </TableCell>
+                        <TableCell>
+                          {user.full_name || "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {user.email ?? <span className="text-gray-400">N/A</span>}
+                        </TableCell>
+                        <TableCell>
+                          {user.phone ?? <span className="text-gray-400">N/A</span>}
+                        </TableCell>
+                        <TableCell>
+                          {user.email ? (
+                            <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
+                              Email
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
+                              Unknown
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {formatDate(user.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteUser(user.id, user.full_name || user.email || 'Unknown User')}
+                            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
