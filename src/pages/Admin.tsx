@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import ProductManager from '@/components/ProductManager';
 import BulkProductUpload from '@/components/BulkProductUpload';
 import OrdersManager from '@/components/OrdersManager';
 import UserManager from '@/components/UserManager';
+import { SectionErrorBoundary } from '@/components/SectionErrorBoundary';
 
 const Admin = () => {
   console.log("[DEBUG] Admin panel is mounting"); // Debug log for admin page render
@@ -153,11 +155,31 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="p-2 sm:p-6 overflow-x-auto">
               <div className="p-0 sm:p-6">
-                {activeTab === 'products' && <ProductManager />}
-                {activeTab === 'bulk-upload' && <BulkProductUpload />}
-                {activeTab === 'orders' && <OrdersManager />}
-                {activeTab === 'users' && <UserManager />}
-                {activeTab === 'images' && <ImageManager />}
+                {activeTab === 'products' && (
+                  <SectionErrorBoundary label="Product Manager">
+                    <ProductManager />
+                  </SectionErrorBoundary>
+                )}
+                {activeTab === 'bulk-upload' && (
+                  <SectionErrorBoundary label="Bulk Product Upload">
+                    <BulkProductUpload />
+                  </SectionErrorBoundary>
+                )}
+                {activeTab === 'orders' && (
+                  <SectionErrorBoundary label="Orders Manager">
+                    <OrdersManager />
+                  </SectionErrorBoundary>
+                )}
+                {activeTab === 'users' && (
+                  <SectionErrorBoundary label="User Manager">
+                    <UserManager />
+                  </SectionErrorBoundary>
+                )}
+                {activeTab === 'images' && (
+                  <SectionErrorBoundary label="Image Manager">
+                    <ImageManager />
+                  </SectionErrorBoundary>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -167,3 +189,4 @@ const Admin = () => {
   );
 };
 export default Admin;
+
