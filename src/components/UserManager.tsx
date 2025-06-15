@@ -193,63 +193,6 @@ const UserManager = () => {
     }
   };
 
-  // Utility: Synchronize profiles with auth users
-  const handleSyncUsers = async () => {
-    try {
-      // Fetch current profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id');
-      if (profilesError) throw profilesError;
-
-      const existingProfileIds = new Set((profiles || []).map((p: { id: string }) => p.id));
-
-      // Fetch all users from Supabase Auth REST API
-      const res = await fetch('https://bxscivdpwersyohpaamn.supabase.co/auth/v1/users', {
-        headers: {
-          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc',
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc',
-        },
-      });
-      if (!res.ok) throw new Error('Unable to fetch users from Supabase Auth');
-      const { users } = await res.json();
-
-      // Find users without corresponding profile
-      const usersMissingProfile = users.filter((u: any) => !existingProfileIds.has(u.id));
-      if (usersMissingProfile.length === 0) {
-        toast({
-          title: "Already Synchronized",
-          description: "All users have profiles.",
-        });
-        return;
-      }
-      // Insert missing profiles
-      const inserts = usersMissingProfile.map((u: any) => ({
-        id: u.id,
-        full_name: u.user_metadata?.full_name || u.email || null,
-        phone: u.user_metadata?.phone || u.phone || null,
-        email: u.email,
-      }));
-
-      const { error: insertError } = await supabase
-        .from('profiles')
-        .insert(inserts);
-      if (insertError) throw insertError;
-
-      toast({
-        title: "Profiles Synchronized",
-        description: `Inserted ${inserts.length} missing profiles.`,
-      });
-      fetchUsers();
-    } catch (err: any) {
-      toast({
-        title: "Sync Failed",
-        description: err.message || "Failed to synchronize users.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -270,14 +213,7 @@ const UserManager = () => {
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button
-            variant="secondary"
-            className="flex items-center gap-2"
-            onClick={handleSyncUsers}
-          >
-            <RefreshCw className="h-4 w-4" />
-            Sync Users
-          </Button>
+          {/* Removed Sync Users Button */}
         </div>
       </div>
 
