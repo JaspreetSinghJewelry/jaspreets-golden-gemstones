@@ -48,6 +48,8 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  console.log("[DEBUG] App component is mounting"); // Debug log to trace app mount
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

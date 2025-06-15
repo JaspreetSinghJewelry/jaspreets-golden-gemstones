@@ -11,6 +11,7 @@ import OrdersManager from '@/components/OrdersManager';
 import UserManager from '@/components/UserManager';
 
 const Admin = () => {
+  console.log("[DEBUG] Admin panel is mounting"); // Debug log for admin page render
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
