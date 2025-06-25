@@ -14,24 +14,27 @@ const PaymentFailure = () => {
     orderId: '',
     amount: '',
     status: '',
-    error: ''
+    error: '',
+    payuMoneyId: ''
   });
 
   useEffect(() => {
     // Get order details from URL parameters (PayU response)
-    const orderId = searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
     const amount = searchParams.get('amount') || location.state?.totalAmount;
     const status = searchParams.get('status') || 'failed';
-    const error = searchParams.get('error') || '';
+    const error = searchParams.get('error') || searchParams.get('error_Message') || '';
+    const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
 
     setOrderDetails({
-      orderId,
+      orderId: txnid,
       amount,
       status,
-      error
+      error,
+      payuMoneyId
     });
 
-    console.log('Payment failure page loaded with:', { orderId, amount, status, error });
+    console.log('Payment failure page loaded with PayU response:', { txnid, amount, status, error, payuMoneyId });
   }, [searchParams, location.state]);
 
   const handleRetryPayment = () => {
@@ -40,11 +43,14 @@ const PaymentFailure = () => {
   };
 
   const getFailureMessage = () => {
-    if (orderDetails.error === 'verification_failed') {
-      return 'Payment verification failed. Please contact support if amount was debited.';
+    if (orderDetails.error) {
+      return `Payment failed: ${orderDetails.error}`;
     }
     if (orderDetails.status === 'pending') {
       return 'Your payment is pending. Please wait for confirmation or contact support.';
+    }
+    if (orderDetails.status === 'failure') {
+      return 'Your payment was declined. Please check your payment details and try again.';
     }
     return 'Your payment could not be processed. Please try again or contact support.';
   };
@@ -70,6 +76,11 @@ const PaymentFailure = () => {
             <p className="text-sm text-gray-500 mb-1">
               Order ID: <span className="font-mono font-medium">{orderDetails.orderId}</span>
             </p>
+            {orderDetails.payuMoneyId && (
+              <p className="text-sm text-gray-500 mb-1">
+                PayU Transaction ID: <span className="font-mono font-medium">{orderDetails.payuMoneyId}</span>
+              </p>
+            )}
             {orderDetails.amount && (
               <p className="text-lg font-semibold text-gray-600">
                 Amount: ₹{parseFloat(orderDetails.amount).toLocaleString()}

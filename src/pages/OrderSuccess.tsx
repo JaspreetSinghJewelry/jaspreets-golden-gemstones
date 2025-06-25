@@ -13,22 +13,25 @@ const OrderSuccess = () => {
   const [orderDetails, setOrderDetails] = useState({
     orderId: '',
     amount: '',
-    status: ''
+    status: '',
+    payuMoneyId: ''
   });
 
   useEffect(() => {
     // Get order details from URL parameters (PayU response)
-    const orderId = searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
     const amount = searchParams.get('amount') || location.state?.totalAmount;
     const status = searchParams.get('status') || 'success';
+    const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
 
     setOrderDetails({
-      orderId,
+      orderId: txnid,
       amount,
-      status
+      status,
+      payuMoneyId
     });
 
-    console.log('Order success page loaded with:', { orderId, amount, status });
+    console.log('Order success page loaded with PayU response:', { txnid, amount, status, payuMoneyId });
   }, [searchParams, location.state]);
 
   return (
@@ -52,6 +55,11 @@ const OrderSuccess = () => {
             <p className="text-sm text-gray-500 mb-1">
               Order ID: <span className="font-mono font-medium">{orderDetails.orderId}</span>
             </p>
+            {orderDetails.payuMoneyId && (
+              <p className="text-sm text-gray-500 mb-1">
+                PayU Transaction ID: <span className="font-mono font-medium">{orderDetails.payuMoneyId}</span>
+              </p>
+            )}
             {orderDetails.amount && (
               <p className="text-lg font-semibold text-green-600">
                 Amount Paid: ₹{parseFloat(orderDetails.amount).toLocaleString()}

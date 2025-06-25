@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +10,10 @@ import { FancyText } from '@/components/ui/fancy-text';
 import { ArrowLeft, MapPin, ShoppingBag, CreditCard, Truck, Shield, User, Mail, Phone, Home, Plus, Minus, Trash2 } from 'lucide-react';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, getCartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -59,7 +61,45 @@ const Checkout = () => {
     });
   };
 
-  const handleContinueToPayment = () => {
+  const generateOrderId = () => {
+    return 'PLS-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+  };
+
+  const createPayUForm = (payuData: any) => {
+    // Remove any existing PayU forms
+    const existingForms = document.querySelectorAll('form[data-payu-form]');
+    existingForms.forEach(form => form.remove());
+    
+    // Create a form element
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://test.payu.in/_payment';
+    form.target = '_top';
+    form.setAttribute('data-payu-form', 'true');
+    form.style.display = 'none';
+    
+    // Add all form data as hidden inputs
+    Object.entries(payuData).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value as string;
+      form.appendChild(input);
+    });
+
+    // Add form to document body and submit
+    document.body.appendChild(form);
+    form.submit();
+    
+    // Clean up form after a delay
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
+      }
+    }, 5000);
+  };
+
+  const handleProceedToPayment = async () => {
     // Validate required fields
     const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'pincode', 'state'];
     const isValid = requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
@@ -68,13 +108,64 @@ const Checkout = () => {
       alert('Please fill in all required fields');
       return;
     }
-    
-    // Navigate to payment page with customer data
-    navigate('/payment', { 
-      state: { 
-        customerData: { ...formData, location } 
-      }
-    });
+
+    setIsProcessing(true);
+
+    try {
+      // Generate order ID
+      const orderId = generateOrderId();
+      
+      // Prepare PayU payment data
+      const key = "LSzl2Y";
+      const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz";
+      
+      const payuData = {
+        key: key,
+        txnid: orderId,
+        amount: totalAmount.toString(),
+        productinfo: `Order ${orderId} - ${cartItems.length} items`,
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        surl: `${window.location.origin}/order-success`,
+        furl: `${window.location.origin}/payment-failure`,
+        udf1: orderId,
+        udf2: formData.address,
+        udf3: formData.city,
+        udf4: formData.state,
+        udf5: formData.pincode
+      };
+
+      // Generate hash
+      const hashString = `${key}|${orderId}|${totalAmount}|${payuData.productinfo}|${formData.firstName}|${formData.email}|||||||||||${salt}`;
+      
+      // Create hash using Web Crypto API
+      const encoder = new TextEncoder();
+      const data = encoder.encode(hashString);
+      const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+      // Add hash to PayU data
+      const finalPayuData = {
+        ...payuData,
+        hash: hash
+      };
+
+      console.log('PayU Data:', finalPayuData);
+
+      // Clear cart before redirect
+      clearCart();
+
+      // Create and submit PayU form
+      createPayUForm(finalPayuData);
+
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      setIsProcessing(false);
+      alert('Error processing payment. Please try again.');
+    }
   };
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
@@ -403,18 +494,25 @@ const Checkout = () => {
                   {/* Security Badge */}
                   <div className="flex items-center gap-2 text-green-700 bg-green-50 p-3 rounded-lg border border-green-200 mt-4">
                     <Shield className="h-4 w-4" />
-                    <span className="text-sm font-medium">Secure SSL Encrypted Checkout</span>
+                    <span className="text-sm font-medium">Secure PayU Payment Gateway</span>
                   </div>
 
-                  {/* Continue to Payment Button */}
+                  {/* Proceed to Payment Button */}
                   <Button 
-                    onClick={handleContinueToPayment}
-                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105"
+                    onClick={handleProceedToPayment}
+                    disabled={isProcessing}
+                    className="w-full bg-cream-900 text-cream-50 hover:bg-cream-800 font-bold py-4 text-lg shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50"
                     size="lg"
                   >
                     <CreditCard className="h-5 w-5 mr-2" />
-                    Continue to Payment
+                    {isProcessing ? 'Processing...' : 'Proceed to PayU Payment'}
                   </Button>
+
+                  {isProcessing && (
+                    <p className="text-sm text-cream-600 text-center">
+                      Redirecting to PayU payment gateway...
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
