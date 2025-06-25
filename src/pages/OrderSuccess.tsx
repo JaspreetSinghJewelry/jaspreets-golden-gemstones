@@ -18,21 +18,45 @@ const OrderSuccess = () => {
   });
 
   useEffect(() => {
-    // Get order details from URL parameters (PayU response)
-    const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    const amount = searchParams.get('amount') || location.state?.totalAmount;
-    const status = searchParams.get('status') || 'success';
-    const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
+    try {
+      // Get order details from URL parameters (PayU response)
+      const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      const amount = searchParams.get('amount') || location.state?.totalAmount || '0';
+      const status = searchParams.get('status') || 'success';
+      const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
 
-    setOrderDetails({
-      orderId: txnid,
-      amount,
-      status,
-      payuMoneyId
-    });
+      setOrderDetails({
+        orderId: txnid,
+        amount: amount,
+        status: status,
+        payuMoneyId: payuMoneyId
+      });
 
-    console.log('Order success page loaded with PayU response:', { txnid, amount, status, payuMoneyId });
+      console.log('Order success page loaded with PayU response:', { txnid, amount, status, payuMoneyId });
+    } catch (error) {
+      console.error('Error processing order success data:', error);
+      // Set default values if there's an error
+      setOrderDetails({
+        orderId: '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        amount: '0',
+        status: 'success',
+        payuMoneyId: ''
+      });
+    }
   }, [searchParams, location.state]);
+
+  const formatAmount = (amount: string) => {
+    try {
+      if (!amount || amount === 'undefined' || amount === '0') {
+        return '0';
+      }
+      const numAmount = parseFloat(amount);
+      return isNaN(numAmount) ? '0' : numAmount.toLocaleString();
+    } catch (error) {
+      console.error('Error formatting amount:', error);
+      return '0';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center p-4">
@@ -60,11 +84,9 @@ const OrderSuccess = () => {
                 PayU Transaction ID: <span className="font-mono font-medium">{orderDetails.payuMoneyId}</span>
               </p>
             )}
-            {orderDetails.amount && (
-              <p className="text-lg font-semibold text-green-600">
-                Amount Paid: ₹{parseFloat(orderDetails.amount).toLocaleString()}
-              </p>
-            )}
+            <p className="text-lg font-semibold text-green-600">
+              Amount Paid: ₹{formatAmount(orderDetails.amount)}
+            </p>
             <p className="text-sm text-green-600 mt-2">
               Payment Status: {orderDetails.status === 'success' ? 'Completed' : 'Processing'}
             </p>
