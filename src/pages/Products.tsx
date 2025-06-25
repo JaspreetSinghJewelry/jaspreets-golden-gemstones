@@ -43,7 +43,8 @@ const Products = () => {
 
         data.forEach((item) => {
           const groupId = item.product_group;
-          const imageUrl = supabase.storage.from('images').getPublicUrl(item.file_path).data.publicUrl;
+          // Fix the image URL construction
+          const imageUrl = `https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/${item.file_path}`;
           
           if (!groupedProducts.has(groupId)) {
             groupedProducts.set(groupId, {
