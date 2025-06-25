@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, ShoppingBag, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User, Heart, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -9,6 +10,7 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { useNavigate } from 'react-router-dom';
 import CartDrawer from './CartDrawer';
 import AccountMenu from './AccountMenu';
@@ -20,6 +22,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const searchButtonRef = useRef<HTMLButtonElement>(null);
@@ -36,6 +39,10 @@ const Header = () => {
     if (!isAuthenticated) {
       navigate('/auth');
     }
+  };
+
+  const handleWishlistClick = () => {
+    navigate('/wishlist');
   };
 
   return (
@@ -124,6 +131,21 @@ const Header = () => {
             onClick={() => setIsSearchOpen(true)}
           >
             <Search className="h-4 w-4" />
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-white/10 relative h-9 w-9 touch-target"
+            style={{ color: '#C8A157' }}
+            onClick={handleWishlistClick}
+          >
+            <Heart className="h-4 w-4" />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold" style={{ backgroundColor: '#C8A157' }}>
+                {wishlistCount}
+              </span>
+            )}
           </Button>
           
           {isAuthenticated ? (
