@@ -91,8 +91,8 @@ serve(async (req) => {
 
     // Redirect based on payment status
     const redirectUrl = paymentStatus === 'completed' 
-      ? `https://jaspreets-golden-gemstones.lovable.app/order-success?orderId=${txnid}&amount=${amount}&status=${status}`
-      : `https://jaspreets-golden-gemstones.lovable.app/payment-failure?orderId=${txnid}&amount=${amount}&status=${status}`
+      ? `https://jaspreetsinghjewelry.com/order-success?orderId=${txnid}&amount=${amount}&status=${status}`
+      : `https://jaspreetsinghjewelry.com/payment-failure?orderId=${txnid}&amount=${amount}&status=${status}`
 
     console.log('Redirecting to:', redirectUrl)
 
@@ -112,7 +112,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': 'https://jaspreets-golden-gemstones.lovable.app/payment-failure?error=verification_failed'
+        'Location': 'https://jaspreetsinghjewelry.com/payment-failure?error=verification_failed'
       }
     })
   }
