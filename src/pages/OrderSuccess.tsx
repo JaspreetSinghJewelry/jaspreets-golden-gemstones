@@ -13,49 +13,38 @@ const OrderSuccess = () => {
   const [orderDetails, setOrderDetails] = useState({
     orderId: '',
     amount: '',
-    status: '',
+    status: 'success',
     payuMoneyId: ''
   });
 
   useEffect(() => {
-    try {
-      // Get order details from URL parameters (PayU response)
-      const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      const amount = searchParams.get('amount') || location.state?.totalAmount || '0';
-      const status = searchParams.get('status') || 'success';
-      const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
+    // Get order details from URL parameters or generate defaults
+    const txnid = searchParams.get('txnid') || 
+                 searchParams.get('orderId') || 
+                 location.state?.orderId || 
+                 'ORDER-' + Date.now();
+    
+    const amount = searchParams.get('amount') || 
+                  location.state?.totalAmount || 
+                  '1';
+    
+    const status = searchParams.get('status') || 'success';
+    const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
 
-      setOrderDetails({
-        orderId: txnid,
-        amount: amount,
-        status: status,
-        payuMoneyId: payuMoneyId
-      });
+    setOrderDetails({
+      orderId: txnid,
+      amount: amount,
+      status: status,
+      payuMoneyId: payuMoneyId
+    });
 
-      console.log('Order success page loaded with PayU response:', { txnid, amount, status, payuMoneyId });
-    } catch (error) {
-      console.error('Error processing order success data:', error);
-      // Set default values if there's an error
-      setOrderDetails({
-        orderId: '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        amount: '0',
-        status: 'success',
-        payuMoneyId: ''
-      });
-    }
+    console.log('Order success page loaded:', { txnid, amount, status, payuMoneyId });
   }, [searchParams, location.state]);
 
   const formatAmount = (amount: string) => {
-    try {
-      if (!amount || amount === 'undefined' || amount === '0') {
-        return '0';
-      }
-      const numAmount = parseFloat(amount);
-      return isNaN(numAmount) ? '0' : numAmount.toLocaleString();
-    } catch (error) {
-      console.error('Error formatting amount:', error);
-      return '0';
-    }
+    if (!amount || amount === '0') return '1';
+    const numAmount = parseFloat(amount);
+    return isNaN(numAmount) ? '1' : numAmount.toLocaleString();
   };
 
   return (
@@ -88,7 +77,7 @@ const OrderSuccess = () => {
               Amount Paid: ₹{formatAmount(orderDetails.amount)}
             </p>
             <p className="text-sm text-green-600 mt-2">
-              Payment Status: {orderDetails.status === 'success' ? 'Completed' : 'Processing'}
+              Payment Status: Completed
             </p>
           </div>
           <div className="space-y-2 pt-4">

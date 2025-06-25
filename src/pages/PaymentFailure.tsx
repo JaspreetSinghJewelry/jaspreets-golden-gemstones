@@ -13,44 +13,38 @@ const PaymentFailure = () => {
   const [orderDetails, setOrderDetails] = useState({
     orderId: '',
     amount: '',
-    status: '',
+    status: 'failed',
     error: '',
     payuMoneyId: ''
   });
 
   useEffect(() => {
-    try {
-      // Get order details from URL parameters (PayU response)
-      const txnid = searchParams.get('txnid') || searchParams.get('orderId') || location.state?.orderId || '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      const amount = searchParams.get('amount') || location.state?.totalAmount || '0';
-      const status = searchParams.get('status') || 'failed';
-      const error = searchParams.get('error') || searchParams.get('error_Message') || '';
-      const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
+    // Get order details from URL parameters or generate defaults
+    const txnid = searchParams.get('txnid') || 
+                 searchParams.get('orderId') || 
+                 location.state?.orderId || 
+                 'ORDER-' + Date.now();
+    
+    const amount = searchParams.get('amount') || 
+                  location.state?.totalAmount || 
+                  '1';
+    
+    const status = searchParams.get('status') || 'failed';
+    const error = searchParams.get('error') || searchParams.get('error_Message') || '';
+    const payuMoneyId = searchParams.get('payuMoneyId') || searchParams.get('mihpayid') || '';
 
-      setOrderDetails({
-        orderId: txnid,
-        amount: amount,
-        status: status,
-        error: error,
-        payuMoneyId: payuMoneyId
-      });
+    setOrderDetails({
+      orderId: txnid,
+      amount: amount,
+      status: status,
+      error: error,
+      payuMoneyId: payuMoneyId
+    });
 
-      console.log('Payment failure page loaded with PayU response:', { txnid, amount, status, error, payuMoneyId });
-    } catch (error) {
-      console.error('Error processing payment failure data:', error);
-      // Set default values if there's an error
-      setOrderDetails({
-        orderId: '#JS' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        amount: '0',
-        status: 'failed',
-        error: 'Unknown error occurred',
-        payuMoneyId: ''
-      });
-    }
+    console.log('Payment failure page loaded:', { txnid, amount, status, error, payuMoneyId });
   }, [searchParams, location.state]);
 
   const handleRetryPayment = () => {
-    // Navigate back to checkout to retry payment
     navigate('/checkout');
   };
 
@@ -61,23 +55,13 @@ const PaymentFailure = () => {
     if (orderDetails.status === 'pending') {
       return 'Your payment is pending. Please wait for confirmation or contact support.';
     }
-    if (orderDetails.status === 'failure') {
-      return 'Your payment was declined. Please check your payment details and try again.';
-    }
     return 'Your payment could not be processed. Please try again or contact support.';
   };
 
   const formatAmount = (amount: string) => {
-    try {
-      if (!amount || amount === 'undefined' || amount === '0') {
-        return '0';
-      }
-      const numAmount = parseFloat(amount);
-      return isNaN(numAmount) ? '0' : numAmount.toLocaleString();
-    } catch (error) {
-      console.error('Error formatting amount:', error);
-      return '0';
-    }
+    if (!amount || amount === '0') return '1';
+    const numAmount = parseFloat(amount);
+    return isNaN(numAmount) ? '1' : numAmount.toLocaleString();
   };
 
   return (
