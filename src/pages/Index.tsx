@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from "@/components/Header";
+import SimpleHero from "@/components/SimpleHero";
 import ProductCarousel from "@/components/ProductCarousel";
 import UploadedImages from "@/components/UploadedImages";
 import Categories from "@/components/Categories";
@@ -14,19 +15,26 @@ import { useAuth } from "@/hooks/useAuth";
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
 
   console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
-      }, 3000);
+      }, 5000); // Increased to 5 seconds
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, loading]);
+  }, [isAuthenticated, loading, mounted]);
 
-  if (loading) {
+  // Only show loading for the first 2 seconds max
+  if (!mounted) {
+    setTimeout(() => setMounted(true), 100);
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -40,6 +48,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+      <SimpleHero />
       <ProductCarousel />
       <Categories />
       <LabGrownDiamonds />
