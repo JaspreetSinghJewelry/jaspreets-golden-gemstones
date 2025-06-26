@@ -10,15 +10,12 @@ import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
-import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { isAuthenticated, loading } = useAuth();
 
-  useEffect(() => {
-    console.log("[DEBUG - Index.tsx] isAuthenticated:", isAuthenticated, "loading:", loading);
-  }, [isAuthenticated, loading]);
+  console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -29,50 +26,33 @@ const Index = () => {
     }
   }, [isAuthenticated, loading]);
 
-  // Simple loading state without complex error handling
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mb-4"></div>
-        <span className="text-gray-600 font-semibold">Loading...</span>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <SectionErrorBoundary label="Header">
-        <Header />
-      </SectionErrorBoundary>
-      <SectionErrorBoundary label="ProductCarousel">
-        <ProductCarousel />
-      </SectionErrorBoundary>
-      <SectionErrorBoundary label="Categories">
-        <Categories />
-      </SectionErrorBoundary>
-      <SectionErrorBoundary label="LabGrownDiamonds">
-        <LabGrownDiamonds />
-      </SectionErrorBoundary>
-      <SectionErrorBoundary label="UploadedImages">
-        <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
-      </SectionErrorBoundary>
+      <Header />
+      <ProductCarousel />
+      <Categories />
+      <LabGrownDiamonds />
+      <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
       <div className="grid lg:grid-cols-2 gap-0">
-        <SectionErrorBoundary label="InstagramGallery">
-          <InstagramGallery />
-        </SectionErrorBoundary>
-        <SectionErrorBoundary label="LabGrownInstagramGallery">
-          <LabGrownInstagramGallery />
-        </SectionErrorBoundary>
+        <InstagramGallery />
+        <LabGrownInstagramGallery />
       </div>
-      <SectionErrorBoundary label="Footer">
-        <Footer />
-      </SectionErrorBoundary>
-      <SectionErrorBoundary label="LoginPopup">
-        <LoginPopup
-          isOpen={showLoginPopup}
-          onClose={() => setShowLoginPopup(false)}
-        />
-      </SectionErrorBoundary>
+      <Footer />
+      <LoginPopup
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+      />
     </div>
   );
 };
