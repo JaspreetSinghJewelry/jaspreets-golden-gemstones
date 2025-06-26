@@ -61,45 +61,7 @@ const Checkout = () => {
     });
   };
 
-  const generateOrderId = () => {
-    return 'PLS-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-  };
-
-  const createPayUForm = (payuData: any) => {
-    // Remove any existing PayU forms
-    const existingForms = document.querySelectorAll('form[data-payu-form]');
-    existingForms.forEach(form => form.remove());
-    
-    // Create a form element
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://test.payu.in/_payment';
-    form.target = '_top';
-    form.setAttribute('data-payu-form', 'true');
-    form.style.display = 'none';
-    
-    // Add all form data as hidden inputs
-    Object.entries(payuData).forEach(([key, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value as string;
-      form.appendChild(input);
-    });
-
-    // Add form to document body and submit
-    document.body.appendChild(form);
-    form.submit();
-    
-    // Clean up form after a delay
-    setTimeout(() => {
-      if (document.body.contains(form)) {
-        document.body.removeChild(form);
-      }
-    }, 5000);
-  };
-
-  const handleProceedToPayment = async () => {
+  const handleProceedToPayment = () => {
     // Validate required fields
     const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'pincode', 'state'];
     const isValid = requiredFields.every(field => formData[field as keyof typeof formData].trim() !== '');
@@ -109,63 +71,12 @@ const Checkout = () => {
       return;
     }
 
-    setIsProcessing(true);
-
-    try {
-      // Generate order ID
-      const orderId = generateOrderId();
-      
-      // Prepare PayU payment data
-      const key = "LSzl2Y";
-      const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz";
-      
-      const payuData = {
-        key: key,
-        txnid: orderId,
-        amount: totalAmount.toString(),
-        productinfo: `Order ${orderId} - ${cartItems.length} items`,
-        firstname: formData.firstName,
-        lastname: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        surl: `${window.location.origin}/order-success`,
-        furl: `${window.location.origin}/payment-failure`,
-        udf1: orderId,
-        udf2: formData.address,
-        udf3: formData.city,
-        udf4: formData.state,
-        udf5: formData.pincode
-      };
-
-      // Generate hash
-      const hashString = `${key}|${orderId}|${totalAmount}|${payuData.productinfo}|${formData.firstName}|${formData.email}|||||||||||${salt}`;
-      
-      // Create hash using Web Crypto API
-      const encoder = new TextEncoder();
-      const data = encoder.encode(hashString);
-      const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-      // Add hash to PayU data
-      const finalPayuData = {
-        ...payuData,
-        hash: hash
-      };
-
-      console.log('PayU Data:', finalPayuData);
-
-      // Clear cart before redirect
-      clearCart();
-
-      // Create and submit PayU form
-      createPayUForm(finalPayuData);
-
-    } catch (error) {
-      console.error('Error processing payment:', error);
-      setIsProcessing(false);
-      alert('Error processing payment. Please try again.');
-    }
+    // Navigate to Payment page with customer data
+    navigate('/payment', {
+      state: {
+        customerData: formData
+      }
+    });
   };
 
   const handleQuantityChange = (id: number, newQuantity: number) => {
