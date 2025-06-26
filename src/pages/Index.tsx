@@ -13,20 +13,28 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { isAuthenticated, loading } = useAuth();
 
   console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading);
 
+  // Handle mounting state
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  // Show login popup after delay for non-authenticated users
+  useEffect(() => {
+    if (mounted && !loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, loading]);
+  }, [mounted, isAuthenticated, loading]);
 
-  if (loading) {
+  // Show brief loading only on initial mount
+  if (!mounted || (loading && !isAuthenticated)) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
