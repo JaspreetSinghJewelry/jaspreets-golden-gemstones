@@ -106,12 +106,12 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
 
       console.log('Request body prepared:', JSON.stringify(requestBody, null, 2));
 
-      // Call PayU initiation edge function with proper error handling
+      // Call PayU initiation edge function with correct anon key
       const response = await fetch('https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-initiate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc`
         },
         body: JSON.stringify(requestBody)
       });
