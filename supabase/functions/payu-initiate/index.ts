@@ -20,6 +20,7 @@ serve(async (req) => {
     if (req.method !== 'POST') {
       console.error('Invalid request method:', req.method)
       return new Response(JSON.stringify({ 
+        success: false,
         error: 'Method not allowed',
         details: 'Only POST requests are supported'
       }), {
@@ -29,14 +30,15 @@ serve(async (req) => {
     }
 
     // Parse request body
-    let orderData;
+    let requestBody;
     try {
-      const body = await req.text()
-      console.log('Raw request body received')
+      const bodyText = await req.text()
+      console.log('Raw request body received, length:', bodyText.length)
       
-      if (!body || body.trim() === '') {
+      if (!bodyText || bodyText.trim() === '') {
         console.error('Empty request body received')
         return new Response(JSON.stringify({ 
+          success: false,
           error: 'Empty request body',
           details: 'Request body cannot be empty. Please ensure order data is provided.'
         }), {
@@ -45,24 +47,29 @@ serve(async (req) => {
         })
       }
       
-      const parsedBody = JSON.parse(body)
-      orderData = parsedBody.orderData
+      requestBody = JSON.parse(bodyText)
+      console.log('Request body parsed successfully')
       
-      if (!orderData) {
-        console.error('Missing orderData in request body')
-        return new Response(JSON.stringify({ 
-          error: 'Missing orderData',
-          details: 'Request must contain orderData field with payment information'
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-      }
     } catch (parseError) {
       console.error('Error parsing request body:', parseError)
       return new Response(JSON.stringify({ 
+        success: false,
         error: 'Request parsing failed',
         details: parseError.message || 'Unable to parse request body'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const orderData = requestBody.orderData || requestBody;
+
+    if (!orderData) {
+      console.error('Missing orderData in request body')
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Missing orderData',
+        details: 'Request must contain orderData field with payment information'
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -75,7 +82,7 @@ serve(async (req) => {
       hasCustomerData: !!orderData.customerData
     })
 
-    // Your PayU credentials
+    // Your PayU credentials - exactly as provided
     const merchantKey = "LSzl2Y";
     const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz";
 
@@ -88,6 +95,7 @@ serve(async (req) => {
     if (!supabaseUrl || !supabaseAnonKey) {
       console.error('Supabase configuration missing')
       return new Response(JSON.stringify({ 
+        success: false,
         error: 'Database configuration error',
         details: 'Database credentials missing'
       }), {
@@ -116,6 +124,7 @@ serve(async (req) => {
         hasCustomerData: !!customerData 
       })
       return new Response(JSON.stringify({ 
+        success: false,
         error: 'Invalid order data',
         details: 'Missing required fields: orderId, amount, or customerData'
       }), {
@@ -140,15 +149,15 @@ serve(async (req) => {
 
     console.log('Processed customer data:', processedCustomerData)
 
-    // Generate transaction ID in your format
+    // Generate transaction ID exactly like your PHP code
     const txnid = `PLS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // PayU payment parameters matching your format
+    // PayU payment parameters matching your exact format
     const payuData = {
       key: merchantKey,
       txnid: txnid,
       amount: String(amount),
-      productinfo: `diamond bracelet - Order ${orderId}`,
+      productinfo: "diamond bracelet",
       firstname: processedCustomerData.firstName,
       email: processedCustomerData.email,
       phone: processedCustomerData.phone,
@@ -230,6 +239,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('PayU initiation error:', error)
     return new Response(JSON.stringify({ 
+      success: false,
       error: 'Payment initialization failed',
       details: error.message || 'An unexpected error occurred during payment initialization',
       timestamp: new Date().toISOString()

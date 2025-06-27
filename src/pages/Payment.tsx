@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,7 +43,7 @@ const Payment = () => {
 
   const createPayUForm = useCallback((payuUrl: string, formData: any) => {
     console.log('Creating PayU form with URL:', payuUrl);
-    console.log('Form data:', formData);
+    console.log('Form data keys:', Object.keys(formData));
     
     // Remove any existing PayU forms
     const existingForms = document.querySelectorAll('form[data-payu-form]');
@@ -65,6 +64,7 @@ const Payment = () => {
       input.name = key;
       input.value = value as string;
       form.appendChild(input);
+      console.log(`Added form field: ${key} = ${value}`);
     });
     
     document.body.appendChild(form);
@@ -108,27 +108,29 @@ const Payment = () => {
         }
       };
 
-      console.log('Calling payu-initiate function...');
-      
+      console.log('Request body prepared:', JSON.stringify(requestBody, null, 2));
+
       // Call PayU initiation edge function with proper error handling
-      const { data, error: functionError } = await supabase.functions.invoke('payu-initiate', {
-        body: JSON.stringify(requestBody),
+      const response = await fetch('https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-initiate', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabase.supabaseKey}`
+        },
+        body: JSON.stringify(requestBody)
       });
 
-      console.log('Function response:', { data, error: functionError });
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-      if (functionError) {
-        console.error('Supabase function error:', functionError);
-        throw new Error(`Payment service error: ${functionError.message}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
-      if (!data) {
-        console.error('No data received from function');
-        throw new Error('No response from payment service');
-      }
+      const data = await response.json();
+      console.log('Function response:', data);
 
       if (!data.success) {
         console.error('Function returned error:', data);
