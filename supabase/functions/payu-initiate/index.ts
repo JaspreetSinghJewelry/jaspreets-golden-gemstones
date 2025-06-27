@@ -82,7 +82,7 @@ serve(async (req) => {
       hasCustomerData: !!orderData.customerData
     })
 
-    // Your PayU credentials
+    // Your PayU credentials - exactly as provided
     const merchantKey = "LSzl2Y";
     const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz";
 
@@ -135,11 +135,11 @@ serve(async (req) => {
 
     console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
 
-    // Process customer data
+    // Process customer data exactly as in your PHP code
     const processedCustomerData = {
-      firstName: String(customerData.firstName || 'Customer').trim(),
+      firstName: String(customerData.firstName || 'Manveer Singh Bhalla').trim(),
       lastName: String(customerData.lastName || '').trim(),
-      email: String(customerData.email || 'customer@example.com').trim(),
+      email: String(customerData.email || 'manveersinghbhalla17@gmail.com').trim(),
       phone: String(customerData.phone || '9999999999').replace(/\D/g, '').slice(-10) || '9999999999',
       address: String(customerData.address || '').trim(),
       city: String(customerData.city || '').trim(),
@@ -149,15 +149,15 @@ serve(async (req) => {
 
     console.log('Processed customer data:', processedCustomerData)
 
-    // Generate transaction ID
+    // Generate transaction ID exactly like your PHP code
     const txnid = `PLS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // PayU payment parameters
+    // PayU payment parameters matching your exact format
     const payuData = {
       key: merchantKey,
       txnid: txnid,
       amount: String(amount),
-      productinfo: `diamond bracelet - Order ${orderId}`,
+      productinfo: "diamond bracelet",
       firstname: processedCustomerData.firstName,
       email: processedCustomerData.email,
       phone: processedCustomerData.phone,
@@ -177,11 +177,10 @@ serve(async (req) => {
       productinfo: payuData.productinfo
     })
 
-    // Generate hash with correct PayU format
-    // Format: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
-    const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|${payuData.udf1}|${payuData.udf2}|${payuData.udf3}|${payuData.udf4}|${payuData.udf5}||||||${salt}`
-    
-    console.log('Hash string for calculation:', hashString)
+    // Generate hash exactly as in your PHP code
+    // Correct hash format: key|txnid|amount|productinfo|firstname|email|||||||||||salt
+    const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
+    console.log('Hash string prepared for transaction:', payuData.txnid)
 
     // Create hash using Web Crypto API
     const encoder = new TextEncoder()
@@ -190,7 +189,7 @@ serve(async (req) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
-    console.log('Hash generated successfully:', hash.substring(0, 20) + '...')
+    console.log('Hash generated successfully for order:', orderId)
 
     // Try to save order to database
     try {
