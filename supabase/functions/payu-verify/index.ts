@@ -17,13 +17,9 @@ serve(async (req) => {
     const formData = await req.formData()
     console.log('PayU verification request received')
 
-    // Get PayU credentials from secrets
-    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
-    const salt = Deno.env.get('PAYU_SALT')
-
-    if (!merchantKey || !salt) {
-      throw new Error('PayU credentials not configured')
-    }
+    // Your PayU credentials
+    const merchantKey = "LSzl2Y"
+    const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz"
 
     // Extract PayU response parameters
     const status = formData.get('status')
@@ -45,7 +41,7 @@ serve(async (req) => {
       payuMoneyId
     })
 
-    // Verify hash for security
+    // Verify hash for security using the same format as your PHP code
     const reverseHashString = `${salt}|${status}|||||||||||${email}|${firstname}|${productinfo}|${amount}|${txnid}|${merchantKey}`
     
     const encoder = new TextEncoder()
@@ -89,10 +85,10 @@ serve(async (req) => {
       throw updateError
     }
 
-    // Redirect based on payment status
+    // Redirect based on payment status using your specified URLs
     const redirectUrl = paymentStatus === 'completed' 
-      ? `https://jaspreetsinghjewelry.com/order-success?orderId=${txnid}&amount=${amount}&status=${status}`
-      : `https://jaspreetsinghjewelry.com/payment-failure?orderId=${txnid}&amount=${amount}&status=${status}`
+      ? `https://jaspreetsinghjewelry.com/order-success?orderId=${txnid}&amount=${amount}&status=${status}&payuMoneyId=${payuMoneyId}`
+      : `https://jaspreetsinghjewelry.com/payment-failure?orderId=${txnid}&amount=${amount}&status=${status}&payuMoneyId=${payuMoneyId}`
 
     console.log('Redirecting to:', redirectUrl)
 

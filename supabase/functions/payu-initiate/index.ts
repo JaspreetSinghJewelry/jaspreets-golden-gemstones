@@ -7,9 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Rate limiting map - more lenient
-const requestTracker = new Map<string, number>();
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -18,7 +15,6 @@ serve(async (req) => {
 
   try {
     console.log('PayU initiate function called - Method:', req.method)
-    console.log('Content-Type:', req.headers.get('content-type'))
 
     // Validate request method
     if (req.method !== 'POST') {
@@ -32,12 +28,11 @@ serve(async (req) => {
       })
     }
 
-    // Parse request body with better error handling
+    // Parse request body
     let orderData;
     try {
       const body = await req.text()
-      console.log('Raw request body length:', body.length)
-      console.log('Raw request body preview:', body.substring(0, 200))
+      console.log('Raw request body received')
       
       if (!body || body.trim() === '') {
         console.error('Empty request body received')
@@ -50,24 +45,11 @@ serve(async (req) => {
         })
       }
       
-      let parsedBody;
-      try {
-        parsedBody = JSON.parse(body)
-      } catch (jsonError) {
-        console.error('JSON parse error:', jsonError)
-        return new Response(JSON.stringify({ 
-          error: 'Invalid JSON format',
-          details: 'Request body must be valid JSON'
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        })
-      }
-      
+      const parsedBody = JSON.parse(body)
       orderData = parsedBody.orderData
       
       if (!orderData) {
-        console.error('Missing orderData in request body. Body keys:', Object.keys(parsedBody))
+        console.error('Missing orderData in request body')
         return new Response(JSON.stringify({ 
           error: 'Missing orderData',
           details: 'Request must contain orderData field with payment information'
@@ -93,20 +75,9 @@ serve(async (req) => {
       hasCustomerData: !!orderData.customerData
     })
 
-    // Get PayU credentials from secrets
-    const merchantKey = Deno.env.get('PAYU_MERCHANT_KEY')
-    const salt = Deno.env.get('PAYU_SALT')
-
-    if (!merchantKey || !salt) {
-      console.error('PayU credentials not found')
-      return new Response(JSON.stringify({ 
-        error: 'Payment gateway not configured',
-        details: 'PayU credentials are missing. Please contact support.'
-      }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
+    // Your PayU credentials
+    const merchantKey = "LSzl2Y";
+    const salt = "0TnuJebAqBoK2GKZnMwxBrc39wtcTiFz";
 
     console.log('PayU credentials verified')
 
@@ -153,79 +124,36 @@ serve(async (req) => {
       })
     }
 
-    // More lenient rate limiting - 3 second cooldown
-    const requestKey = `${orderId}_${customerData.email || 'no-email'}`
-    const now = Date.now()
-    const lastRequest = requestTracker.get(requestKey)
-    
-    if (lastRequest && (now - lastRequest) < 3000) {
-      console.log('Rate limit hit for:', requestKey, 'Time since last:', now - lastRequest)
-      return new Response(JSON.stringify({ 
-        error: 'Too many requests',
-        details: 'Please wait a moment before trying again'
-      }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-    
-    requestTracker.set(requestKey, now)
-
-    // Clean up old entries
-    if (requestTracker.size > 100) {
-      const entries = Array.from(requestTracker.entries())
-      const sortedEntries = entries.sort((a, b) => b[1] - a[1])
-      requestTracker.clear()
-      sortedEntries.slice(0, 50).forEach(([key, value]) => {
-        requestTracker.set(key, value)
-      })
-    }
-
     console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
 
-    // Process and validate customer data with better defaults
+    // Process customer data exactly as in your PHP code
     const processedCustomerData = {
-      firstName: String(customerData.firstName || 'Test').trim() || 'Test',
-      lastName: String(customerData.lastName || 'User').trim() || 'User',
-      email: String(customerData.email || 'test@example.com').trim() || 'test@example.com',
+      firstName: String(customerData.firstName || 'Manveer Singh Bhalla').trim(),
+      lastName: String(customerData.lastName || '').trim(),
+      email: String(customerData.email || 'manveersinghbhalla17@gmail.com').trim(),
       phone: String(customerData.phone || '9999999999').replace(/\D/g, '').slice(-10) || '9999999999',
-      address: String(customerData.address || 'Test Address').trim() || 'Test Address',
-      city: String(customerData.city || 'Test City').trim() || 'Test City',
-      state: String(customerData.state || 'Test State').trim() || 'Test State',
-      pincode: String(customerData.pincode || '123456').replace(/\D/g, '').slice(-6) || '123456'
-    }
-
-    // Validate email format - use default if invalid
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(processedCustomerData.email)) {
-      console.log('Invalid email format, using default')
-      processedCustomerData.email = 'test@example.com'
-    }
-
-    // Ensure phone number is valid
-    if (processedCustomerData.phone.length < 10) {
-      processedCustomerData.phone = '9999999999'
-    }
-
-    // Ensure pincode is valid
-    if (processedCustomerData.pincode.length < 6) {
-      processedCustomerData.pincode = '123456'
+      address: String(customerData.address || '').trim(),
+      city: String(customerData.city || '').trim(),
+      state: String(customerData.state || '').trim(),
+      pincode: String(customerData.pincode || '').replace(/\D/g, '').slice(-6) || '123456'
     }
 
     console.log('Processed customer data:', processedCustomerData)
 
-    // PayU payment parameters
+    // Generate transaction ID in your format
+    const txnid = `PLS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    // PayU payment parameters matching your format
     const payuData = {
       key: merchantKey,
-      txnid: orderId,
+      txnid: txnid,
       amount: String(amount),
-      productinfo: `Order ${orderId} - ${cartItems.length} items`,
+      productinfo: `diamond bracelet - Order ${orderId}`,
       firstname: processedCustomerData.firstName,
-      lastname: processedCustomerData.lastName,
       email: processedCustomerData.email,
       phone: processedCustomerData.phone,
-      surl: `${supabaseUrl}/functions/v1/payu-verify`,
-      furl: `${supabaseUrl}/functions/v1/payu-verify`,
+      surl: 'https://jaspreetsinghjewelry.com/order-success',
+      furl: 'https://jaspreetsinghjewelry.com/payment-failure',
       udf1: orderId,
       udf2: processedCustomerData.address,
       udf3: processedCustomerData.city,
@@ -240,7 +168,8 @@ serve(async (req) => {
       productinfo: payuData.productinfo
     })
 
-    // Generate hash for security
+    // Generate hash exactly as in your PHP code
+    // Correct hash format: key|txnid|amount|productinfo|firstname|email|||||||||||salt
     const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
     console.log('Hash string prepared for transaction:', payuData.txnid)
 
