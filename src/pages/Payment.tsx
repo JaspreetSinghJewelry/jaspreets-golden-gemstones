@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,75 +44,33 @@ const Payment = () => {
 
   const createPayUForm = useCallback((payuUrl: string, formData: any) => {
     console.log('Creating PayU form with URL:', payuUrl);
-    console.log('Form data keys:', Object.keys(formData));
+    console.log('Form data:', formData);
     
     // Remove any existing PayU forms
     const existingForms = document.querySelectorAll('form[data-payu-form]');
     existingForms.forEach(form => form.remove());
     
-    // Create HTML content similar to your first code
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>PayU Payment Gateway</title>
-        <style>
-          body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
-          .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-          .loading { color: #666; margin: 20px 0; }
-          .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
-          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h2>PayU Payment Gateway</h2>
-          <div class="spinner"></div>
-          <p class="loading">Redirecting to PayU secure payment gateway...</p>
-          <p>Please wait, do not refresh or close this page.</p>
-          
-          <form id="paymentForm" action="${payuUrl}" method="post" style="display: none;">
-            ${Object.entries(formData).map(([key, value]) => 
-              `<input type="hidden" name="${key}" value="${value}" />`
-            ).join('')}
-          </form>
-        </div>
-        
-        <script>
-          // Auto-submit the form after a short delay
-          setTimeout(function() {
-            document.getElementById('paymentForm').submit();
-          }, 2000);
-        </script>
-      </body>
-      </html>
-    `;
+    // Create form exactly like your HTML code
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = payuUrl;
+    form.target = '_self';
+    form.style.display = 'none';
+    form.setAttribute('data-payu-form', 'true');
     
-    // Open in new window/tab
-    const paymentWindow = window.open('', '_blank');
-    if (paymentWindow) {
-      paymentWindow.document.write(htmlContent);
-      paymentWindow.document.close();
-      console.log('PayU form opened in new window');
-    } else {
-      // Fallback: create form in current window
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = payuUrl;
-      form.target = '_self';
-      form.style.display = 'none';
-      
-      Object.entries(formData).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
-      });
-      
-      document.body.appendChild(form);
-      form.submit();
-    }
+    // Add all form fields
+    Object.entries(formData).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value as string;
+      form.appendChild(input);
+    });
+    
+    document.body.appendChild(form);
+    
+    console.log('Submitting PayU form...');
+    form.submit();
   }, []);
 
   const handleProceedToPayment = useCallback(async () => {
@@ -149,28 +108,32 @@ const Payment = () => {
         }
       };
 
-      console.log('Request body prepared:', requestBody);
+      console.log('Calling payu-initiate function...');
       
-      // Call PayU initiation edge function
-      console.log('Calling supabase function...');
-      
-      const { data, error } = await supabase.functions.invoke('payu-initiate', {
-        body: requestBody,
+      // Call PayU initiation edge function with proper error handling
+      const { data, error: functionError } = await supabase.functions.invoke('payu-initiate', {
+        body: JSON.stringify(requestBody),
         headers: {
           'Content-Type': 'application/json'
         }
       });
 
-      console.log('Supabase function response:', { data, error });
+      console.log('Function response:', { data, error: functionError });
 
-      if (error) {
-        console.error('PayU function error:', error);
-        throw new Error(`Payment initialization failed: ${error.message}`);
+      if (functionError) {
+        console.error('Supabase function error:', functionError);
+        throw new Error(`Payment service error: ${functionError.message}`);
       }
 
-      if (!data || !data.success) {
-        console.error('PayU function returned error:', data?.error || data?.details);
-        throw new Error(data?.error || 'Payment gateway returned an error');
+      if (!data) {
+        console.error('No data received from function');
+        throw new Error('No response from payment service');
+      }
+
+      if (!data.success) {
+        console.error('Function returned error:', data);
+        const errorMsg = data.error || data.details || 'Payment gateway returned an error';
+        throw new Error(errorMsg);
       }
 
       console.log('PayU response received successfully:', data);
@@ -194,7 +157,7 @@ const Payment = () => {
       clearCart();
       
       // Small delay to ensure cart is cleared
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Create and submit form to PayU
       createPayUForm(data.payuUrl, data.formData);
