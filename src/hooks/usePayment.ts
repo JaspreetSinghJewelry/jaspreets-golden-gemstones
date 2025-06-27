@@ -2,7 +2,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface CartItem {
@@ -106,7 +105,7 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
 
       console.log('Request body prepared:', JSON.stringify(requestBody, null, 2));
 
-      // Call PayU initiation edge function with correct anon key
+      // Call PayU initiation edge function
       const response = await fetch('https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-initiate', {
         method: 'POST',
         headers: {
