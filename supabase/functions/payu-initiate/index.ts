@@ -178,9 +178,9 @@ serve(async (req) => {
     })
 
     // Generate hash exactly as in your PHP code
-    // Correct hash format: key|txnid|amount|productinfo|firstname|email|||||||||||salt
-    const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|||||||||||${salt}`
-    console.log('Hash string prepared for transaction:', payuData.txnid)
+    // Correct hash format: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
+    const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|${payuData.udf1}|${payuData.udf2}|${payuData.udf3}|${payuData.udf4}|${payuData.udf5}||||||${salt}`
+    console.log('Hash string prepared:', hashString)
 
     // Create hash using Web Crypto API
     const encoder = new TextEncoder()

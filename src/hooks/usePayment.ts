@@ -38,7 +38,7 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
 
   const createPayUForm = useCallback((payuUrl: string, formData: any) => {
     console.log('Creating PayU form with URL:', payuUrl);
-    console.log('Form data keys:', Object.keys(formData));
+    console.log('Form data:', formData);
     
     // Remove any existing PayU forms
     const existingForms = document.querySelectorAll('form[data-payu-form]');
@@ -105,7 +105,7 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
 
       console.log('Request body prepared:', JSON.stringify(requestBody, null, 2));
 
-      // Call PayU initiation edge function
+      // Call PayU initiation edge function with proper Authorization header
       const response = await fetch('https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-initiate', {
         method: 'POST',
         headers: {
