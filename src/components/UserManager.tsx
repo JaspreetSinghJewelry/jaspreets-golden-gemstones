@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, RefreshCw, Images, Calendar, Mail, Phone, User, Trash2, AlertCircle } from 'lucide-react';
+import { Users, RefreshCw, Calendar, Mail, Phone, User, Trash2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
 
 interface UserProfile {
   id: string;
@@ -18,30 +17,58 @@ interface UserProfile {
   updated_at: string;
 }
 
+interface AuthUser {
+  id: string;
+  email: string | null;
+  created_at: string;
+  last_sign_in_at: string | null;
+  email_confirmed_at: string | null;
+}
+
 const UserManager = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
+      console.log('Fetching all users from profiles table...');
+      
+      // Fetch profiles data
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        setError(`Database error: ${error.message}`);
-        setUsers([]);
-      } else if (!data) {
-        setError('No data received from Supabase');
+      if (profilesError) {
+        console.error('Profiles fetch error:', profilesError);
+        setError(`Database error: ${profilesError.message}`);
         setUsers([]);
       } else {
-        setUsers(data);
+        console.log('Profiles data fetched:', profilesData?.length || 0, 'users');
+        setUsers(profilesData || []);
       }
+
+      // Also try to get auth users count for comparison
+      try {
+        console.log('Checking auth users...');
+        const { count, error: countError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+        
+        if (!countError) {
+          console.log('Total users in profiles table:', count);
+        }
+      } catch (e) {
+        console.log('Could not get auth users count:', e);
+      }
+
     } catch (error) {
+      console.error('Unexpected error:', error);
       setError('Unexpected error occurred while fetching users');
       setUsers([]);
     } finally {
@@ -50,42 +77,68 @@ const UserManager = () => {
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete user "${userName || 'Unknown User'}"? This will also delete all their orders. This action cannot be undone.`)) {
       return;
     }
+    
+    setDeleting(userId);
+    
     try {
-      await supabase.from('orders').delete().eq('user_id', userId);
+      console.log('Deleting user:', userId);
+      
+      // First delete user's orders
+      const { error: ordersError } = await supabase
+        .from('orders')
+        .delete()
+        .eq('user_id', userId);
+      
+      if (ordersError) {
+        console.error('Error deleting user orders:', ordersError);
+      }
+      
+      // Then delete user profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
         .eq('id', userId);
+      
       if (profileError) {
+        console.error('Error deleting user profile:', profileError);
         toast({
           title: "Delete Failed",
-          description: "Failed to delete the user. Please try again.",
+          description: "Failed to delete the user profile. Please try again.",
           variant: "destructive"
         });
         return;
       }
+      
       toast({
         title: "User Deleted",
-        description: `User "${userName || 'Unknown User'}" has been deleted.`
+        description: `User "${userName || 'Unknown User'}" has been deleted successfully.`
       });
-      fetchUsers();
+      
+      // Remove from local state and refresh
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+      setTimeout(() => fetchUsers(), 500);
+      
     } catch (error) {
+      console.error('Error deleting user:', error);
       toast({
         title: "Delete Failed",
         description: "Failed to delete the user. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setDeleting(null);
     }
   };
 
   useEffect(() => {
     fetchUsers();
 
+    // Set up real-time subscription for profile changes
     const channel = supabase
-      .channel('public:profiles-changes')
+      .channel('profiles-changes')
       .on(
         'postgres_changes',
         {
@@ -93,21 +146,22 @@ const UserManager = () => {
           schema: 'public',
           table: 'profiles'
         },
-        (_payload) => fetchUsers()
+        (payload) => {
+          console.log('Profiles table changed:', payload);
+          fetchUsers();
+        }
       )
       .subscribe();
 
-    const pollInterval = setInterval(() => fetchUsers(), 10000);
-
-    const handleUserSignedUp = (_event: any) => {
+    // Poll for updates every 30 seconds
+    const pollInterval = setInterval(() => {
+      console.log('Polling for user updates...');
       fetchUsers();
-    };
-    window.addEventListener('user-signed-up', handleUserSignedUp);
+    }, 30000);
 
     return () => {
       supabase.removeChannel(channel);
       clearInterval(pollInterval);
-      window.removeEventListener('user-signed-up', handleUserSignedUp);
     };
   }, []);
 
@@ -132,7 +186,7 @@ const UserManager = () => {
           <Users className="h-6 w-6 text-red-600" />
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">User Management</h2>
-            <p className="text-gray-600">View and manage user registrations</p>
+            <p className="text-gray-600">View and manage all registered users</p>
           </div>
         </div>
         <Button
@@ -154,6 +208,7 @@ const UserManager = () => {
               <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
+                <p className="mt-1 text-xs">Note: Make sure users have profiles created when they sign up.</p>
               </div>
             </div>
           </div>
@@ -178,20 +233,25 @@ const UserManager = () => {
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p className="text-lg font-medium">No users found</p>
               <p className="text-sm mt-2">
-                {error ? 'Check the error message above' : 'Users will appear here after they sign up'}
+                {error ? 'Check the error message above' : 'Users will appear here after they sign up and profiles are created'}
               </p>
+              <Button variant="outline" onClick={fetchUsers} className="mt-4">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Users
+              </Button>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>UID</TableHead>
-                    <TableHead>Display Name</TableHead>
+                    <TableHead>User ID</TableHead>
+                    <TableHead>Full Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
-                    <TableHead>Providers</TableHead>
-                    <TableHead>Created At</TableHead>
+                    <TableHead>Registration Date</TableHead>
+                    <TableHead>Last Updated</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -199,40 +259,64 @@ const UserManager = () => {
                   {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        <div className="font-mono text-xs text-gray-800">{user.id}</div>
+                        <div className="font-mono text-xs text-gray-800 max-w-[200px] truncate">
+                          {user.id}
+                        </div>
                       </TableCell>
                       <TableCell>
-                        {user.full_name || "N/A"}
+                        <div className="font-medium">
+                          {user.full_name || "N/A"}
+                        </div>
                       </TableCell>
                       <TableCell>
-                        {user.email ?? <span className="text-gray-400">N/A</span>}
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-400" />
+                          {user.email || <span className="text-gray-400">N/A</span>}
+                        </div>
                       </TableCell>
                       <TableCell>
-                        {user.phone ?? <span className="text-gray-400">N/A</span>}
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-400" />
+                          {user.phone || <span className="text-gray-400">N/A</span>}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          {formatDate(user.created_at)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-gray-600">
+                          {formatDate(user.updated_at)}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {user.email ? (
-                          <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200">
-                            Email
+                          <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200">
+                            <User className="h-3 w-3 mr-1" />
+                            Active
                           </Badge>
                         ) : (
                           <Badge variant="secondary" className="bg-gray-100 text-gray-500 border-gray-200">
-                            Unknown
+                            Incomplete
                           </Badge>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {formatDate(user.created_at)}
                       </TableCell>
                       <TableCell>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteUser(user.id, user.full_name || user.email || 'Unknown User')}
+                          disabled={deleting === user.id}
                           className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
+                          {deleting === user.id ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                          {deleting === user.id ? 'Deleting...' : 'Delete'}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -243,6 +327,13 @@ const UserManager = () => {
           )}
         </CardContent>
       </Card>
+
+      {users.length > 0 && (
+        <div className="text-sm text-gray-500 text-center">
+          <p>Total registered users: {users.length}</p>
+          <p className="mt-1">Data refreshes automatically every 30 seconds</p>
+        </div>
+      )}
     </div>
   );
 };

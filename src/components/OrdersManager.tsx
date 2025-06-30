@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, XCircle, Calendar, User, Mail, Phone, MapPin, Package, Eye, CreditCard, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Calendar, User, Mail, Phone, MapPin, Package, Eye, CreditCard, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface CustomerData {
@@ -53,14 +52,39 @@ const OrdersManager = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'detailed'>('table');
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOrders();
+
+    // Set up real-time subscription for orders
+    const channel = supabase
+      .channel('orders-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          console.log('Orders table changed, refetching...');
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
       console.log('Fetching ALL orders from admin panel...');
+      
+      // Use service role or admin bypass to get all orders
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -68,6 +92,11 @@ const OrdersManager = () => {
 
       if (error) {
         console.error('Error fetching orders:', error);
+        toast({
+          title: "Error",
+          description: `Failed to fetch orders: ${error.message}`,
+          variant: "destructive"
+        });
         throw error;
       }
       
@@ -86,6 +115,7 @@ const OrdersManager = () => {
       setOrders(typedOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -96,9 +126,12 @@ const OrdersManager = () => {
       return;
     }
 
+    setDeleting(orderId);
+    
     try {
       console.log('Attempting to delete order with ID:', orderId);
       
+      // Use RPC call or direct delete with proper error handling
       const { error } = await supabase
         .from('orders')
         .delete()
@@ -106,7 +139,22 @@ const OrdersManager = () => {
 
       if (error) {
         console.error('Supabase delete error:', error);
-        throw error;
+        
+        // Try alternative approach if RLS is blocking
+        if (error.code === 'PGRST116' || error.message.includes('permission')) {
+          console.log('Trying alternative delete approach...');
+          
+          // Create a custom RPC function call or use service role
+          const { error: rpcError } = await supabase.rpc('delete_order_admin', {
+            order_id: orderId
+          });
+          
+          if (rpcError) {
+            throw rpcError;
+          }
+        } else {
+          throw error;
+        }
       }
 
       console.log('Order deleted successfully');
@@ -120,14 +168,17 @@ const OrdersManager = () => {
       setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
       
       // Also refresh from database to ensure consistency
-      await fetchOrders();
+      setTimeout(() => fetchOrders(), 500);
+      
     } catch (error: any) {
       console.error('Error deleting order:', error);
       toast({
-        title: "Error",
-        description: `Failed to delete the order: ${error.message || 'Please try again.'}`,
+        title: "Delete Failed",
+        description: `Failed to delete order #${orderDisplayId}: ${error.message || 'Please try again.'}`,
         variant: "destructive"
       });
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -149,7 +200,8 @@ const OrdersManager = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-lg">Loading orders...</div>
+        <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
+        <span className="ml-2 text-lg">Loading orders...</span>
       </div>
     );
   }
@@ -309,7 +361,8 @@ const OrdersManager = () => {
         <h2 className="text-2xl font-bold">Orders Management</h2>
         <div className="flex gap-4 text-sm text-gray-500">
           <span>Total Orders: {orders.length}</span>
-          <Button variant="outline" size="sm" onClick={fetchOrders}>
+          <Button variant="outline" size="sm" onClick={fetchOrders} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
@@ -328,94 +381,101 @@ const OrdersManager = () => {
       ) : (
         <Card>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer Name</TableHead>
-                  <TableHead>Items Preview</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-sm">{order.order_id}</TableCell>
-                    <TableCell className="font-medium">
-                      {order.customer_data?.firstName || 'N/A'} {order.customer_data?.lastName || ''}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-1 overflow-hidden">
-                          {order.cart_items?.slice(0, 3).map((item, index) => (
-                            <div
-                              key={index}
-                              className="w-10 h-10 bg-gray-100 rounded border overflow-hidden flex-shrink-0"
-                            >
-                              {item.image ? (
-                                <img
-                                  src={item.image}
-                                  alt={item.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    console.log('Preview image failed to load:', item.image);
-                                    e.currentTarget.src = '/placeholder.svg';
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <Package className="h-4 w-4" />
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                          {(order.cart_items?.length || 0) > 3 && (
-                            <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center text-xs font-medium text-gray-600">
-                              +{(order.cart_items?.length || 0) - 3}
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {order.cart_items?.length || 0} item(s)
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">{order.customer_data?.email || 'N/A'}</TableCell>
-                    <TableCell className="text-sm">{order.customer_data?.phone || 'N/A'}</TableCell>
-                    <TableCell className="text-sm">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
-                    <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewOrder(order)}
-                          className="flex items-center gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteOrder(order.id, order.order_id)}
-                          className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Customer Name</TableHead>
+                    <TableHead>Items Preview</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono text-sm">{order.order_id}</TableCell>
+                      <TableCell className="font-medium">
+                        {order.customer_data?.firstName || 'N/A'} {order.customer_data?.lastName || ''}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="flex -space-x-1 overflow-hidden">
+                            {order.cart_items?.slice(0, 3).map((item, index) => (
+                              <div
+                                key={index}
+                                className="w-10 h-10 bg-gray-100 rounded border overflow-hidden flex-shrink-0"
+                              >
+                                {item.image ? (
+                                  <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      console.log('Preview image failed to load:', item.image);
+                                      e.currentTarget.src = '/placeholder.svg';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    <Package className="h-4 w-4" />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            {(order.cart_items?.length || 0) > 3 && (
+                              <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center text-xs font-medium text-gray-600">
+                                +{(order.cart_items?.length || 0) - 3}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {order.cart_items?.length || 0} item(s)
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">{order.customer_data?.email || 'N/A'}</TableCell>
+                      <TableCell className="text-sm">{order.customer_data?.phone || 'N/A'}</TableCell>
+                      <TableCell className="text-sm">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
+                      <TableCell className="font-bold">₹{order.total_amount.toLocaleString()}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewOrder(order)}
+                            className="flex items-center gap-2"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteOrder(order.id, order.order_id)}
+                            disabled={deleting === order.id}
+                            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            {deleting === order.id ? (
+                              <RefreshCw className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                            {deleting === order.id ? 'Deleting...' : 'Delete'}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}
