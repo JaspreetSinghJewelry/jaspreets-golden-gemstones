@@ -179,7 +179,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      delete_order_admin: {
+        Args: { order_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
