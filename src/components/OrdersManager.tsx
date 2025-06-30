@@ -131,30 +131,14 @@ const OrdersManager = () => {
     try {
       console.log('Attempting to delete order with ID:', orderId);
       
-      // Use RPC call or direct delete with proper error handling
-      const { error } = await supabase
-        .from('orders')
-        .delete()
-        .eq('id', orderId);
+      // Use the RPC function to delete the order with admin privileges
+      const { error } = await supabase.rpc('delete_order_admin', {
+        order_id: orderId
+      });
 
       if (error) {
-        console.error('Supabase delete error:', error);
-        
-        // Try alternative approach if RLS is blocking
-        if (error.code === 'PGRST116' || error.message.includes('permission')) {
-          console.log('Trying alternative delete approach...');
-          
-          // Create a custom RPC function call or use service role
-          const { error: rpcError } = await supabase.rpc('delete_order_admin', {
-            order_id: orderId
-          });
-          
-          if (rpcError) {
-            throw rpcError;
-          }
-        } else {
-          throw error;
-        }
+        console.error('Error deleting order:', error);
+        throw error;
       }
 
       console.log('Order deleted successfully');
