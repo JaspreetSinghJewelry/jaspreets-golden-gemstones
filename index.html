@@ -1,64 +1,61 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    
-    <title>Jaspreet Singh Jewelry</title>
-    <meta name="description" content="Premium Jewelry Collection by Jaspreet Singh" />
-    <meta name="author" content="Jaspreet Singh Jewelry" />
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  
+  <title>Jaspreet Singh Jewelry</title>
+  <meta name="description" content="Premium Jewelry Collection by Jaspreet Singh" />
+  <meta name="author" content="Jaspreet Singh Jewelry" />
 
-    <meta property="og:title" content="Jaspreet Singh Jewelry" />
-    <meta property="og:description" content="Premium Jewelry Collection" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://jaspreetsinghjewelry.com" />
+  <meta property="og:title" content="Jaspreet Singh Jewelry" />
+  <meta property="og:description" content="Premium Jewelry Collection" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jaspreetsinghjewelry.com" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Jaspreet Singh Jewelry" />
-    
-    <!-- iOS Safari specific meta tags -->
-    <meta name="apple-mobile-web-app-title" content="Jaspreet Singh Jewelry" />
-    <meta name="theme-color" content="#001c39" />
-    
-    <!-- Android Chrome specific meta tags -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="Jaspreet Singh Jewelry" />
-    
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
-    <link rel="manifest" href="%PUBLIC_URL%/site.webmanifest">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jaspreet Singh Jewelry" />
 
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/src/main.tsx" as="script" />
-    
-    <!-- Start Single Page Apps for GitHub Pages -->
-    <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
-        }
-      }(window.location))
-    </script>
-    <!-- End Single Page Apps for GitHub Pages -->
-  </head>
+  <!-- iOS Safari specific -->
+  <meta name="apple-mobile-web-app-title" content="Jaspreet Singh Jewelry" />
+  <meta name="theme-color" content="#001c39" />
+
+  <!-- Android Chrome specific -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Jaspreet Singh Jewelry" />
+
+  <!-- ✅ CORRECT favicon links for Vite -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/src/main.tsx" as="script" />
+
+  <!-- Start Single Page Apps for GitHub Pages -->
+  <script type="text/javascript">
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
+  <!-- End SPA fix -->
+</head>
+
 
   <body>
     <div id="root"></div>
