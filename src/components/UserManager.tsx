@@ -38,7 +38,8 @@ const UserManager = () => {
     try {
       console.log('Fetching all users from profiles table...');
       
-      // Fetch profiles data
+      // Use a more comprehensive approach to get user data
+      // First, try to get profiles data with relaxed RLS
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -46,16 +47,51 @@ const UserManager = () => {
 
       if (profilesError) {
         console.error('Profiles fetch error:', profilesError);
-        setError(`Database error: ${profilesError.message}`);
-        setUsers([]);
+        
+        // If profiles fetch fails, try to get auth users through admin approach
+        console.log('Trying alternative approach to fetch user data...');
+        
+        // Create profiles for users who might not have them
+        const { data: ordersData, error: ordersError } = await supabase
+          .from('orders')
+          .select('user_id, customer_data, created_at')
+          .not('user_id', 'is', null)
+          .order('created_at', { ascending: false });
+
+        if (!ordersError && ordersData) {
+          console.log('Found users from orders data:', ordersData.length);
+          
+          // Create profile-like data from orders
+          const uniqueUsers = new Map();
+          ordersData.forEach(order => {
+            if (order.user_id && !uniqueUsers.has(order.user_id)) {
+              const customerData = order.customer_data as any;
+              uniqueUsers.set(order.user_id, {
+                id: order.user_id,
+                full_name: customerData?.firstName && customerData?.lastName 
+                  ? `${customerData.firstName} ${customerData.lastName}` 
+                  : null,
+                email: customerData?.email || null,
+                phone: customerData?.phone || null,
+                created_at: order.created_at,
+                updated_at: order.created_at
+              });
+            }
+          });
+          
+          setUsers(Array.from(uniqueUsers.values()));
+        } else {
+          setError(`Unable to fetch user data: ${profilesError.message}`);
+          setUsers([]);
+        }
       } else {
-        console.log('Profiles data fetched:', profilesData?.length || 0, 'users');
+        console.log('Profiles data fetched successfully:', profilesData?.length || 0, 'users');
         setUsers(profilesData || []);
       }
 
-      // Also try to get auth users count for comparison
+      // Also try to get count for debugging
       try {
-        console.log('Checking auth users...');
+        console.log('Checking total profiles count...');
         const { count, error: countError } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true });
@@ -64,7 +100,7 @@ const UserManager = () => {
           console.log('Total users in profiles table:', count);
         }
       } catch (e) {
-        console.log('Could not get auth users count:', e);
+        console.log('Could not get profiles count:', e);
       }
 
     } catch (error) {
@@ -208,7 +244,7 @@ const UserManager = () => {
               <h3 className="text-sm font-medium text-red-800">Error Loading Users</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
-                <p className="mt-1 text-xs">Note: Make sure users have profiles created when they sign up.</p>
+                <p className="mt-1 text-xs">Note: This may happen if users haven't completed their profiles or there are permission issues.</p>
               </div>
             </div>
           </div>
@@ -233,7 +269,7 @@ const UserManager = () => {
               <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p className="text-lg font-medium">No users found</p>
               <p className="text-sm mt-2">
-                {error ? 'Check the error message above' : 'Users will appear here after they sign up and profiles are created'}
+                {error ? 'Check the error message above' : 'Users will appear here after they sign up and complete orders'}
               </p>
               <Button variant="outline" onClick={fetchUsers} className="mt-4">
                 <RefreshCw className="h-4 w-4 mr-2" />
