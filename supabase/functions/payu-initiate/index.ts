@@ -29,7 +29,7 @@ serve(async (req) => {
       })
     }
 
-    // Parse request body
+    // Parse request body with better error handling
     let requestBody;
     try {
       const bodyText = await req.text()
@@ -116,17 +116,18 @@ serve(async (req) => {
       taxes
     } = orderData
 
-    // Validate required data
-    if (!orderId || !amount || !customerData) {
-      console.error('Missing required order data:', { 
+    // Validate required data with better checks
+    if (!orderId || !amount || amount <= 0 || !customerData) {
+      console.error('Missing or invalid required order data:', { 
         hasOrderId: !!orderId, 
-        hasAmount: !!amount, 
+        hasAmount: !!amount,
+        amountValue: amount,
         hasCustomerData: !!customerData 
       })
       return new Response(JSON.stringify({ 
         success: false,
         error: 'Invalid order data',
-        details: 'Missing required fields: orderId, amount, or customerData'
+        details: 'Missing required fields: orderId, valid amount, or customerData'
       }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -135,11 +136,11 @@ serve(async (req) => {
 
     console.log('Processing order:', { orderId, amount, customerEmail: customerData.email })
 
-    // Process customer data exactly as in your PHP code
+    // Process customer data with better validation
     const processedCustomerData = {
-      firstName: String(customerData.firstName || 'Manveer Singh Bhalla').trim(),
+      firstName: String(customerData.firstName || 'Customer').trim(),
       lastName: String(customerData.lastName || '').trim(),
-      email: String(customerData.email || 'manveersinghbhalla17@gmail.com').trim(),
+      email: String(customerData.email || 'customer@example.com').trim(),
       phone: String(customerData.phone || '9999999999').replace(/\D/g, '').slice(-10) || '9999999999',
       address: String(customerData.address || '').trim(),
       city: String(customerData.city || '').trim(),
@@ -149,15 +150,15 @@ serve(async (req) => {
 
     console.log('Processed customer data:', processedCustomerData)
 
-    // Generate transaction ID exactly like your PHP code
-    const txnid = `PLS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // Generate transaction ID with better uniqueness
+    const txnid = `PLS-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
     // PayU payment parameters matching your exact format
     const payuData = {
       key: merchantKey,
       txnid: txnid,
       amount: String(amount),
-      productinfo: "diamond bracelet",
+      productinfo: "diamond jewelry",
       firstname: processedCustomerData.firstName,
       email: processedCustomerData.email,
       phone: processedCustomerData.phone,
@@ -177,8 +178,7 @@ serve(async (req) => {
       productinfo: payuData.productinfo
     })
 
-    // Generate hash exactly as in your PHP code
-    // Correct hash format: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
+    // Generate hash with the exact same format as your PHP code
     const hashString = `${payuData.key}|${payuData.txnid}|${payuData.amount}|${payuData.productinfo}|${payuData.firstname}|${payuData.email}|${payuData.udf1}|${payuData.udf2}|${payuData.udf3}|${payuData.udf4}|${payuData.udf5}||||||${salt}`
     console.log('Hash string prepared:', hashString)
 
@@ -191,7 +191,7 @@ serve(async (req) => {
 
     console.log('Hash generated successfully for order:', orderId)
 
-    // Try to save order to database
+    // Try to save order to database with better error handling
     try {
       const { error: orderError } = await supabase
         .from('orders')
@@ -206,17 +206,19 @@ serve(async (req) => {
           payment_status: 'pending',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'order_id'
         })
 
       if (orderError) {
         console.error('Error saving order to database:', orderError)
-        // Continue with payment even if database save fails
+        // Continue with payment even if database save fails - don't block payment
       } else {
         console.log('Order saved to database successfully:', orderId)
       }
     } catch (dbError) {
       console.error('Database operation error:', dbError)
-      // Continue with payment
+      // Continue with payment even if database operation fails
     }
 
     // Return PayU form data

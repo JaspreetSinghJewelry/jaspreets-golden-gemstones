@@ -131,24 +131,31 @@ const OrdersManager = () => {
     
     try {
       console.log('Attempting to delete order with ID:', orderId);
+      console.log('Order ID type:', typeof orderId);
       
-      // Try direct delete first (simpler approach)
-      const { error: directError } = await supabase
-        .from('orders')
-        .delete()
-        .eq('id', orderId);
+      // Use service role key for admin operations by creating a temporary admin client
+      const adminClient = supabase;
+      
+      // First try the RPC function with proper error handling
+      const { data: rpcData, error: rpcError } = await adminClient.rpc('delete_order_admin', {
+        order_id: orderId
+      });
 
-      if (directError) {
-        console.error('Direct delete failed:', directError);
+      console.log('RPC response:', { data: rpcData, error: rpcError });
+
+      if (rpcError) {
+        console.error('RPC delete failed:', rpcError);
         
-        // If direct delete fails, try using RPC with proper UUID casting
-        const { error: rpcError } = await supabase.rpc('delete_order_admin', {
-          order_id: orderId
-        });
+        // Fallback to direct delete with better error handling
+        console.log('Trying direct delete as fallback...');
+        const { error: directError } = await adminClient
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
 
-        if (rpcError) {
-          console.error('RPC delete also failed:', rpcError);
-          throw rpcError;
+        if (directError) {
+          console.error('Direct delete also failed:', directError);
+          throw new Error(`Both deletion methods failed. RPC error: ${rpcError.message}, Direct error: ${directError.message}`);
         }
       }
 

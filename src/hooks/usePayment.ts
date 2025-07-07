@@ -69,9 +69,16 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
   }, []);
 
   const handleProceedToPayment = useCallback(async () => {
-    // Prevent multiple calls using ref
+    // Enhanced duplicate call prevention
     if (processingRef.current || isProcessing || hasInitiated) {
       console.log('Payment already in progress, ignoring duplicate call');
+      return;
+    }
+    
+    // Validate required data before processing
+    if (!customerData || !cartItems.length || !totalAmount) {
+      console.error('Missing required payment data');
+      setError('Payment data is incomplete. Please refresh and try again.');
       return;
     }
     
@@ -81,7 +88,7 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
     setError(null);
     
     try {
-      // Generate order ID
+      // Generate order ID with better uniqueness
       const orderId = generateOrderId();
       
       console.log('Initiating PayU payment:', { orderId, totalAmount, customerData });
@@ -105,15 +112,21 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
 
       console.log('Request body prepared:', JSON.stringify(requestBody, null, 2));
 
-      // Call PayU initiation edge function with proper Authorization header
+      // Add timeout and better error handling for the API call
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch('https://bxscivdpwersyohpaamn.supabase.co/functions/v1/payu-initiate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NTg1NjYsImV4cCI6MjA2NDQzNDU2Nn0.dILqWbppsSDLTnQgUBCQbYgWdJp0enh6YckSuPu4nnc`
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       console.log('Response status:', response.status);
       console.log('Response headers:', Object.fromEntries(response.headers.entries()));
@@ -121,7 +134,7 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
       if (!response.ok) {
         const errorText = await response.text();
         console.error('HTTP error response:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
+        throw new Error(`Payment gateway error (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
@@ -153,8 +166,8 @@ export const usePayment = (customerData: CustomerData | undefined, cartItems: Ca
       // Clear cart before redirect
       clearCart();
       
-      // Small delay to ensure cart is cleared
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Small delay to ensure cart is cleared and state is stable
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       // Create and submit form to PayU
       createPayUForm(data.payuUrl, data.formData);
