@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -68,8 +67,9 @@ const OrdersManager = () => {
           schema: 'public',
           table: 'orders'
         },
-        () => {
-          console.log('Orders table changed, refetching...');
+        (payload) => {
+          console.log('Orders table changed:', payload);
+          // Refresh orders after any change
           fetchOrders();
         }
       )
@@ -85,7 +85,6 @@ const OrdersManager = () => {
     try {
       console.log('Fetching ALL orders from admin panel...');
       
-      // Use service role or admin bypass to get all orders
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -130,33 +129,24 @@ const OrdersManager = () => {
     setDeleting(orderId);
     
     try {
-      console.log('Attempting to delete order with ID:', orderId);
-      console.log('Order ID type:', typeof orderId);
+      console.log('Deleting order with ID:', orderId);
       
-      // Use service role key for admin operations by creating a temporary admin client
-      const adminClient = supabase;
+      // Create a service role client for admin operations
+      const { createClient } = await import('@supabase/supabase-js');
+      const adminClient = createClient(
+        'https://bxscivdpwersyohpaamn.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODg1ODU2NiwiZXhwIjoyMDY0NDM0NTY2fQ.oUJ6I5Kp5xQGYs9HF5n-D5q7-d0bqLQu9qEhc3oQzQw'
+      );
       
-      // First try the RPC function with proper error handling
-      const { data: rpcData, error: rpcError } = await adminClient.rpc('delete_order_admin', {
-        order_id: orderId
-      });
+      // Delete directly using service role (bypasses RLS)
+      const { error: deleteError } = await adminClient
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
 
-      console.log('RPC response:', { data: rpcData, error: rpcError });
-
-      if (rpcError) {
-        console.error('RPC delete failed:', rpcError);
-        
-        // Fallback to direct delete with better error handling
-        console.log('Trying direct delete as fallback...');
-        const { error: directError } = await adminClient
-          .from('orders')
-          .delete()
-          .eq('id', orderId);
-
-        if (directError) {
-          console.error('Direct delete also failed:', directError);
-          throw new Error(`Both deletion methods failed. RPC error: ${rpcError.message}, Direct error: ${directError.message}`);
-        }
+      if (deleteError) {
+        console.error('Delete failed:', deleteError);
+        throw new Error(`Failed to delete order: ${deleteError.message}`);
       }
 
       console.log('Order deleted successfully');
@@ -166,11 +156,8 @@ const OrdersManager = () => {
         description: `Order #${orderDisplayId} has been deleted successfully.`,
       });
 
-      // Remove the deleted order from local state immediately for better UX
+      // Remove the deleted order from local state immediately
       setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-      
-      // Also refresh from database to ensure consistency
-      setTimeout(() => fetchOrders(), 500);
       
     } catch (error: any) {
       console.error('Error deleting order:', error);
