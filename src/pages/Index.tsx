@@ -10,22 +10,25 @@ import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
 import LoginPopup from "@/components/LoginPopup";
 import { useAuth } from "@/hooks/useAuth";
+import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { isAuthenticated, loading } = useAuth();
 
-  console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading);
+  console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading, "mounted:", mounted);
 
   // Handle mounting state
   useEffect(() => {
+    console.log("[DEBUG] Index component mounted");
     setMounted(true);
   }, []);
 
   // Show login popup after delay for non-authenticated users
   useEffect(() => {
     if (mounted && !loading && !isAuthenticated) {
+      console.log("[DEBUG] Setting login popup timer");
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 3000);
@@ -33,8 +36,9 @@ const Index = () => {
     }
   }, [mounted, isAuthenticated, loading]);
 
-  // Show brief loading only on initial mount
-  if (!mounted || (loading && !isAuthenticated)) {
+  // Simplified loading state - only show for a very brief moment
+  if (!mounted) {
+    console.log("[DEBUG] Index not mounted yet");
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -45,18 +49,45 @@ const Index = () => {
     );
   }
 
+  // Force render main content after mount, regardless of auth state
+  console.log("[DEBUG] Rendering main content");
+  
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-      <ProductCarousel />
-      <Categories />
-      <LabGrownDiamonds />
-      <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
+      <SectionErrorBoundary label="Header">
+        <Header />
+      </SectionErrorBoundary>
+      
+      <SectionErrorBoundary label="Product Carousel">
+        <ProductCarousel />
+      </SectionErrorBoundary>
+      
+      <SectionErrorBoundary label="Categories">
+        <Categories />
+      </SectionErrorBoundary>
+      
+      <SectionErrorBoundary label="Lab Grown Diamonds">
+        <LabGrownDiamonds />
+      </SectionErrorBoundary>
+      
+      <SectionErrorBoundary label="Uploaded Images">
+        <UploadedImages location="lab-grown-diamonds" title="Lab Grown Diamond Collection" />
+      </SectionErrorBoundary>
+      
       <div className="grid lg:grid-cols-2 gap-0">
-        <InstagramGallery />
-        <LabGrownInstagramGallery />
+        <SectionErrorBoundary label="Instagram Gallery">
+          <InstagramGallery />
+        </SectionErrorBoundary>
+        
+        <SectionErrorBoundary label="Lab Grown Instagram Gallery">
+          <LabGrownInstagramGallery />
+        </SectionErrorBoundary>
       </div>
-      <Footer />
+      
+      <SectionErrorBoundary label="Footer">
+        <Footer />
+      </SectionErrorBoundary>
+      
       <LoginPopup
         isOpen={showLoginPopup}
         onClose={() => setShowLoginPopup(false)}
