@@ -131,18 +131,10 @@ const OrdersManager = () => {
     try {
       console.log('Deleting order with ID:', orderId);
       
-      // Create a service role client for admin operations
-      const { createClient } = await import('@supabase/supabase-js');
-      const adminClient = createClient(
-        'https://bxscivdpwersyohpaamn.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4c2NpdmRwd2Vyc3lvaHBhYW1uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODg1ODU2NiwiZXhwIjoyMDY0NDM0NTY2fQ.oUJ6I5Kp5xQGYs9HF5n-D5q7-d0bqLQu9qEhc3oQzQw'
-      );
-      
-      // Delete directly using service role (bypasses RLS)
-      const { error: deleteError } = await adminClient
-        .from('orders')
-        .delete()
-        .eq('id', orderId);
+      // Use the admin RPC function that bypasses RLS
+      const { error: deleteError } = await supabase.rpc('delete_order_admin', {
+        order_id: orderId
+      });
 
       if (deleteError) {
         console.error('Delete failed:', deleteError);
