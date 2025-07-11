@@ -185,7 +185,7 @@ export type Database = {
     }
     Functions: {
       delete_order_admin: {
-        Args: { order_id: string }
+        Args: { target_order_id: string }
         Returns: undefined
       }
     }

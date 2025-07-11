@@ -133,7 +133,7 @@ const OrdersManager = () => {
       
       // Use the admin RPC function that bypasses RLS
       const { error: deleteError } = await supabase.rpc('delete_order_admin', {
-        order_id: orderId
+        target_order_id: orderId
       });
 
       if (deleteError) {
