@@ -91,7 +91,7 @@ const MultiAngleProduct = ({ product }: MultiAngleProductProps) => {
               <img
                 src={currentImage.url}
                 alt={product.name}
-                className="w-full h-64 object-cover cursor-pointer"
+                className="w-full h-48 sm:h-64 object-cover cursor-pointer"
                 onClick={nextImage}
                 onError={(e) => {
                   e.currentTarget.src = '/placeholder.svg';

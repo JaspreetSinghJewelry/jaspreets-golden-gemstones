@@ -63,7 +63,7 @@ const ProductCarousel = () => {
           <CarouselContent>
             {products.map((product) => (
               <CarouselItem key={product.id}>
-                <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden rounded-xl mx-2">
+                <div className="relative h-80 sm:h-96 md:h-[500px] overflow-hidden rounded-xl mx-2">
                   <img 
                     src={product.image} 
                     alt={product.name}
@@ -71,7 +71,6 @@ const ProductCarousel = () => {
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6">
                     <h4 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2">{product.name}</h4>
-                    <p className="text-base sm:text-lg text-white">{product.price}</p>
                   </div>
                 </div>
               </CarouselItem>
