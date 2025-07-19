@@ -17,7 +17,7 @@ const Footer = () => {
               <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Jewellery Guide</h4>
               <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <Link to="/buying-price-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/buying-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Buying and Price Guide
                   </Link>
                 </li>
@@ -27,7 +27,7 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/diamond-solitaire-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/diamond-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Diamond and Solitaire Guide
                   </Link>
                 </li>
@@ -42,7 +42,7 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/jewelry-care-guide" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/jewelry-care" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Jewelry Care Guide
                   </Link>
                 </li>
@@ -55,22 +55,22 @@ const Footer = () => {
               <h4 className="text-base md:text-lg font-bold mb-4 md:mb-6 text-black">Policies</h4>
               <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <Link to="/defective-product-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/defective-product" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Refund & Replacement Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/exchange-buyback-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/exchange-buyback" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Buyback Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/privacy-policy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/privacy" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms-conditions" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
+                  <Link to="/terms" className="text-gray-600 hover:text-black transition-colors text-sm md:text-base">
                     Terms & Conditions
                   </Link>
                 </li>

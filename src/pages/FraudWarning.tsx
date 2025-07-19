@@ -26,24 +26,52 @@ const FraudWarning = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-8">Fraud Warning Disclaimer</h1>
           
           <div className="prose max-w-none text-gray-700 space-y-6">
-            <p>
-              We take online security seriously. Jaspreet Singh Jewelry is a legally registered business. Any purchases or communications should be done only through our official website or authorized store.
-            </p>
-            
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Beware of:</h3>
-              <ol className="list-decimal list-inside space-y-2">
-                <li>Third-party websites or social media accounts impersonating our brand</li>
-                <li>Unsolicited messages offering discounts or gifts in our name</li>
-                <li>Requests for payment on personal numbers or apps</li>
-              </ol>
+            <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+              <h3 className="text-xl font-semibold mb-4 text-red-800">⚠️ Important Fraud Warning</h3>
+              <p className="text-red-700">
+                Please be aware of fraudulent activities and protect yourself from scams when purchasing jewelry online.
+              </p>
             </div>
             
-            <div className="bg-red-50 p-6 rounded-lg border border-red-200">
-              <p className="font-semibold mb-2">Always verify contact and bank details before making payments.</p>
-              <p>For security concerns, contact: 📧 i@jaspreetsinghjewelry.com</p>
-              <p className="mt-2 text-sm">
-                We are not liable for losses caused by unauthorized sellers, impersonators, or phishing attempts.
+            <div>
+              <h3 className="text-xl font-semibold mb-4">How to Identify Legitimate Sellers:</h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>Always verify the seller's physical address and contact information</li>
+                <li>Look for proper business registration and certifications</li>
+                <li>Check for authentic hallmarks and certifications on jewelry</li>
+                <li>Read reviews and testimonials from verified customers</li>
+                <li>Ensure secure payment gateways and SSL certificates</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Red Flags to Watch Out For:</h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>Unusually low prices for precious metals and stones</li>
+                <li>Pressure to make immediate payments</li>
+                <li>Requests for payment through untraceable methods</li>
+                <li>No return or exchange policy</li>
+                <li>Poor quality images or vague product descriptions</li>
+                <li>No proper certification or documentation</li>
+              </ul>
+            </div>
+            
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <p className="font-semibold mb-2">At Jaspreet Singh Jewelry:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>All our jewelry comes with proper certification</li>
+                <li>We provide detailed product descriptions and authentic images</li>
+                <li>Secure payment options with buyer protection</li>
+                <li>Clear return and exchange policies</li>
+                <li>Verified business address and contact information</li>
+              </ul>
+            </div>
+            
+            <div className="bg-blue-50 p-6 rounded-lg">
+              <p>
+                If you encounter any suspicious activity or have concerns about authenticity, 
+                please contact us immediately at <strong>i@jaspreetsinghjewelry.com</strong> or 
+                call <strong>+91-9289061999</strong>.
               </p>
             </div>
           </div>
