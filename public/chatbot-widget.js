@@ -25,14 +25,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const send = box.querySelector("#custom-chatbot-send");
   const close = box.querySelector("#chatbot-close");
 
-  const faq = {
-    "tell me about the company": "Jaspreet Singh Jewelry offers elegant gold and diamond jewelry, focusing on certified quality and sustainable lab-grown diamonds. We provide detailed buying guides, lifetime exchange, and a 7-day defective product replacement policy.",
-    "do you offer lab-grown diamonds": "Yes! We specialize in certified, eco-friendly lab-grown diamonds for ethical, high-quality jewelry.",
-    "what is your return policy": "We offer a 7-day defective replacement and a lifetime exchange policy to ensure your satisfaction.",
-    "what jewelry do you sell": "We offer rings, necklaces, earrings, bracelets — all crafted with elegance and precision.",
-    "how do i contact support": "You can contact us via WhatsApp, email, or visit our Contact Us page for quick assistance.",
-    "do you offer customization": "Yes, we offer custom jewelry designs based on your preferences. Please contact us for details."
-  };
+  const knowledgeBase = [
+    {
+      question: "how can I contact you",
+      answer: "You can contact us via WhatsApp, phone, or email from our Contact page: https://jaspreetsinghjewelry.com/contact"
+    },
+    {
+      question: "do you have custom jewelry",
+      answer: "Yes! We offer custom jewelry design services. Just tell us what you're looking for!"
+    },
+    {
+      question: "what is your return policy",
+      answer: "We offer a 7-day replacement policy for defective products and lifetime exchange on purchases."
+    },
+    {
+      question: "are your diamonds lab grown",
+      answer: "Yes! We use certified, eco-friendly lab-grown diamonds in all our pieces."
+    },
+    {
+      question: "how long does delivery take",
+      answer: "Shipping usually takes 2–3 business days. You'll get a tracking ID when it ships."
+    },
+    {
+      question: "what are your payment options",
+      answer: "We accept all major payment methods including UPI, cards, and PayU."
+    }
+  ];
 
   toggleBtn.addEventListener("click", () => {
     box.style.display = box.style.display === "none" || box.style.display === "" ? "flex" : "none";
@@ -52,17 +70,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!question) return;
     appendMessage("user", question);
     input.value = "";
-
-    const reply = getAnswer(question);
-    setTimeout(() => appendMessage("bot", reply), 500);
+    setTimeout(() => appendMessage("bot", getAnswer(question)), 500);
   }
 
-  function getAnswer(msg) {
-    const q = msg.toLowerCase();
-    for (let key in faq) {
-      if (q.includes(key)) return faq[key];
-    }
-    return "Sorry, I couldn't understand. Please try asking differently or contact support.";
+  function getAnswer(input) {
+    const query = input.toLowerCase();
+    let bestMatch = knowledgeBase.find(entry => query.includes(entry.question.replace(/[^a-zA-Z ]/g, "").toLowerCase()));
+    if (bestMatch) return bestMatch.answer;
+    return "I'm here to help! Please visit https://jaspreetsinghjewelry.com or contact our support team for more assistance.";
   }
 
   function appendMessage(sender, text) {
@@ -73,8 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
     body.scrollTop = body.scrollHeight;
   }
 
-  // Auto welcome message
+  // Welcome message
   setTimeout(() => {
-    appendMessage("bot", "Hi 👋 I'm here to help you with anything related to Jaspreet Singh Jewelry. Ask me anything!");
+    appendMessage("bot", "Hi 👋 I'm your assistant from Jaspreet Singh Jewelry. Ask me anything about our store, products, or support!");
   }, 1000);
 });
