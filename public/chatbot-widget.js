@@ -6,15 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 70px;
-    height: 70px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #001c39, #1a3a5c);
-    color: #C8A157;
-    border: 2px solid #C8A157;
+    background: linear-gradient(135deg, #001c39, #003366, #004d99);
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.2);
     font-size: 32px;
     cursor: pointer;
-    box-shadow: 0 12px 40px rgba(0, 28, 57, 0.6), 0 0 20px rgba(200, 161, 87, 0.3);
+    box-shadow: 0 15px 45px rgba(0, 28, 57, 0.7), 0 0 25px rgba(0, 77, 153, 0.4);
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(20px);
@@ -22,116 +22,168 @@ document.addEventListener("DOMContentLoaded", () => {
     align-items: center;
     justify-content: center;
     transform: scale(1);
+    animation: pulse 3s infinite;
   `;
   
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 15px 45px rgba(0, 28, 57, 0.7), 0 0 25px rgba(0, 77, 153, 0.4); }
+      50% { box-shadow: 0 20px 60px rgba(0, 28, 57, 0.9), 0 0 35px rgba(0, 77, 153, 0.6); }
+    }
+  `;
+  document.head.appendChild(style);
+  
   toggleBtn.addEventListener('mouseenter', () => {
-    toggleBtn.style.transform = 'scale(1.1)';
-    toggleBtn.style.boxShadow = '0 16px 50px rgba(0, 28, 57, 0.8), 0 0 30px rgba(200, 161, 87, 0.5)';
+    toggleBtn.style.transform = 'scale(1.15)';
+    toggleBtn.style.background = 'linear-gradient(135deg, #002952, #004080, #0066cc)';
+    toggleBtn.style.boxShadow = '0 20px 60px rgba(0, 28, 57, 0.9), 0 0 40px rgba(0, 77, 153, 0.7)';
   });
   
   toggleBtn.addEventListener('mouseleave', () => {
     toggleBtn.style.transform = 'scale(1)';
-    toggleBtn.style.boxShadow = '0 12px 40px rgba(0, 28, 57, 0.6), 0 0 20px rgba(200, 161, 87, 0.3)';
+    toggleBtn.style.background = 'linear-gradient(135deg, #001c39, #003366, #004d99)';
+    toggleBtn.style.boxShadow = '0 15px 45px rgba(0, 28, 57, 0.7), 0 0 25px rgba(0, 77, 153, 0.4)';
   });
 
   const box = document.createElement("div");
   box.id = "custom-chatbot-box";
   box.style.cssText = `
     position: fixed;
-    bottom: 110px;
+    bottom: 115px;
     right: 20px;
-    width: 400px;
-    height: 550px;
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
-    border-radius: 24px;
-    box-shadow: 0 30px 60px rgba(0, 28, 57, 0.4), 0 0 0 1px rgba(200, 161, 87, 0.2);
+    width: 420px;
+    height: 580px;
+    background: linear-gradient(145deg, #ffffff, #f5f7fa);
+    border-radius: 28px;
+    box-shadow: 
+      0 35px 70px rgba(0, 28, 57, 0.5), 
+      0 0 0 1px rgba(0, 28, 57, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
     display: none;
     flex-direction: column;
     z-index: 1001;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    border: 2px solid rgba(200, 161, 87, 0.3);
+    border: 1px solid rgba(0, 28, 57, 0.2);
     overflow: hidden;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(25px);
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   `;
   
   box.innerHTML = `
     <div id="custom-chatbot-header" style="
-      background: linear-gradient(135deg, #001c39, #1a3a5c);
-      color: #C8A157;
-      padding: 24px 28px;
+      background: linear-gradient(135deg, #001c39 0%, #003366 50%, #004d99 100%);
+      color: white;
+      padding: 28px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 700;
-      font-size: 18px;
-      box-shadow: 0 4px 20px rgba(0, 28, 57, 0.3);
-      border-bottom: 1px solid rgba(200, 161, 87, 0.3);
+      font-size: 19px;
+      box-shadow: 
+        0 8px 32px rgba(0, 28, 57, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
     ">
-      <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+        pointer-events: none;
+      "></div>
+      <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">
         <div style="
-          width: 40px; 
-          height: 40px; 
-          background: linear-gradient(135deg, #C8A157, #d4b76a);
+          width: 48px; 
+          height: 48px; 
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
           border-radius: 50%; 
           display: flex; 
           align-items: center; 
           justify-content: center;
-          box-shadow: 0 4px 12px rgba(200, 161, 87, 0.4);
+          box-shadow: 
+            0 8px 20px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         ">
-          <span style="font-size: 20px;">💎</span>
+          <span style="font-size: 24px;">💎</span>
         </div>
-        <span style="font-size: 18px; font-weight: 700;">Jaspreet Singh Jewelry</span>
+        <div>
+          <div style="font-size: 19px; font-weight: 700; margin-bottom: 2px;">Jaspreet Singh Jewelry</div>
+          <div style="font-size: 13px; opacity: 0.8; font-weight: 400;">Premium Jewelry Specialist</div>
+        </div>
       </div>
       <span id="chatbot-close" style="
         cursor: pointer; 
-        font-size: 28px; 
+        font-size: 32px; 
         line-height: 1;
         padding: 8px 12px;
-        border-radius: 12px;
+        border-radius: 50%;
         transition: all 0.3s ease;
-        color: #C8A157;
-        background: rgba(200, 161, 87, 0.1);
-        border: 1px solid rgba(200, 161, 87, 0.3);
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
       ">×</span>
     </div>
     <div id="custom-chatbot-body" style="
       flex: 1;
-      padding: 28px;
+      padding: 32px;
       overflow-y: auto;
-      background: linear-gradient(145deg, #f8f9fb, #ffffff);
+      background: linear-gradient(145deg, #fafbfc, #ffffff);
       scroll-behavior: smooth;
-      border-top: 1px solid rgba(200, 161, 87, 0.1);
+      border-top: 1px solid rgba(0, 28, 57, 0.08);
     "></div>
     <div id="custom-chatbot-footer" style="
-      padding: 24px 28px;
-      border-top: 1px solid rgba(200, 161, 87, 0.2);
+      padding: 28px 32px;
+      border-top: 1px solid rgba(0, 28, 57, 0.1);
       display: flex;
       gap: 16px;
-      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      background: linear-gradient(145deg, #ffffff, #f8fafe);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
     ">
       <input type="text" id="custom-chatbot-input" placeholder="Ask about our jewelry, policies, contact..." style="
         flex: 1;
-        padding: 16px 20px;
-        border: 2px solid rgba(200, 161, 87, 0.3);
-        border-radius: 16px;
+        padding: 18px 24px;
+        border: 2px solid rgba(0, 28, 57, 0.15);
+        border-radius: 20px;
         outline: none;
-        font-size: 15px;
+        font-size: 16px;
         transition: all 0.3s ease;
         background: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 28, 57, 0.1);
+        box-shadow: 
+          0 4px 16px rgba(0, 28, 57, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        color: #001c39;
       " />
       <button id="custom-chatbot-send" style="
-        background: linear-gradient(135deg, #001c39, #1a3a5c);
-        color: #C8A157;
-        border: 2px solid #C8A157;
-        padding: 16px 24px;
-        border-radius: 16px;
+        background: linear-gradient(135deg, #001c39 0%, #003366 50%, #004d99 100%);
+        color: white;
+        border: none;
+        padding: 18px 28px;
+        border-radius: 20px;
         cursor: pointer;
         font-weight: 700;
         transition: all 0.3s ease;
-        box-shadow: 0 6px 20px rgba(0, 28, 57, 0.3);
-        min-width: 80px;
-        font-size: 15px;
+        box-shadow: 
+          0 8px 24px rgba(0, 28, 57, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        min-width: 90px;
+        font-size: 16px;
+        position: relative;
+        overflow: hidden;
       ">Send</button>
     </div>
   `;
@@ -185,14 +237,29 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   toggleBtn.addEventListener("click", () => {
-    box.style.display = box.style.display === "none" || box.style.display === "" ? "flex" : "none";
-    if (box.style.display === "flex") {
-      input.focus();
+    const isVisible = box.style.display === "flex";
+    if (isVisible) {
+      box.style.transform = "translateY(20px) scale(0.95)";
+      box.style.opacity = "0";
+      setTimeout(() => {
+        box.style.display = "none";
+      }, 300);
+    } else {
+      box.style.display = "flex";
+      setTimeout(() => {
+        box.style.transform = "translateY(0) scale(1)";
+        box.style.opacity = "1";
+        input.focus();
+      }, 10);
     }
   });
 
   close.addEventListener("click", () => {
-    box.style.display = "none";
+    box.style.transform = "translateY(20px) scale(0.95)";
+    box.style.opacity = "0";
+    setTimeout(() => {
+      box.style.display = "none";
+    }, 300);
   });
 
   send.addEventListener("click", () => handleUserMessage());
@@ -278,8 +345,8 @@ document.addEventListener("DOMContentLoaded", () => {
       line-height: 1.5;
       transition: all 0.2s ease;
       ${sender === 'user' 
-        ? 'background: linear-gradient(135deg, #001c39, #1a3a5c); color: #C8A157; border-bottom-right-radius: 8px; box-shadow: 0 6px 16px rgba(0, 28, 57, 0.4); border: 1px solid rgba(200, 161, 87, 0.3);'
-        : 'background: linear-gradient(145deg, #ffffff, #f8f9fa); color: #001c39; border: 2px solid rgba(200, 161, 87, 0.2); border-bottom-left-radius: 8px; box-shadow: 0 4px 12px rgba(0, 28, 57, 0.15);'
+        ? 'background: linear-gradient(135deg, #001c39, #003366); color: white; border-bottom-right-radius: 8px; box-shadow: 0 8px 20px rgba(0, 28, 57, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);'
+        : 'background: linear-gradient(145deg, #ffffff, #f8fafe); color: #001c39; border: 2px solid rgba(0, 28, 57, 0.1); border-bottom-left-radius: 8px; box-shadow: 0 6px 16px rgba(0, 28, 57, 0.12);'
       }
     `;
     bubble.textContent = text;
@@ -299,12 +366,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const bubble = document.createElement("div");
     bubble.style.cssText = `
       display: inline-block;
-      padding: 16px 20px;
-      border-radius: 22px;
-      background: linear-gradient(145deg, #ffffff, #f8f9fa);
-      border: 2px solid rgba(200, 161, 87, 0.2);
+      padding: 18px 22px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #ffffff, #f8fafe);
+      border: 2px solid rgba(0, 28, 57, 0.1);
       border-bottom-left-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 28, 57, 0.15);
+      box-shadow: 0 6px 16px rgba(0, 28, 57, 0.12);
     `;
     bubble.innerHTML = `
       <div style="display: flex; gap: 4px; align-items: center;">
