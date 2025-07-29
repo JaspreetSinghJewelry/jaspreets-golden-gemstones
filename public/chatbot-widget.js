@@ -6,80 +6,102 @@ document.addEventListener("DOMContentLoaded", () => {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #9333ea, #c084fc);
+    background: linear-gradient(135deg, hsl(12 88% 59%), hsl(25 100% 65%));
     color: white;
     border: none;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.3);
+    box-shadow: 0 8px 32px hsla(12 88% 59% / 0.4), 0 4px 16px hsla(25 100% 65% / 0.3);
     z-index: 1000;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   `;
 
   const box = document.createElement("div");
   box.id = "custom-chatbot-box";
   box.style.cssText = `
     position: fixed;
-    bottom: 90px;
+    bottom: 100px;
     right: 20px;
-    width: 350px;
-    height: 500px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    width: 380px;
+    height: 520px;
+    background: hsl(0 0% 100%);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px hsla(240 10% 3% / 0.25), 0 8px 16px -8px hsla(240 10% 3% / 0.1);
     display: none;
     flex-direction: column;
     z-index: 1001;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    border: 1px solid hsl(240 5.9% 10% / 0.08);
+    overflow: hidden;
   `;
   
   box.innerHTML = `
     <div id="custom-chatbot-header" style="
-      background: linear-gradient(135deg, #9333ea, #c084fc);
+      background: linear-gradient(135deg, hsl(12 88% 59%), hsl(25 100% 65%));
       color: white;
-      padding: 16px 20px;
-      border-radius: 12px 12px 0 0;
+      padding: 20px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 2px 8px hsla(12 88% 59% / 0.2);
     ">
-      <span>💎 Jaspreet Singh Jewelry</span>
-      <span id="chatbot-close" style="cursor: pointer; font-size: 20px; line-height: 1;">×</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px;">💎</span>
+        <span>Jaspreet Singh Jewelry</span>
+      </div>
+      <span id="chatbot-close" style="
+        cursor: pointer; 
+        font-size: 24px; 
+        line-height: 1;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      ">×</span>
     </div>
     <div id="custom-chatbot-body" style="
       flex: 1;
-      padding: 20px;
+      padding: 24px;
       overflow-y: auto;
-      background: #fafafa;
+      background: hsl(240 4.8% 95.9%);
+      scroll-behavior: smooth;
     "></div>
     <div id="custom-chatbot-footer" style="
-      padding: 16px;
-      border-top: 1px solid #e5e7eb;
+      padding: 20px 24px;
+      border-top: 1px solid hsl(240 5.9% 10% / 0.08);
       display: flex;
-      gap: 8px;
-      background: white;
-      border-radius: 0 0 12px 12px;
+      gap: 12px;
+      background: hsl(0 0% 100%);
     ">
       <input type="text" id="custom-chatbot-input" placeholder="Ask about our jewelry, policies, contact..." style="
         flex: 1;
-        padding: 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 14px 16px;
+        border: 1px solid hsl(240 5.9% 10% / 0.1);
+        border-radius: 10px;
         outline: none;
         font-size: 14px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: hsl(0 0% 100%);
       " />
       <button id="custom-chatbot-send" style="
-        background: linear-gradient(135deg, #9333ea, #c084fc);
+        background: linear-gradient(135deg, hsl(12 88% 59%), hsl(25 100% 65%));
         color: white;
         border: none;
-        padding: 12px 16px;
-        border-radius: 8px;
+        padding: 14px 20px;
+        border-radius: 10px;
         cursor: pointer;
-        font-weight: 500;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px hsla(12 88% 59% / 0.2);
+        min-width: 60px;
       ">Send</button>
     </div>
   `;
@@ -217,16 +239,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const bubble = document.createElement("div");
     bubble.style.cssText = `
       display: inline-block;
-      padding: 12px 16px;
-      border-radius: 18px;
-      max-width: 80%;
+      padding: 14px 18px;
+      border-radius: 20px;
+      max-width: 85%;
       word-wrap: break-word;
       white-space: pre-line;
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.5;
+      transition: all 0.2s ease;
       ${sender === 'user' 
-        ? 'background: linear-gradient(135deg, #9333ea, #c084fc); color: white; border-bottom-right-radius: 4px;'
-        : 'background: white; color: #374151; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);'
+        ? 'background: linear-gradient(135deg, hsl(12 88% 59%), hsl(25 100% 65%)); color: white; border-bottom-right-radius: 6px; box-shadow: 0 4px 12px hsla(12 88% 59% / 0.3);'
+        : 'background: hsl(0 0% 100%); color: hsl(240 10% 3.9%); border: 1px solid hsl(240 5.9% 10% / 0.1); border-bottom-left-radius: 6px; box-shadow: 0 2px 8px hsla(240 10% 3% / 0.1);'
       }
     `;
     bubble.textContent = text;
@@ -246,12 +269,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const bubble = document.createElement("div");
     bubble.style.cssText = `
       display: inline-block;
-      padding: 12px 16px;
-      border-radius: 18px;
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-bottom-left-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 14px 18px;
+      border-radius: 20px;
+      background: hsl(0 0% 100%);
+      border: 1px solid hsl(240 5.9% 10% / 0.1);
+      border-bottom-left-radius: 6px;
+      box-shadow: 0 2px 8px hsla(240 10% 3% / 0.1);
     `;
     bubble.innerHTML = `
       <div style="display: flex; gap: 4px; align-items: center;">
