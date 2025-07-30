@@ -111,14 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
             0 8px 20px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.2);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          overflow: hidden;
         ">
-          <img src="/favicon-32x32.png" alt="Jaspreet Singh Jewelry Logo" style="
-            width: 32px; 
-            height: 32px; 
-            object-fit: contain;
-            filter: brightness(1.2) contrast(1.1);
-          " />
+          <span style="font-size: 24px;">💎</span>
         </div>
         <div>
           <div style="font-size: 19px; font-weight: 700; margin-bottom: 2px;">Jaspreet Singh Jewelry</div>
@@ -202,111 +196,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const send = box.querySelector("#custom-chatbot-send");
   const close = box.querySelector("#chatbot-close");
 
-  // Comprehensive knowledge base for the jewelry store
+  // Enhanced knowledge base for fallback
   const knowledgeBase = [
-    // Contact Information
     {
-      keywords: ["contact", "phone", "email", "whatsapp", "reach", "call", "address", "location"],
-      answer: "📞 Contact Jaspreet Singh Jewelry:\n• WhatsApp: +91-98765-43210\n• Email: info@jaspreetsinghjewelry.com\n• Phone: +91-11-2345-6789\n• Address: 103, Poonam Chambers, 2645 Bank Street, Karol Bagh, New Delhi - 110005\n• Get directions to our store for in-person visits"
+      keywords: ["contact", "phone", "email", "whatsapp", "reach", "call"],
+      answer: "📞 Contact us:\n• WhatsApp: +91-98765-43210\n• Email: info@jaspreetsinghjewelry.com\n• Phone: +91-11-2345-6789\n• Visit our Contact page for more details"
     },
-    
-    // Store Information
-    {
-      keywords: ["store", "visit", "location", "address", "directions", "karol bagh", "delhi"],
-      answer: "🏪 Visit Our Store:\n• Address: 103, Poonam Chambers, 2645 Bank Street, Karol Bagh, New Delhi\n• Pincode: 110005\n• Located in the heart of Karol Bagh jewelry market\n• Easy access by metro and public transport\n• Professional consultation available"
-    },
-
-    // Jewelry Guides
-    {
-      keywords: ["buying guide", "price guide", "how to buy", "jewelry guide"],
-      answer: "📖 Buying & Price Guide:\n• Understand diamond 4Cs (Cut, Color, Clarity, Carat)\n• Compare prices across different qualities\n• Tips for getting best value\n• Budget planning for jewelry purchase\n• Investment perspective on jewelry"
-    },
-    
-    {
-      keywords: ["certification", "certificate", "gia", "authenticity", "certified"],
-      answer: "📜 Certification Guide:\n• All diamonds come with proper certification\n• GIA, IGI, and other international certifications\n• How to read diamond certificates\n• Authenticity guarantee on all products\n• Quality assurance documentation"
-    },
-    
-    {
-      keywords: ["diamond guide", "solitaire", "diamond knowledge", "4cs"],
-      answer: "💎 Diamond & Solitaire Guide:\n• Understanding the 4Cs: Cut, Color, Clarity, Carat\n• Solitaire setting styles and options\n• Diamond shapes and their characteristics\n• How to choose the perfect diamond\n• Investment value of diamonds"
-    },
-    
-    {
-      keywords: ["gemstone", "gemstones", "ruby", "emerald", "sapphire", "precious stones"],
-      answer: "💎 Gemstone Guide:\n• Premium quality rubies, emeralds, and sapphires\n• Natural vs synthetic gemstones\n• Gemstone care and maintenance\n• Certification for precious stones\n• Custom gemstone jewelry options"
-    },
-    
-    {
-      keywords: ["gifting", "gift", "occasions", "anniversary", "engagement", "wedding"],
-      answer: "🎁 Gifting Guide:\n• Perfect jewelry for every occasion\n• Engagement and wedding collections\n• Anniversary and birthday gifts\n• Festival and celebration jewelry\n• Gift wrapping and presentation services"
-    },
-    
-    {
-      keywords: ["jewelry care", "maintenance", "cleaning", "care guide"],
-      answer: "🧼 Jewelry Care Guide:\n• Proper cleaning techniques for different metals\n• Storage recommendations\n• Professional cleaning services\n• Maintenance schedules\n• How to preserve jewelry's shine and quality"
-    },
-
-    // Policies
-    {
-      keywords: ["refund", "replacement", "return policy", "defective"],
-      answer: "🔄 Refund & Replacement Policy:\n• 7-day replacement for defective products\n• Quality guarantee on all items\n• Easy return process\n• No questions asked policy\n• Full documentation provided"
-    },
-    
-    {
-      keywords: ["buyback", "exchange", "exchange policy", "lifetime"],
-      answer: "🔄 Buyback Policy:\n• Lifetime exchange on all purchases\n• Fair market value assessment\n• Upgrade options available\n• Transparent pricing policy\n• Easy exchange process"
-    },
-    
-    {
-      keywords: ["privacy", "privacy policy", "data protection"],
-      answer: "🔐 Privacy Policy:\n• Your personal information is secure\n• Data protection compliance\n• No sharing with third parties\n• Secure payment processing\n• Transparent data usage"
-    },
-    
-    {
-      keywords: ["terms", "conditions", "terms and conditions"],
-      answer: "📋 Terms & Conditions:\n• Clear purchase terms\n• Warranty conditions\n• Service agreements\n• Liability and limitations\n• Legal compliance information"
-    },
-    
-    {
-      keywords: ["fraud", "warning", "disclaimer", "security"],
-      answer: "⚠️ Fraud Warning Disclaimer:\n• Beware of counterfeit products\n• Only purchase from authorized dealers\n• Verify certifications and authenticity\n• Report suspicious activities\n• Secure payment methods only"
-    },
-
-    // Products and Services
     {
       keywords: ["custom", "design", "bespoke", "personalized", "made to order"],
-      answer: "✨ Custom Jewelry Design:\n• Bespoke jewelry creation\n• Personalized engagement rings\n• Custom necklaces and earrings\n• Design consultation services\n• Bring your vision to life with expert craftsmanship"
+      answer: "✨ Yes! We specialize in custom jewelry design. We create personalized pieces including engagement rings, necklaces, earrings, and bracelets. Share your vision and we'll bring it to life!"
     },
-    
     {
-      keywords: ["lab grown", "diamonds", "eco-friendly", "sustainable"],
-      answer: "🌱 Lab-Grown Diamonds:\n• 100% real diamonds, ethically created\n• Environmentally sustainable choice\n• Same quality as natural diamonds\n• Certified by leading institutes\n• Cost-effective premium option"
+      keywords: ["return", "policy", "exchange", "refund", "replacement"],
+      answer: "🔄 Our Policies:\n• 7-day replacement for defective products\n• Lifetime exchange on all purchases\n• No questions asked returns within policy period\n• Check our Exchange & Buyback Policy page for details"
     },
-    
     {
-      keywords: ["delivery", "shipping", "time", "dispatch", "worldwide"],
-      answer: "🚚 Shipping & Delivery:\n• Standard delivery: 2-3 business days\n• Express delivery options available\n• Free shipping on orders above ₹10,000\n• Worldwide shipping available\n• Tracking provided for all orders"
+      keywords: ["lab grown", "diamonds", "certified", "natural", "eco"],
+      answer: "💎 We use certified, eco-friendly lab-grown diamonds that are:\n• 100% real diamonds\n• Environmentally sustainable\n• Certified by leading institutes\n• Same quality as natural diamonds"
     },
-    
     {
-      keywords: ["payment", "methods", "upi", "card", "payu", "emi"],
-      answer: "💳 Payment Options:\n• All major credit/debit cards accepted\n• UPI and digital wallet payments\n• Secure PayU payment gateway\n• EMI options available\n• Cash on delivery (select areas)"
+      keywords: ["delivery", "shipping", "time", "how long", "dispatch"],
+      answer: "🚚 Shipping Information:\n• Standard delivery: 2-3 business days\n• Express delivery available\n• Free shipping on orders above ₹10,000\n• Tracking ID provided after dispatch"
     },
-    
     {
-      keywords: ["about", "company", "jaspreet singh", "experience", "history"],
-      answer: "🏆 About Jaspreet Singh Jewelry:\n• 17+ years of experience in jewelry crafting\n• Located in Karol Bagh, New Delhi's jewelry hub\n• Specializing in Polki, Jadau & diamond jewelry\n• Trusted by customers worldwide\n• Commitment to quality and traditional craftsmanship"
+      keywords: ["payment", "methods", "upi", "card", "payu", "cash"],
+      answer: "💳 Payment Options:\n• All major credit/debit cards\n• UPI payments\n• PayU gateway\n• Cash on delivery (select areas)\n• EMI options available"
     },
-    
     {
-      keywords: ["collections", "rings", "necklaces", "earrings", "bracelets", "bridal"],
-      answer: "💍 Our Collections:\n• Bridal jewelry sets\n• Diamond rings and solitaires\n• Gold and silver necklaces\n• Designer earrings\n• Elegant bracelets\n• Traditional and contemporary designs"
+      keywords: ["about", "company", "jaspreet singh", "experience", "years"],
+      answer: "🏆 About Jaspreet Singh Jewelry:\n• 17+ years of experience\n• Based in Karol Bagh, New Delhi\n• Specializing in Polki, Jadau & diamond jewelry\n• Trusted worldwide shipping\n• Commitment to quality & craftsmanship"
     },
-    
     {
-      keywords: ["price", "cost", "budget", "affordable", "expensive"],
-      answer: "💰 Pricing Information:\n• Jewelry for every budget range\n• Transparent pricing policy\n• Custom pieces within your budget\n• EMI and financing options\n• Best value for certified diamonds\n• Contact us for personalized quotes"
+      keywords: ["price", "cost", "expensive", "budget", "affordable"],
+      answer: "💰 We offer jewelry for all budgets:\n• Wide range of price points\n• Custom pieces as per your budget\n• EMI options available\n• Best value for certified diamonds\n• Contact us for personalized quotes"
+    },
+    {
+      keywords: ["certificate", "certification", "gia", "authenticity"],
+      answer: "📜 All our diamonds come with:\n• Proper certification\n• Authenticity guarantee\n• Quality assurance documents\n• International standards compliance"
     }
   ];
 
