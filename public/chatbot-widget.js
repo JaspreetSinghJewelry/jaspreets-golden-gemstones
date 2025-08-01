@@ -202,111 +202,116 @@ document.addEventListener("DOMContentLoaded", () => {
   const send = box.querySelector("#custom-chatbot-send");
   const close = box.querySelector("#chatbot-close");
 
-  // Comprehensive knowledge base for the jewelry store
+  // Comprehensive knowledge base with detailed information about all website sections
   const knowledgeBase = [
+    // Welcome and General
+    {
+      keywords: ["hello", "hi", "hey", "start", "welcome"],
+      answer: "Hi there! 👋 Welcome to Jaspreet Singh Jewelry! \n\nI'm here to help you with:\n💎 Our jewelry collections & guides\n📋 Policies & shipping information\n📞 Contact & store details\n✨ Custom designs & consultation\n🛒 Shopping assistance\n\nWhat can I help you with today?"
+    },
+
     // Contact Information
     {
-      keywords: ["contact", "phone", "email", "whatsapp", "reach", "call", "address", "location"],
-      answer: "📞 Contact Jaspreet Singh Jewelry:\n• WhatsApp: +91-98765-43210\n• Email: info@jaspreetsinghjewelry.com\n• Phone: +91-11-2345-6789\n• Address: 103, Poonam Chambers, 2645 Bank Street, Karol Bagh, New Delhi - 110005\n• Get directions to our store for in-person visits"
+      keywords: ["contact", "phone", "email", "whatsapp", "reach", "call", "address", "location", "customer", "service"],
+      answer: "📞 Contact Jaspreet Singh Jewelry:\n\n📱 **WhatsApp:** +91-98765-43210\n📧 **Email:** info@jaspreetsinghjewelry.com\n🌐 **Website:** jaspreetsinghjewelry.com\n\n⏰ **Business Hours:**\nMon-Sat: 10:00 AM - 8:00 PM\nSun: 11:00 AM - 6:00 PM\n\n🏪 **Visit Our Store:**\nExperience our complete collection in person\nExpert consultation available\nTry before you buy"
     },
     
     // Store Information
     {
-      keywords: ["store", "visit", "location", "address", "directions", "karol bagh", "delhi"],
-      answer: "🏪 Visit Our Store:\n• Address: 103, Poonam Chambers, 2645 Bank Street, Karol Bagh, New Delhi\n• Pincode: 110005\n• Located in the heart of Karol Bagh jewelry market\n• Easy access by metro and public transport\n• Professional consultation available"
+      keywords: ["store", "visit", "address", "directions", "karol", "bagh", "delhi", "location"],
+      answer: "🏪 Visit Our Store:\n\n📍 **Address:**\n103, Poonam Chambers\n2645 Bank Street, Karol Bagh\nNew Delhi - 110005\n\n🚇 **How to Reach:**\n• Located in the heart of Karol Bagh jewelry market\n• Easy access by metro and public transport\n• Ample parking available\n• Professional consultation available\n\n✨ **Why Visit:**\n• See our complete collection\n• Expert guidance\n• Try jewelry before buying\n• Custom design consultation"
     },
 
-    // Jewelry Guides
+    // Buying & Price Guide
     {
-      keywords: ["buying guide", "price guide", "how to buy", "jewelry guide"],
-      answer: "📖 Buying & Price Guide:\n• Understand diamond 4Cs (Cut, Color, Clarity, Carat)\n• Compare prices across different qualities\n• Tips for getting best value\n• Budget planning for jewelry purchase\n• Investment perspective on jewelry"
+      keywords: ["buying", "price", "guide", "pricing", "cost", "budget", "affordable", "expensive", "factors", "how", "buy"],
+      answer: "💰 Buying & Price Guide:\n\n🔍 **Factors Affecting Gold Jewelry Prices:**\n• Current gold market rates\n• Making charges (8-25% of gold value)\n• Design complexity and craftsmanship\n• Stone setting charges\n• Brand value and certification\n\n💡 **Smart Buying Tips:**\n• Compare making charges between jewelers\n• Check for BIS hallmarks on gold\n• Verify stone certificates (GIA/IGI)\n• Understand buyback policies\n• Ask for detailed invoices with breakdowns\n• Consider long-term value retention\n\n📊 **Price Transparency:**\nWe provide clear breakdowns of gold weight, making charges, and stone costs for complete transparency."
     },
     
+    // Certification Guide
     {
-      keywords: ["certification", "certificate", "gia", "authenticity", "certified"],
-      answer: "📜 Certification Guide:\n• All diamonds come with proper certification\n• GIA, IGI, and other international certifications\n• How to read diamond certificates\n• Authenticity guarantee on all products\n• Quality assurance documentation"
+      keywords: ["certification", "certificate", "hallmark", "bis", "gia", "igi", "quality", "authenticity", "certified"],
+      answer: "🏆 Certification Guide:\n\n✅ **Gold Jewelry Certification:**\n• BIS Hallmark mandatory for all gold jewelry\n• Ensures purity (916 for 22K, 750 for 18K)\n• Government-authorized assaying centers\n• Laser marking with BIS logo and details\n\n💎 **Diamond Certification:**\n• GIA/IGI certificates for all diamonds\n• Complete 4C grading details provided\n• Laser inscription on diamond girdle\n• Lifetime authenticity guarantee\n\n🔍 **Why Certification Matters:**\n• Guarantees quality and purity\n• Enables easy resale/exchange\n• Legal compliance and consumer protection\n• Investment security\n• International recognition"
     },
     
+    // Diamond & Solitaire Guide
     {
-      keywords: ["diamond guide", "solitaire", "diamond knowledge", "4cs"],
-      answer: "💎 Diamond & Solitaire Guide:\n• Understanding the 4Cs: Cut, Color, Clarity, Carat\n• Solitaire setting styles and options\n• Diamond shapes and their characteristics\n• How to choose the perfect diamond\n• Investment value of diamonds"
+      keywords: ["diamond", "solitaire", "4c", "cut", "color", "clarity", "carat", "engagement", "stone"],
+      answer: "💎 Diamond & Solitaire Guide:\n\n✨ **The 4Cs of Diamonds:**\n• **Cut:** Determines brilliance and sparkle quality\n• **Color:** Graded D (colorless) to Z (light yellow)\n• **Clarity:** From FL (flawless) to I (included)\n• **Carat:** Weight measurement (1 carat = 200mg)\n\n💍 **Solitaire Jewelry:**\n• Classic engagement ring style\n• Single diamond as the centerpiece\n• Available in various gold settings\n• Timeless and elegant designs\n• Symbol of eternal love\n\n🏆 **Our Diamond Promise:**\n• Only certified diamonds from reputed labs\n• Detailed grading reports provided\n• Lifetime authentication guarantee\n• Expert guidance on diamond selection\n• Best value for certified quality"
     },
     
+    // Gemstone Guide
     {
-      keywords: ["gemstone", "gemstones", "ruby", "emerald", "sapphire", "precious stones"],
-      answer: "💎 Gemstone Guide:\n• Premium quality rubies, emeralds, and sapphires\n• Natural vs synthetic gemstones\n• Gemstone care and maintenance\n• Certification for precious stones\n• Custom gemstone jewelry options"
+      keywords: ["gemstone", "gemstones", "emerald", "ruby", "sapphire", "precious", "semi-precious", "stone", "colored"],
+      answer: "💎 Gemstone Guide:\n\n🌟 **Popular Precious Gemstones:**\n• **Ruby:** King of gems, deep red color, symbol of passion\n• **Emerald:** Vibrant green, symbol of rebirth and love\n• **Sapphire:** Blue elegance, represents wisdom and royalty\n• **Pearl:** Lustrous beauty, classic and timeless appeal\n\n🔍 **Choosing the Right Gemstone:**\n• Consider color saturation and intensity\n• Check for natural vs. treated stones\n• Verify authenticity certificates\n• Match with skin tone and personal style\n• Consider durability for daily wear\n\n✅ **Quality Indicators:**\n• Color intensity and uniformity\n• Clarity and visible inclusions\n• Cut quality and proportions\n• Origin and treatment disclosure\n• Certification from recognized laboratories"
     },
     
+    // Gifting Guide
     {
-      keywords: ["gifting", "gift", "occasions", "anniversary", "engagement", "wedding"],
-      answer: "🎁 Gifting Guide:\n• Perfect jewelry for every occasion\n• Engagement and wedding collections\n• Anniversary and birthday gifts\n• Festival and celebration jewelry\n• Gift wrapping and presentation services"
+      keywords: ["gifting", "gift", "occasion", "wedding", "anniversary", "birthday", "festival", "present"],
+      answer: "🎁 Gifting Guide:\n\n💝 **Perfect Jewelry Gifts by Occasion:**\n• **Engagement:** Solitaire rings, diamond sets\n• **Wedding:** Bridal jewelry sets, mangalsutras\n• **Anniversary:** Eternity rings, pendant sets\n• **Birthday:** Earrings, bracelets, personalized pieces\n• **Festivals:** Traditional gold jewelry, coin jewelry\n• **Graduation:** Elegant watches, simple chains\n\n🎯 **Choosing the Right Gift:**\n• Consider recipient's style preference\n• Know their metal preference (gold/silver)\n• Size considerations for rings/bracelets\n• Traditional vs. contemporary designs\n• Budget-appropriate options\n\n📦 **Our Gift Services:**\n• Elegant gift packaging included\n• Personalized message cards\n• Size exchange facility available\n• Gift certificates for any amount"
     },
     
+    // Jewelry Care Guide
     {
-      keywords: ["jewelry care", "maintenance", "cleaning", "care guide"],
-      answer: "🧼 Jewelry Care Guide:\n• Proper cleaning techniques for different metals\n• Storage recommendations\n• Professional cleaning services\n• Maintenance schedules\n• How to preserve jewelry's shine and quality"
+      keywords: ["jewelry", "care", "maintenance", "cleaning", "storage", "polish", "preserve"],
+      answer: "✨ Jewelry Care Guide:\n\n🧼 **Daily Care Tips:**\n• Remove jewelry before swimming/exercising\n• Clean with soft cloth after wearing\n• Avoid contact with perfumes/lotions\n• Store separately to prevent scratching\n• Keep away from harsh chemicals\n\n🏠 **Proper Storage:**\n• Use individual pouches or compartments\n• Keep in dry, cool place\n• Avoid direct sunlight exposure\n• Use anti-tarnish strips for silver\n• Soft fabric-lined jewelry boxes\n\n🔧 **Professional Maintenance:**\n• Annual professional cleaning recommended\n• Prong tightening for stone jewelry\n• Repolishing when needed\n• Professional ultrasonic cleaning\n• Regular inspection for damage\n\n💡 **Quick Cleaning at Home:**\n• Warm soapy water for gold jewelry\n• Soft brush for intricate designs\n• Professional cleaning for delicate stones\n• Dry thoroughly before storage"
     },
 
-    // Policies
+    // Refund & Replacement Policy
     {
-      keywords: ["refund", "replacement", "return policy", "defective"],
-      answer: "🔄 Refund & Replacement Policy:\n• 7-day replacement for defective products\n• Quality guarantee on all items\n• Easy return process\n• No questions asked policy\n• Full documentation provided"
+      keywords: ["refund", "replacement", "return", "defective", "manufacturing", "defect", "policy"],
+      answer: "🔄 Refund & Replacement Policy:\n\n🛡️ **7-Day Defective Product Policy:**\n• Full replacement for manufacturing defects\n• Must be reported within 7 days of delivery\n• Original packaging and tags required\n• Quality inspection by our expert team\n• Free replacement with no additional charges\n\n📋 **Replacement Conditions:**\n• Manufacturing defects only (not wear & tear)\n• Product must be in original condition\n• Original invoice and packaging required\n• No damage due to misuse or accidents\n• Quality certification maintained\n\n🚫 **Not Covered Under Policy:**\n• Normal wear and tear\n• Damage due to misuse or accidents\n• Size change requests\n• Change of mind after purchase\n• Damage from improper care\n\n📞 **To Initiate Return:**\nContact us immediately with order details and clear photos of the defect."
     },
     
+    // Buyback Policy
     {
-      keywords: ["buyback", "exchange", "exchange policy", "lifetime"],
-      answer: "🔄 Buyback Policy:\n• Lifetime exchange on all purchases\n• Fair market value assessment\n• Upgrade options available\n• Transparent pricing policy\n• Easy exchange process"
+      keywords: ["buyback", "exchange", "lifetime", "gold", "value", "resale", "upgrade"],
+      answer: "💰 Buyback Policy:\n\n🔄 **Lifetime Exchange Policy:**\n• 100% gold value guaranteed for exchange\n• Lifetime exchange on all gold jewelry\n• Easy upgrade to higher value pieces\n• Transparent valuation process\n• No hidden charges or deductions\n\n💎 **Diamond Buyback:**\n• Certified diamonds eligible for buyback\n• Current market-rate evaluation\n• Original certification required\n• Professional third-party assessment\n• Fair and transparent pricing\n\n📊 **Exchange Process:**\n• Current gold rate evaluation\n• Minimal deduction for wear and tear\n• Pay only the difference for upgrades\n• Instant processing and valuation\n• Documentation provided\n\n✅ **Benefits:**\n• Investment protection guarantee\n• Fashion flexibility and updates\n• Value retention over time\n• Trusted and transparent evaluation\n• Customer satisfaction priority"
     },
     
+    // Privacy Policy
     {
-      keywords: ["privacy", "privacy policy", "data protection"],
-      answer: "🔐 Privacy Policy:\n• Your personal information is secure\n• Data protection compliance\n• No sharing with third parties\n• Secure payment processing\n• Transparent data usage"
+      keywords: ["privacy", "policy", "data", "personal", "information", "security", "protection"],
+      answer: "🔒 Privacy Policy:\n\n🛡️ **Data Protection:**\n• Personal information secured with encryption\n• SSL encryption for all transactions\n• No data sharing with third parties\n• GDPR compliant practices\n• Regular security audits\n\n📋 **Information We Collect:**\n• Contact details for order processing\n• Payment information (securely processed)\n• Preferences for personalized service\n• Communication history for support\n• Location for delivery purposes\n\n🎯 **How We Use Your Data:**\n• Order processing and delivery coordination\n• Customer service and support\n• Marketing communications (with consent)\n• Legal compliance requirements\n• Service improvement\n\n✅ **Your Rights:**\n• Access your stored data\n• Request corrections or updates\n• Opt-out of marketing communications\n• Request data deletion\n• Transparent privacy practices"
     },
     
+    // Terms & Conditions
     {
-      keywords: ["terms", "conditions", "terms and conditions"],
-      answer: "📋 Terms & Conditions:\n• Clear purchase terms\n• Warranty conditions\n• Service agreements\n• Liability and limitations\n• Legal compliance information"
+      keywords: ["terms", "conditions", "legal", "agreement", "rules", "policy"],
+      answer: "📜 Terms & Conditions:\n\n⚖️ **Key Terms:**\n• All sales subject to our terms\n• Prices subject to gold market changes\n• Product descriptions are accurate\n• Photography may vary slightly from actual products\n• Custom orders have specific terms\n\n🛒 **Order Terms:**\n• Payment required before delivery\n• Custom orders are non-refundable\n• Delivery timelines are estimates\n• Risk and title pass upon delivery\n• Inspection period allowed\n\n⚠️ **Important Limitations:**\n• Liability limited to product value\n• Force majeure event exclusions\n• Local court jurisdiction applies\n• Dispute resolution procedures\n• Warranty terms and conditions\n\n📞 **For Complete Terms:**\nContact us directly or visit our website for the full terms and conditions document."
     },
     
+    // Fraud Warning Disclaimer
     {
-      keywords: ["fraud", "warning", "disclaimer", "security"],
-      answer: "⚠️ Fraud Warning Disclaimer:\n• Beware of counterfeit products\n• Only purchase from authorized dealers\n• Verify certifications and authenticity\n• Report suspicious activities\n• Secure payment methods only"
+      keywords: ["fraud", "warning", "fake", "duplicate", "scam", "authentic", "disclaimer", "security"],
+      answer: "⚠️ Fraud Warning Disclaimer:\n\n🚨 **Beware of Fake Sellers:**\n• Always verify seller credentials\n• Check for proper business licenses\n• Avoid unrealistic price offers\n• Verify physical store address\n• Check customer reviews and testimonials\n\n✅ **Legitimate Seller Indicators:**\n• Established physical store presence\n• Proper business registration and licenses\n• Certified products with documentation\n• Transparent pricing policies\n• Genuine customer testimonials\n• Professional website and communication\n\n🔍 **Red Flags to Avoid:**\n• High-pressure sales tactics\n• No clear return policy\n• Payment only through cash/unofficial channels\n• No product certifications provided\n• Unrealistic discounts and offers\n• Lack of proper contact information\n\n🛡️ **Stay Safe:**\n• Buy only from authorized dealers\n• Verify all product certifications\n• Keep all purchase receipts and documents\n• Report suspicious seller activities\n• Trust your instincts about deals too good to be true"
     },
 
-    // Products and Services
+    // Additional Services
     {
-      keywords: ["custom", "design", "bespoke", "personalized", "made to order"],
-      answer: "✨ Custom Jewelry Design:\n• Bespoke jewelry creation\n• Personalized engagement rings\n• Custom necklaces and earrings\n• Design consultation services\n• Bring your vision to life with expert craftsmanship"
+      keywords: ["custom", "design", "bespoke", "personalized", "made", "order"],
+      answer: "✨ Custom Jewelry Design:\n\n🎨 **Our Custom Services:**\n• Bespoke jewelry creation from scratch\n• Personalized engagement rings\n• Custom necklaces and earrings\n• Design consultation with experts\n• CAD design and 3D modeling\n\n⏰ **Process:**\n• Initial consultation (free)\n• Design conceptualization\n• 3D rendering and approval\n• Crafting and quality check\n• Final delivery and certification\n\n💎 **Specializations:**\n• Traditional Indian designs\n• Contemporary fusion pieces\n• Vintage restoration\n• Stone setting and resizing"
     },
     
     {
-      keywords: ["lab grown", "diamonds", "eco-friendly", "sustainable"],
-      answer: "🌱 Lab-Grown Diamonds:\n• 100% real diamonds, ethically created\n• Environmentally sustainable choice\n• Same quality as natural diamonds\n• Certified by leading institutes\n• Cost-effective premium option"
+      keywords: ["lab", "grown", "diamonds", "eco", "friendly", "sustainable", "ethical"],
+      answer: "🌱 Lab-Grown Diamonds:\n\n✨ **What are Lab-Grown Diamonds:**\n• 100% real diamonds, ethically created\n• Identical chemical and physical properties\n• Environmentally sustainable choice\n• Same brilliance as natural diamonds\n• Cost-effective premium option\n\n🔬 **Benefits:**\n• 20-40% less expensive than natural\n• Conflict-free and ethical sourcing\n• Environmentally responsible\n• Certified by leading institutes (GIA/IGI)\n• Available in all cuts and sizes\n\n💎 **Quality Assurance:**\n• Same 4C standards applied\n• Professional certification included\n• Lifetime warranty and support\n• Expert guidance available"
     },
     
     {
-      keywords: ["delivery", "shipping", "time", "dispatch", "worldwide"],
-      answer: "🚚 Shipping & Delivery:\n• Standard delivery: 2-3 business days\n• Express delivery options available\n• Free shipping on orders above ₹10,000\n• Worldwide shipping available\n• Tracking provided for all orders"
+      keywords: ["shipping", "delivery", "time", "dispatch", "worldwide", "tracking"],
+      answer: "🚚 Shipping & Delivery:\n\n📦 **Delivery Options:**\n• Standard delivery: 2-3 business days\n• Express delivery: 1-2 business days\n• Free shipping on orders above ₹10,000\n• Same-day delivery in Delhi NCR\n• International shipping available\n\n🌍 **Coverage:**\n• Pan-India delivery network\n• Worldwide shipping to 50+ countries\n• Remote area delivery available\n• Secure packaging with insurance\n\n📊 **Tracking & Updates:**\n• Real-time tracking number provided\n• SMS and email delivery updates\n• Customer support for queries\n• Delivery confirmation required"
     },
     
     {
-      keywords: ["payment", "methods", "upi", "card", "payu", "emi"],
-      answer: "💳 Payment Options:\n• All major credit/debit cards accepted\n• UPI and digital wallet payments\n• Secure PayU payment gateway\n• EMI options available\n• Cash on delivery (select areas)"
+      keywords: ["payment", "methods", "upi", "card", "payu", "emi", "finance"],
+      answer: "💳 Payment Options:\n\n💰 **Accepted Methods:**\n• All major credit/debit cards\n• UPI and digital wallet payments\n• Net banking from all major banks\n• EMI options (3-24 months)\n• Cash on delivery (select areas)\n\n🔒 **Security Features:**\n• Secure PayU payment gateway\n• 256-bit SSL encryption\n• PCI DSS compliant processing\n• Fraud detection systems\n• Secure transaction monitoring\n\n📊 **EMI Options:**\n• 0% EMI available on select cards\n• Flexible tenure options\n• Easy approval process\n• No hidden charges"
     },
     
     {
-      keywords: ["about", "company", "jaspreet singh", "experience", "history"],
-      answer: "🏆 About Jaspreet Singh Jewelry:\n• 17+ years of experience in jewelry crafting\n• Located in Karol Bagh, New Delhi's jewelry hub\n• Specializing in Polki, Jadau & diamond jewelry\n• Trusted by customers worldwide\n• Commitment to quality and traditional craftsmanship"
-    },
-    
-    {
-      keywords: ["collections", "rings", "necklaces", "earrings", "bracelets", "bridal"],
-      answer: "💍 Our Collections:\n• Bridal jewelry sets\n• Diamond rings and solitaires\n• Gold and silver necklaces\n• Designer earrings\n• Elegant bracelets\n• Traditional and contemporary designs"
-    },
-    
-    {
-      keywords: ["price", "cost", "budget", "affordable", "expensive"],
-      answer: "💰 Pricing Information:\n• Jewelry for every budget range\n• Transparent pricing policy\n• Custom pieces within your budget\n• EMI and financing options\n• Best value for certified diamonds\n• Contact us for personalized quotes"
+      keywords: ["about", "company", "jaspreet", "singh", "experience", "history", "background"],
+      answer: "🏆 About Jaspreet Singh Jewelry:\n\n📍 **Our Heritage:**\n• 17+ years of experience in jewelry crafting\n• Located in Karol Bagh, New Delhi's jewelry hub\n• Family-owned business with traditional values\n• Trusted by customers across India and globally\n\n💎 **Specializations:**\n• Polki and Jadau traditional jewelry\n• Diamond and precious stone jewelry\n• Bridal and wedding collections\n• Custom design and restoration\n• Contemporary and fusion pieces\n\n🏅 **Our Commitment:**\n• Quality craftsmanship guaranteed\n• Ethical sourcing practices\n• Customer satisfaction priority\n• Lifetime support and service"
     }
   ];
 
