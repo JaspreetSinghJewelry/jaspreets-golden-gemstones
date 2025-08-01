@@ -103,6 +103,9 @@ const FeaturedProducts = () => {
                     src={product.images[0]?.url}
                     alt={product.name}
                     className="w-full h-64 object-cover rounded-lg"
+                    loading="lazy"
+                    onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+                    style={{opacity: '0', transition: 'opacity 0.3s ease'}}
                     onError={(e) => {
                       e.currentTarget.src = '/placeholder.svg';
                     }}

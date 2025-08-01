@@ -68,6 +68,9 @@ const ProductCarousel = () => {
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
+                    style={{opacity: '0', transition: 'opacity 0.3s ease'}}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6">
                     <h4 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2">{product.name}</h4>
