@@ -317,6 +317,10 @@ export type Database = {
         Args: { "": unknown[] }
         Returns: number
       }
+      verify_admin_credentials: {
+        Args: { input_password: string; input_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
