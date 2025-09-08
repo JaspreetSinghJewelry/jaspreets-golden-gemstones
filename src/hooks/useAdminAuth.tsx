@@ -29,9 +29,23 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({ children 
     try {
       console.log('Attempting admin login...');
       
-      // For demo purposes, using simple comparison
-      // In production, you'd hash the password and compare with database
-      if (userId === 'admin' && password === 'admin123') {
+      // Use secure database function to verify admin credentials
+      const { data, error } = await supabase.rpc('verify_admin_credentials', {
+        input_user_id: userId,
+        input_password: password
+      });
+
+      if (error) {
+        console.error('Admin login error:', error);
+        toast({
+          title: "Authentication Failed",
+          description: "Unable to verify credentials",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      if (data === true) {
         localStorage.setItem('admin_session', 'authenticated');
         setIsAdminAuthenticated(true);
         
