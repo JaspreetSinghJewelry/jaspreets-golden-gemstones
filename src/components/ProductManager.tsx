@@ -339,6 +339,8 @@ const ProductManager = () => {
       case 'necklaces': return 'Necklaces';
       case 'earrings': return 'Earrings';
       case 'bracelets': return 'Bracelets';
+      case 'pendants': return 'Pendants';
+      case 'power-stones': return 'Power Stones';
       case 'lab-grown-diamonds': return 'Lab Grown Diamonds';
       case 'best-sellers': return 'Best Sellers';
       default: return location || 'Unknown';
@@ -356,6 +358,8 @@ const ProductManager = () => {
     { value: 'necklaces', label: 'Necklaces' },
     { value: 'earrings', label: 'Earrings' },
     { value: 'bracelets', label: 'Bracelets' },
+    { value: 'pendants', label: 'Pendants' },
+    { value: 'power-stones', label: 'Power Stones' },
     { value: 'lab-grown-diamonds', label: 'Lab Grown Diamonds' },
     { value: 'best-sellers', label: 'Best Sellers' }
   ];

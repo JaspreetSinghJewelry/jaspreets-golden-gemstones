@@ -8,6 +8,8 @@ type ImageLocation =
   | 'necklaces' 
   | 'earrings' 
   | 'bracelets' 
+  | 'pendants'
+  | 'power-stones'
   | 'lab-grown-diamonds'
   | 'best-sellers'
   | 'featured-collection';

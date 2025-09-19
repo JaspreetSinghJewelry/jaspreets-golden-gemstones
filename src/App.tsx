@@ -20,6 +20,8 @@ import Earrings from '@/pages/Earrings';
 import Bracelets from '@/pages/Bracelets';
 import Bridal from '@/pages/Bridal';
 import LabGrownDiamonds from '@/pages/LabGrownDiamonds';
+import Pendants from '@/pages/Pendants';
+import PowerStones from '@/pages/PowerStones';
 import Admin from '@/pages/Admin';
 import Checkout from '@/pages/Checkout';
 import Payment from '@/pages/Payment';
@@ -75,6 +77,8 @@ function App() {
                       <Route path="/necklaces" element={<Necklaces />} />
                       <Route path="/earrings" element={<Earrings />} />
                       <Route path="/bracelets" element={<Bracelets />} />
+                      <Route path="/pendants" element={<Pendants />} />
+                      <Route path="/power-stones" element={<PowerStones />} />
                       <Route path="/bridal" element={<Bridal />} />
                       <Route path="/lab-grown-diamonds" element={<LabGrownDiamonds />} />
                       <Route path="/category/:category" element={<DisplayCategoryProducts />} />

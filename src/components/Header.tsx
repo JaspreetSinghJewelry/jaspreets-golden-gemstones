@@ -33,6 +33,7 @@ const Header = () => {
     { name: 'Necklaces', path: '/necklaces' },
     { name: 'Earrings', path: '/earrings' },
     { name: 'Bracelets', path: '/bracelets' },
+    { name: 'Pendants', path: '/pendants' },
   ];
 
   const handleUserAction = () => {
@@ -109,6 +110,14 @@ const Header = () => {
             style={{ color: '#C8A157' }}
           >
             Lab Grown Diamonds
+          </button>
+
+          <button
+            onClick={() => navigate('/power-stones')}
+            className="transition-colors whitespace-nowrap hover:opacity-80"
+            style={{ color: '#C8A157' }}
+          >
+            Power Stones
           </button>
           
           <button
@@ -256,6 +265,17 @@ const Header = () => {
               style={{ color: '#C8A157' }}
             >
               Lab Grown Diamonds
+            </button>
+
+            <button
+              onClick={() => {
+                navigate('/power-stones');
+                setIsMenuOpen(false);
+              }}
+              className="block w-full text-left py-3 px-3 transition-colors text-base font-medium rounded-md hover:bg-white/5"
+              style={{ color: '#C8A157' }}
+            >
+              Power Stones
             </button>
             
             <button

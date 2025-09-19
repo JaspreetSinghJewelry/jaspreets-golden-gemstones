@@ -32,6 +32,12 @@ const Categories = () => {
     description: 'Delicate bracelets for everyday elegance'
   },
   {
+    name: 'Pendants',
+    path: '/pendants',
+    image: '/lovable-uploads/cae9a9c5-19f1-4f96-bdcc-f3053b3cff46.png',
+    description: 'Exquisite pendants for timeless elegance'
+  },
+  {
     name: 'Lab Grown Diamonds',
     path: '/lab-grown-diamonds',
     image: 'https://bxscivdpwersyohpaamn.supabase.co/storage/v1/object/public/images/lab%20diamond%20earring.jpeg',
