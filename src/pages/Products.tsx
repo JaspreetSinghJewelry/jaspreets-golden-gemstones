@@ -29,7 +29,7 @@ const Products = () => {
           .from('images')
           .select('*')
           .eq('is_active', true)
-          .in('display_location', ['rings', 'necklaces', 'earrings', 'bracelets', 'lab-grown-diamonds'])
+          .in('display_location', ['rings', 'necklaces', 'earrings', 'bracelets', 'pendants', 'power-stones', 'lab-grown-diamonds'])
           .order('product_group')
           .order('sort_order', { ascending: true });
 

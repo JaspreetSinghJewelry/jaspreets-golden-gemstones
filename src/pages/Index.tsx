@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from "@/components/Header";
+import HeroSection from "@/components/HeroSection";
 import ProductCarousel from "@/components/ProductCarousel";
 import UploadedImages from "@/components/UploadedImages";
 import Categories from "@/components/Categories";
@@ -56,6 +57,10 @@ const Index = () => {
     <div className="min-h-screen bg-white">
       <SectionErrorBoundary label="Header">
         <Header />
+      </SectionErrorBoundary>
+      
+      <SectionErrorBoundary label="Hero Section">
+        <HeroSection />
       </SectionErrorBoundary>
       
       <SectionErrorBoundary label="Product Carousel">
