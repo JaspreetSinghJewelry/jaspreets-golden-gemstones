@@ -69,6 +69,9 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Fallback colors in case CSS variables fail */
+    background-color: white !important;
+    color: black !important;
   }
   
   /* Enhanced mobile compatibility with improved zoom handling */
@@ -95,6 +98,9 @@
     /* iOS Safari bounce fix */
     position: relative;
     -webkit-overflow-scrolling: touch;
+    /* Ensure visibility */
+    background-color: white !important;
+    color: black !important;
   }
   
   /* Better tap targets for mobile */

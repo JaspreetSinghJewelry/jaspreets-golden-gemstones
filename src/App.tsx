@@ -64,7 +64,7 @@ function App() {
             <CartProvider>
               <WishlistProvider>
                 <Router>
-                  <div className="App">
+                  <div className="App" style={{backgroundColor: 'white', minHeight: '100vh', color: 'black'}}>
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />

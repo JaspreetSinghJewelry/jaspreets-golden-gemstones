@@ -41,10 +41,10 @@ const Index = () => {
   if (!mounted) {
     console.log("[DEBUG] Index not mounted yet");
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{backgroundColor: 'white', color: 'black'}}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600" style={{color: 'black'}}>Loading...</p>
         </div>
       </div>
     );
@@ -54,7 +54,7 @@ const Index = () => {
   console.log("[DEBUG] Rendering main content");
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{backgroundColor: 'white', color: 'black'}}>
       <SectionErrorBoundary label="Header">
         <Header />
       </SectionErrorBoundary>
