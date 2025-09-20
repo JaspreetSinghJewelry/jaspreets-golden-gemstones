@@ -413,11 +413,13 @@ const ProductManager = () => {
                 <SelectTrigger className="mt-2">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border shadow-lg z-50">
                   <SelectItem value="rings">Rings</SelectItem>
                   <SelectItem value="necklaces">Necklaces</SelectItem>
                   <SelectItem value="earrings">Earrings</SelectItem>
                   <SelectItem value="bracelets">Bracelets</SelectItem>
+                  <SelectItem value="pendants">Pendants</SelectItem>
+                  <SelectItem value="power-stones">Power Stones</SelectItem>
                   <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
                   <SelectItem value="best-sellers">Best Sellers</SelectItem>
                 </SelectContent>

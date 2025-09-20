@@ -142,7 +142,8 @@ const BulkProductUpload = () => {
   // Calculate validation state
   const selectedImageCount = productImages.filter(img => img.file !== null).length;
   const hasProductName = productName.trim().length > 0;
-  const hasValidPrice = productImages[0]?.price && Number(productImages[0].price) > 0;
+  const firstImage = productImages[0];
+  const hasValidPrice = firstImage?.price && Number(firstImage.price) > 0;
   const canUpload = hasProductName && selectedImageCount > 0 && hasValidPrice && !uploading;
 
   console.log('Render state:', {
@@ -223,7 +224,7 @@ const BulkProductUpload = () => {
             <Button
               onClick={handleUploadProductGroup}
               disabled={!canUpload}
-              className={`w-full ${canUpload ? 'bg-primary hover:bg-primary/90' : 'bg-gray-400 cursor-not-allowed'}`}
+              className={`w-full ${canUpload ? 'bg-primary hover:bg-primary/90 text-white' : 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed text-gray-600'}`}
               size="lg"
             >
               {uploading ? 'Creating Product Group...' : `Create Product Group with ${selectedImageCount} Images`}
