@@ -47,6 +47,8 @@ const ProductFormFields: React.FC<ProductFormFieldsProps> = ({
             <SelectItem value="necklaces">Necklaces</SelectItem>
             <SelectItem value="earrings">Earrings</SelectItem>
             <SelectItem value="bracelets">Bracelets</SelectItem>
+            <SelectItem value="pendants">Pendants</SelectItem>
+            <SelectItem value="power-stones">Power Stones</SelectItem>
             <SelectItem value="lab-grown-diamonds">Lab Grown Diamonds</SelectItem>
           </SelectContent>
         </Select>
