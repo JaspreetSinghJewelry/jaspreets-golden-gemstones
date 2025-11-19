@@ -112,7 +112,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           onClose();
         }
       } else {
-        const { error } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
+        const { error, needsEmailConfirmation } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
         if (error) {
           if (error.message.includes('already exists') || error.message.includes('already registered')) {
             toast({
@@ -132,11 +132,20 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             });
           }
         } else {
-          toast({
-            title: "Account Created!",
-            description: "Please check your email and click the confirmation link to activate your account."
-          });
-          setPendingConfirmation(true);
+          if (needsEmailConfirmation) {
+            toast({
+              title: "Account Created!",
+              description: "Please check your email and click the confirmation link to activate your account."
+            });
+            setPendingConfirmation(true);
+          } else {
+            toast({
+              title: "Account Created!",
+              description: "Your account is ready. You can sign in now without email verification."
+            });
+            setPendingConfirmation(false);
+          }
+
           setActiveTab('signin');
           setPassword('');
           setFullName('');
