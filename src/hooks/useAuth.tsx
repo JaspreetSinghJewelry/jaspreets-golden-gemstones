@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAuthenticated: boolean;
-  signUp: (email: string, password: string, fullName: string, phone: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, phone: string) => Promise<{ error: any; needsEmailConfirmation?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
@@ -116,10 +116,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { error: { message: error.message } };
       }
 
+      const needsEmailConfirmation = !data?.session;
+
       window.dispatchEvent(new CustomEvent('user-signed-up', { detail: { email: cleanEmail } }));
 
       console.log('Auth: Signup successful:', data);
-      return { error: null };
+      return { error: null, needsEmailConfirmation };
     } catch (err) {
       console.error('Auth: Signup exception:', err);
       return { error: { message: 'An unexpected error occurred during signup' } };

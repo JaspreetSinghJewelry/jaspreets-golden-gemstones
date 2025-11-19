@@ -111,7 +111,7 @@ const Auth = () => {
         }
       } else {
         console.log('Auth Page: Attempting signup...');
-        const { error } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
+        const { error, needsEmailConfirmation } = await signUp(email.trim(), password, fullName.trim(), phone.trim());
         
         if (error) {
           console.error('Auth Page: Signup failed:', error);
@@ -135,11 +135,21 @@ const Auth = () => {
           }
         } else {
           console.log('Auth Page: Signup successful');
-          toast({
-            title: "Account Created!",
-            description: "Please check your email and click the confirmation link to activate your account.",
-          });
-          setPendingConfirmation(true);
+
+          if (needsEmailConfirmation) {
+            toast({
+              title: "Account Created!",
+              description: "Please check your email and click the confirmation link to activate your account.",
+            });
+            setPendingConfirmation(true);
+          } else {
+            toast({
+              title: "Account Created!",
+              description: "Your account is ready. You can sign in now without email verification.",
+            });
+            setPendingConfirmation(false);
+          }
+
           setMode('signin');
           setPassword('');
           setFullName('');
