@@ -54,8 +54,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  console.log("[DEBUG] App component rendering");
-
   return (
     <RootErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -64,7 +62,7 @@ function App() {
             <CartProvider>
               <WishlistProvider>
                 <Router>
-                  <div className="App" style={{backgroundColor: 'white', minHeight: '100vh', color: 'black'}}>
+                  <div className="App" style={{backgroundColor: 'white', minHeight: '100vh', color: '#1a1a1a'}}>
                     <Routes>
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />

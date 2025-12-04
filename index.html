@@ -58,12 +58,20 @@
 
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading state shown before React mounts -->
+      <div id="initial-loader" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#fff;font-family:Arial,sans-serif;">
+        <div style="width:48px;height:48px;border:3px solid #f3f3f3;border-top:3px solid #c8a157;border-radius:50%;animation:spin 1s linear infinite;"></div>
+        <p style="color:#666;margin-top:16px;font-size:14px;">Loading Jaspreet Singh Jewelry...</p>
+        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <script src="/chatbot-widget.js" defer></script>
     
     <!-- Fallback for users with JavaScript disabled -->
     <noscript>
+      <style>#initial-loader{display:none !important;}</style>
       <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
         <h1>JavaScript Required</h1>
         <p>This website requires JavaScript to function properly. Please enable JavaScript in your browser.</p>
