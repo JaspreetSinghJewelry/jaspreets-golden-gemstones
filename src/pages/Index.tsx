@@ -15,43 +15,17 @@ import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
 
 const Index = () => {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { isAuthenticated, loading } = useAuth();
-
-  console.log("[DEBUG] Index.tsx rendering - isAuthenticated:", isAuthenticated, "loading:", loading, "mounted:", mounted);
-
-  // Handle mounting state
-  useEffect(() => {
-    console.log("[DEBUG] Index component mounted");
-    setMounted(true);
-  }, []);
 
   // Show login popup after delay for non-authenticated users
   useEffect(() => {
-    if (mounted && !loading && !isAuthenticated) {
-      console.log("[DEBUG] Setting login popup timer");
+    if (!loading && !isAuthenticated) {
       const timer = setTimeout(() => {
         setShowLoginPopup(true);
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [mounted, isAuthenticated, loading]);
-
-  // Simplified loading state - only show for a very brief moment
-  if (!mounted) {
-    console.log("[DEBUG] Index not mounted yet");
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{backgroundColor: 'white', color: 'black'}}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600" style={{color: 'black'}}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Force render main content after mount, regardless of auth state
-  console.log("[DEBUG] Rendering main content");
+  }, [isAuthenticated, loading]);
   
   return (
     <div className="min-h-screen bg-white" style={{backgroundColor: 'white', color: 'black'}}>
