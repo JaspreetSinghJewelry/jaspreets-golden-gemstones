@@ -49,9 +49,9 @@ const ProductCarousel = () => {
   }, [api]);
 
   return (
-    <section className="px-4 sm:px-6 py-8 sm:py-12 md:py-16 bg-white">
+    <section className="px-4 sm:px-6 py-8 sm:py-12 md:py-16 bg-white" style={{ contain: 'layout style' }}>
       <h3 className="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8 md:mb-10 text-black">Featured Collection</h3>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto" style={{ contain: 'layout' }}>
         <Carousel 
           setApi={setApi}
           className="w-full"
