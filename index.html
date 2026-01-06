@@ -37,8 +37,14 @@
 <link rel="manifest" href="/site.webmanifest?v=2" />
 <link rel="shortcut icon" href="/favicon.ico?v=2" />
 
-  <!-- Preload critical resources -->
-  <link rel="preload" href="/src/main.tsx" as="script" />
+  <!-- Preload critical LCP images for faster Speed Index -->
+  <link rel="preload" href="/lovable-uploads/6906fdcc-2913-4e7a-9f80-ea8a32a9d009.png" as="image" fetchpriority="high" />
+  <link rel="preload" href="/lovable-uploads/821c3725-fc1c-4677-9e42-d062bd3ebf3e.png" as="image" />
+  <link rel="preload" href="/lovable-uploads/63f590ef-6210-44a1-9538-a1cd4df03d0f.png" as="image" />
+  <link rel="preload" href="/lovable-uploads/93d8089d-ea97-407c-bcef-9175a04024b9.png" as="image" />
+  
+  <!-- Preconnect to Supabase for faster image loading -->
+  <link rel="preconnect" href="https://bxscivdpwersyohpaamn.supabase.co" crossorigin />
 
   <!-- Start Single Page Apps for GitHub Pages -->
   <script type="text/javascript">
