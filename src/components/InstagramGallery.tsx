@@ -63,6 +63,10 @@ const InstagramGallery = () => {
                 src={image.src}
                 alt={image.alt}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+                decoding="async"
+                width={218}
+                height={218}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#1F1E39]/50 via-transparent to-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
                 <Instagram className="h-6 w-6 text-white" />
