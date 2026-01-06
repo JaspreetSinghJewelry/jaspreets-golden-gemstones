@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users } from 'lucide-react';
+import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users, RefreshCw } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
-import ImageManager from '@/components/ImageManager';
-import ProductManager from '@/components/ProductManager';
-import BulkProductUpload from '@/components/BulkProductUpload';
-import OrdersManager from '@/components/OrdersManager';
-import UserManager from '@/components/UserManager';
+
+// Lazy load heavy components
+const ImageManager = lazy(() => import('@/components/ImageManager'));
+const ProductManager = lazy(() => import('@/components/ProductManager'));
+const BulkProductUpload = lazy(() => import('@/components/BulkProductUpload'));
+const OrdersManager = lazy(() => import('@/components/OrdersManager'));
+const UserManager = lazy(() => import('@/components/UserManager'));
+
+const TabLoadingSpinner = () => (
+  <div className="flex items-center justify-center py-12">
+    <RefreshCw className="h-6 w-6 animate-spin text-red-600" />
+    <span className="ml-2 text-gray-600">Loading...</span>
+  </div>
+);
 
 const Admin = () => {
-  console.log("[DEBUG] Admin panel is mounting"); // Debug log for admin page render
+  console.log("[DEBUG] Admin panel is mounting");
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <RefreshCw className="h-6 w-6 animate-spin text-red-600" />
+        <span className="ml-2 text-lg">Loading...</span>
       </div>
     );
   }
@@ -26,6 +36,23 @@ const Admin = () => {
   if (!isAdminAuthenticated) {
     return <AdminLogin />;
   }
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'products':
+        return <ProductManager />;
+      case 'bulk-upload':
+        return <BulkProductUpload />;
+      case 'orders':
+        return <OrdersManager />;
+      case 'users':
+        return <UserManager />;
+      case 'images':
+        return <ImageManager />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="admin-panel min-h-screen bg-white">
@@ -154,11 +181,9 @@ const Admin = () => {
             </CardHeader>
             <CardContent className="p-3 sm:p-6">
               <div className="text-xs sm:text-sm">
-                {activeTab === 'products' && <ProductManager />}
-                {activeTab === 'bulk-upload' && <BulkProductUpload />}
-                {activeTab === 'orders' && <OrdersManager />}
-                {activeTab === 'users' && <UserManager />}
-                {activeTab === 'images' && <ImageManager />}
+                <Suspense fallback={<TabLoadingSpinner />}>
+                  {renderTabContent()}
+                </Suspense>
               </div>
             </CardContent>
           </Card>
