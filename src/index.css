@@ -74,6 +74,23 @@
     color: black !important;
   }
   
+  /* CSS containment to reduce forced reflows */
+  section {
+    contain: layout style;
+  }
+  
+  /* Carousel containment for better performance */
+  [data-embla-container] {
+    contain: layout style;
+    will-change: transform;
+  }
+  
+  /* Optimize animated elements */
+  .transition-transform,
+  .transition-all {
+    will-change: transform, opacity;
+  }
+  
   /* Enhanced mobile compatibility with improved zoom handling */
   html {
     -webkit-text-size-adjust: 100%;

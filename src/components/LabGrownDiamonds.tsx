@@ -91,9 +91,9 @@ const LabGrownDiamonds = () => {
   };
 
   return (
-    <section className="px-6 py-16 bg-white">
+    <section className="px-6 py-16 bg-white" style={{ contain: 'layout style' }}>
       <h3 className="text-3xl font-semibold text-center mb-10 text-black">Lab Grown Diamonds & Jewellery</h3>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto" style={{ contain: 'layout' }}>
         <Carousel 
           setApi={setApi}
           className="w-full"
