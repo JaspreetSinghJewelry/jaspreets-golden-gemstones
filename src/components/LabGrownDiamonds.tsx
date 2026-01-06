@@ -110,6 +110,10 @@ const LabGrownDiamonds = () => {
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                    width={896}
+                    height={384}
                     onError={(e) => {
                       e.currentTarget.src = '/placeholder.svg';
                     }}

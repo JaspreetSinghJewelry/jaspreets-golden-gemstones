@@ -68,7 +68,11 @@ const ProductCarousel = () => {
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-full object-cover"
-                    loading="lazy"
+                    loading={product.id === 1 ? "eager" : "lazy"}
+                    fetchPriority={product.id === 1 ? "high" : "low"}
+                    width={880}
+                    height={500}
+                    decoding="async"
                     onLoad={(e) => (e.target as HTMLImageElement).style.opacity = '1'}
                     style={{opacity: '0', transition: 'opacity 0.3s ease'}}
                   />

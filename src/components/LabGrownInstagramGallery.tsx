@@ -65,6 +65,10 @@ const LabGrownInstagramGallery = () => {
                 src={image.src}
                 alt={image.alt}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+                decoding="async"
+                width={218}
+                height={218}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-green-600/50 via-transparent to-[#0D0C29]/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
                 <div className="flex items-center space-x-1">
