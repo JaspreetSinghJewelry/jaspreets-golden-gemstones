@@ -2,30 +2,12 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Show loading immediately while app initializes
-const showLoading = () => {
-  const rootElement = document.getElementById("root");
-  if (rootElement && !rootElement.hasChildNodes()) {
-    rootElement.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#fff;font-family:Arial,sans-serif;">
-        <div style="width:48px;height:48px;border:3px solid #f3f3f3;border-top:3px solid #c8a157;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <p style="color:#666;margin-top:16px;">Loading Jaspreet Singh Jewelry...</p>
-        <style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>
-      </div>
-    `;
-  }
-};
-
-// Show loading immediately
-showLoading();
-
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   document.body.innerHTML = `<div style="padding:50px;text-align:center;"><h1>Error: Root element not found</h1></div>`;
 } else {
   try {
-    const root = createRoot(rootElement);
-    root.render(<App />);
+    createRoot(rootElement).render(<App />);
   } catch (error) {
     console.error("[ERROR] Failed to render app:", error);
     rootElement.innerHTML = `
