@@ -11,7 +11,7 @@
     
     {
       keywords: ["store", "location", "address", "visit", "showroom", "physical"],
-      answer: "🏪 Visit Our Store:\n\n📍 **Address:**\n103, Poonam Chambers\n2645 Bank Street, Karol Bagh\nNew Delhi - 110005\n\n🚇 **How to Reach:**\n• Located in the heart of Karol Bagh jewelry market\n• Easy access by metro and public transport\n• Ample parking available\n• Professional consultation available\n\n✨ **Why Visit:**\n• See our complete collection\n• Expert guidance\n• Try jewelry before buying\n• Custom design consultation"
+      answer: "🏪 Visit Our Store:\n\n📍 **Address:**\n205, Solitaire Plaza, Building No. 2606-07\nGurudwara Road, Karol Bagh\nNew Delhi, Delhi, India - 110005\n\n🚇 **How to Reach:**\n• Located in the heart of Karol Bagh jewelry market\n• Easy access by metro and public transport\n• Ample parking available\n• Professional consultation available\n\n✨ **Why Visit:**\n• See our complete collection\n• Expert guidance\n• Try jewelry before buying\n• Custom design consultation"
     },
 
     // Buying & Price Guide - EXACT WEBSITE CONTENT
@@ -104,7 +104,7 @@
     // Contact & Support
     {
       keywords: ["contact", "phone", "email", "support", "help", "customer", "service"],
-      answer: "📞 Contact Information:\n\n🏪 **Store Address:**\n103, Poonam Chambers\n2645 Bank Street, Karol Bagh\nNew Delhi - 110005\n\n⏰ **Store Hours:**\nMonday - Saturday: 10:00 AM - 8:00 PM\nSunday: 11:00 AM - 7:00 PM\n\n💬 **Get Help:**\n• Visit our store for personalized service\n• Browse our website for the latest collection\n• Follow us on social media for updates\n\n✨ Our team of jewelry experts is always ready to assist you!"
+      answer: "📞 Contact Information:\n\n🏪 **Store Address:**\n205, Solitaire Plaza, Building No. 2606-07\nGurudwara Road, Karol Bagh\nNew Delhi, Delhi, India - 110005\n\n⏰ **Store Hours:**\nMonday - Saturday: 10:00 AM - 8:00 PM\nSunday: 11:00 AM - 7:00 PM\n\n💬 **Get Help:**\n• Visit our store for personalized service\n• Browse our website for the latest collection\n• Follow us on social media for updates\n\n✨ Our team of jewelry experts is always ready to assist you!"
     },
 
     // Fallback response
