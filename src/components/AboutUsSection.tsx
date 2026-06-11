@@ -23,9 +23,9 @@ const AboutUsSection = () => {
           </p>
 
           <p>
-            103, Poonam chambers 2645 Bank Street,
-            Karol Bagh, New Delhi
-            Pincode- 110005
+            205, Solitaire Plaza, Building No. 2606-07,
+            Gurudwara Road, Karol Bagh, New Delhi,
+            Delhi, India - Pincode 110005
           </p>
         </div>
       </div>

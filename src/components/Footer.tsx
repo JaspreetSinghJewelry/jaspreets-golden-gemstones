@@ -90,11 +90,11 @@ const Footer = () => {
                   <MapPin className="h-4 w-4 md:h-5 md:w-5 text-gray-600 mt-1 flex-shrink-0" />
                   <div>
                     <span className="text-gray-600 block mb-2 text-sm md:text-base">
-                      103, Poonam chambers 2645 Bank Street,
+                      205, Solitaire Plaza, Building No. 2606-07,
                       <br />
-                      Karol Bagh, New Delhi
+                      Gurudwara Road, Karol Bagh, New Delhi,
                       <br />
-                      Pincode- 110005
+                      Delhi, India - Pincode 110005
                     </span>
                     <Button
                       variant="outline"

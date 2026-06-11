@@ -61,9 +61,9 @@ const ContactUs = () => {
                   <div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Visit Our Store</h3>
                     <address className="text-gray-600 not-italic mb-4">
-                      103, Poonam chambers 2645 Bank Street,<br />
-                      Karol Bagh, New Delhi<br />
-                      Pincode- 110005
+                      205, Solitaire Plaza, Building No. 2606-07,<br />
+                      Gurudwara Road, Karol Bagh, New Delhi,<br />
+                      Delhi, India - Pincode 110005
                     </address>
                     <Button
                       variant="outline"
