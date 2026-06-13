@@ -1,7 +1,7 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users, RefreshCw } from 'lucide-react';
+import { LogOut, Images, Settings, Package, Upload, ShoppingBag, Users, RefreshCw, Star } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import AdminLogin from '@/components/AdminLogin';
 
@@ -11,6 +11,7 @@ const ProductManager = lazy(() => import('@/components/ProductManager'));
 const BulkProductUpload = lazy(() => import('@/components/BulkProductUpload'));
 const OrdersManager = lazy(() => import('@/components/OrdersManager'));
 const UserManager = lazy(() => import('@/components/UserManager'));
+const FeaturedCarouselManager = lazy(() => import('@/components/FeaturedCarouselManager'));
 
 const TabLoadingSpinner = () => (
   <div className="flex items-center justify-center py-12">
@@ -22,7 +23,7 @@ const TabLoadingSpinner = () => (
 const Admin = () => {
   console.log("[DEBUG] Admin panel is mounting");
   const { isAdminAuthenticated, adminLogout, loading } = useAdminAuth();
-  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'bulk-upload' | 'images' | 'orders' | 'users' | 'featured'>('products');
 
   if (loading) {
     return (
@@ -47,6 +48,8 @@ const Admin = () => {
         return <OrdersManager />;
       case 'users':
         return <UserManager />;
+      case 'featured':
+        return <FeaturedCarouselManager />;
       case 'images':
         return <ImageManager />;
       default:
@@ -129,6 +132,17 @@ const Admin = () => {
                   Users
                 </button>
                 <button
+                  onClick={() => setActiveTab('featured')}
+                  className={`py-2 px-3 text-xs sm:text-sm border-b-2 font-medium whitespace-nowrap ${
+                    activeTab === 'featured'
+                      ? 'border-red-500 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Star className="h-3 w-3 sm:h-4 sm:w-4 inline mr-1 sm:mr-2" />
+                  Featured Carousel
+                </button>
+                <button
                   onClick={() => setActiveTab('images')}
                   className={`py-2 px-3 text-xs sm:text-sm border-b-2 font-medium whitespace-nowrap ${
                     activeTab === 'images'
@@ -169,6 +183,12 @@ const Admin = () => {
                   <>
                     <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                     User Management
+                  </>
+                )}
+                {activeTab === 'featured' && (
+                  <>
+                    <Star className="h-4 w-4 sm:h-5 sm:w-5" />
+                    Featured Collection Carousel
                   </>
                 )}
                 {activeTab === 'images' && (
