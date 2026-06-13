@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import ProductCarousel from "@/components/ProductCarousel";
@@ -9,24 +9,9 @@ import LabGrownDiamonds from "@/components/LabGrownDiamonds";
 import InstagramGallery from "@/components/InstagramGallery";
 import LabGrownInstagramGallery from "@/components/LabGrownInstagramGallery";
 import Footer from "@/components/Footer";
-import LoginPopup from "@/components/LoginPopup";
-import { useAuth } from "@/hooks/useAuth";
 import { SectionErrorBoundary } from "@/components/SectionErrorBoundary";
 
 const Index = () => {
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const { isAuthenticated, loading } = useAuth();
-
-  // Show login popup after delay for non-authenticated users
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      const timer = setTimeout(() => {
-        setShowLoginPopup(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, loading]);
-  
   return (
     <div className="min-h-screen bg-white" style={{backgroundColor: 'white', color: 'black'}}>
       <SectionErrorBoundary label="Header">
@@ -66,11 +51,6 @@ const Index = () => {
       <SectionErrorBoundary label="Footer">
         <Footer />
       </SectionErrorBoundary>
-      
-      <LoginPopup
-        isOpen={showLoginPopup}
-        onClose={() => setShowLoginPopup(false)}
-      />
     </div>
   );
 };
